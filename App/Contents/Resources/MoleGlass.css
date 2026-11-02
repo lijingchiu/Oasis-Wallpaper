@@ -1,0 +1,430 @@
+.appearance-tints{display:flex;flex-wrap:wrap;gap:8px}.appearance-tints button{display:grid;justify-items:center;gap:7px;flex:1;min-width:48px;border:1px solid transparent;border-radius:12px;padding:9px 6px;background:transparent;color:var(--text);font:inherit;font-size:11px;cursor:pointer}
+.appearance-tints i{display:block;width:24px;height:24px;border-radius:50%;background:var(--swatch);border:1px solid #ffffff66;box-shadow:inset 0 2px 4px #ffffff60,0 2px 6px #0002}
+.appearance-tints button[aria-checked=true]{border-color:var(--accent);background:var(--surface)}
+.appearance-glass-note{padding:10px 12px;border-radius:12px;background:var(--surface)}
+/* One native frosted backdrop, translucent content tints and native glass navigation.
+   Content cards share the backdrop rather than stacking expensive blur filters. */
+html[data-material=liquid]{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC",sans-serif;--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC",sans-serif;--radius-panel:20px;--radius-inset:12px;--radius-control:999px;--glass-edge:color-mix(in srgb,var(--text) 6%,transparent);--glass-shadow:0 8px 24px #00000018;--glass-light:none;--glass-sheen:none;--control-hover:color-mix(in srgb,var(--text) 8%,transparent);--control-selected:color-mix(in srgb,var(--text) 6%,transparent)}
+html[data-material=liquid] body{font-family:var(--font);font-size:13px;line-height:1.45}
+html[data-material=liquid] body:before{background:var(--bg)!important}
+html[data-material=liquid][data-native-backdrop=true] body:before{background:var(--glass-bg)!important}
+html[data-material=liquid][data-native-backdrop=true],html[data-material=liquid][data-native-backdrop=true] body{background:transparent!important}
+html[data-material=liquid][data-native-backdrop=true] body.mole-inspector{background:var(--glass-bg)!important}
+html[data-material=liquid] body.mole-inspector{background:transparent!important;background-attachment:fixed!important;padding:12px 12px 9px;--accent:inherit;--accent-text:inherit;--scroll-thumb:inherit;--scroll-hover:inherit;--panel:inherit;--surface:inherit;--line:inherit;--muted:inherit}
+html[data-material=liquid] :is(h1,h2,h3,h4,strong){font-family:var(--font)}
+html[data-material=liquid] :is(h1,h2,h3,h4){font-weight:600;letter-spacing:-.015em}
+html[data-material=liquid] .window-bar{height:88px;display:grid;grid-template-columns:104px minmax(0,1fr);gap:18px;position:sticky;top:0;z-index:40;padding-top:12px;padding-right:80px}
+html[data-material=liquid] .window-bar .nav{width:100%;min-width:0;min-height:44px;padding:5px 7px;border:1px solid var(--glass-edge);border-radius:var(--radius-control);background:var(--glass-surface);box-shadow:var(--glass-shadow);backdrop-filter:blur(10px) saturate(1.1)}
+html[data-material=liquid] .nav button{flex:1 1 auto;font:500 12px var(--font);padding:7px 6px;min-width:0;border-radius:var(--radius-control);white-space:nowrap}
+html[data-material=liquid] .nav button.active{background:var(--control-selected);color:var(--text);box-shadow:none}
+html[data-material=liquid][data-native-glass=true] .window-bar .nav{visibility:hidden}
+html[data-material=liquid] .window-tools{bottom:24px;gap:7px}
+html[data-material=liquid] :is(.icon-btn,.top .icon){width:28px;height:28px;border:0;border-radius:50%!important;background:transparent;box-shadow:none}
+html[data-material=liquid] :is(.icon-btn,.top .icon):hover{background:var(--control-hover)}
+html[data-material=liquid] :is(.card,.status-card,.section,.feature-list,.feature-inspector,.feature-device,.work-panel,.app-preview,.outcome,.process-panel,.group-list,.dock-status,.whitelist-list,.file-info,.clean-job,.workday-card,.mu-card,.mu-settings,.mv-compact,.ms-watchlist,.ms-search-results,.ms-detail,.ms-settings,.mf-timer,.mf-settings,.mf-radio,.mr-form,.mr-list,.mr-settings,.mas-panel){border:1px solid var(--line);border-radius:var(--radius-panel);background:radial-gradient(ellipse at 10% 0%,var(--glass-highlight),transparent 55%),var(--glass-panel);box-shadow:inset 0 1px 0 var(--glass-highlight),0 3px 12px #00000006}
+html[data-material=liquid] :is(.status-card,.mu-card,.work-panel,.feature-inspector,.workday-card,.mf-timer,.mf-settings,.mf-radio){padding:15px 16px}
+html[data-material=liquid] :is(.status-grid,.mu-grid,.grid){gap:12px}
+html[data-material=liquid] .solar-heading{border:1px solid var(--line);border-radius:var(--radius-panel);min-height:132px!important;padding:12px 20px 12px 10px!important;background:radial-gradient(ellipse at 10% 0%,var(--glass-highlight),transparent 55%),var(--glass-panel);box-shadow:inset 0 1px 0 var(--glass-highlight),0 3px 12px #00000006}
+html[data-material=liquid] .solar-art{width:104px;height:104px;flex-basis:104px}
+html[data-material=liquid] .solar-kicker{font-size:10px;font-weight:500;letter-spacing:.08em;margin-bottom:6px}
+html[data-material=liquid] .solar-heading :is(h1,h2){font:600 23px var(--font);letter-spacing:-.025em}
+html[data-material=liquid] .solar-heading p{font-size:12px!important}
+html[data-material=liquid] :is(.btn,.mu-button,.feature-chip,.mv-tabs button,.mv-network-settings,.workday-footer button,.display-shortcuts button,.mole-stocks button,.mole-focus button,.mole-reminders button,.mole-switcher button,.appearance-reset,.appearance-modes button){min-height:30px;padding:6px 10px;border:1px solid var(--line);border-radius:var(--radius-control);background:var(--glass-surface);box-shadow:none;font:500 12px var(--font);color:var(--text)}
+html[data-material=liquid] button{border-radius:var(--radius-control);text-shadow:none}
+/* Disclosure labels are controls too. Their pointer light must inherit a real
+   radius instead of painting a rectangular rim inside an otherwise round card. */
+html[data-material=liquid] :is(details,summary){border-radius:var(--radius-inset)}
+html[data-material=liquid] :is(.ms-settings,.wx-settings,.wx-background-picker)>summary{border-radius:var(--radius-panel)}
+html[data-material=liquid] :is(.mole-account-switcher,.mu-card-expand)>summary{border-radius:var(--radius-inset)}
+html[data-material=liquid] :is(.mu-reason,.mu-message){border-radius:var(--radius-inset)}
+html[data-material=liquid] progress{border-radius:999px;overflow:hidden}
+html[data-material=liquid] progress::-webkit-progress-bar,
+html[data-material=liquid] progress::-webkit-progress-value{border-radius:inherit}
+/* Table row backgrounds do not reliably respect a radius on <tr>. Round the
+   two outside cells instead, keeping the middle cells joined as one selection. */
+html[data-material=liquid] .feature-proc tr.selected{background:transparent;clip-path:inset(0 round var(--radius-inset))}
+html[data-material=liquid] .feature-proc tr.selected>:is(td,th){background:var(--control-selected)}
+html[data-material=liquid] .feature-proc tr.selected>:first-child{border-radius:var(--radius-inset) 0 0 var(--radius-inset)}
+html[data-material=liquid] .feature-proc tr.selected>:last-child{border-radius:0 var(--radius-inset) var(--radius-inset) 0}
+html[data-material=liquid] .feature-proc tr.selected>:only-child{border-radius:var(--radius-inset)}
+html[data-material=liquid] :is(.btn.primary,.mv-item-play,.mv-search-form>button,.mu-config-save,.ms-search>button,.mr-save){background:var(--accent);color:var(--accent-text);border-color:transparent;box-shadow:none}
+html[data-material=liquid] :is(.subnav,.feature-tabs,.mv-tabs,.inspector-tabs){padding:4px;border:1px solid var(--line);border-radius:var(--radius-control);gap:3px;background:var(--glass-surface);box-shadow:none}
+html[data-material=liquid] .mv-tabs{width:fit-content;max-width:100%}
+html[data-material=liquid] :is(.subnav,.mv-tabs) button{border:0;background:transparent;box-shadow:none;padding:6px 10px}
+html[data-material=liquid] :is(.subnav button.active,.mv-tabs button.active,.feature-tabs button.active,.mu-switcher button[aria-selected=true],.mole-focus button[aria-pressed=true]){background:var(--control-selected);color:var(--text);border-color:transparent;box-shadow:none}
+html[data-material=liquid] .action-bar{left:16px;right:16px;bottom:12px;max-width:1450px;width:auto;border:1px solid var(--glass-edge);border-radius:var(--radius-panel);padding:11px 15px;background:var(--glass-surface);box-shadow:var(--glass-shadow);backdrop-filter:blur(10px)}
+html[data-material=liquid] :is(dialog,.feature-menu){border:1px solid var(--glass-edge);border-radius:24px;background:var(--panel);box-shadow:0 16px 48px #0003}
+html[data-material=liquid] dialog::backdrop{background:#00000038}
+html[data-material=liquid] :is(.dialog-head,.mu-config-dialog>header){background:transparent;padding:18px 20px;border-color:var(--line)}
+html[data-material=liquid] :is(.dialog-body,.mu-config-body){padding:18px 20px}
+html[data-material=liquid] .feature{border-radius:var(--radius-inset)}
+html[data-material=liquid] .feature{padding:14px;min-height:82px}
+html[data-material=liquid] :is(input:not([type=checkbox]):not([type=range]):not([type=color]),select,textarea){border-radius:var(--radius-control);background:var(--glass-surface);border:1px solid var(--line);font-family:var(--font)}
+html[data-material=liquid] :is(input,select,textarea,button,summary):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+html[data-material=liquid] :is(.mv-player,.mv-search-form){padding:16px;border:1px solid var(--line);border-radius:var(--radius-panel);background:radial-gradient(ellipse at 10% 0%,var(--glass-highlight),transparent 55%),var(--glass-panel);box-shadow:inset 0 1px 0 var(--glass-highlight),0 3px 12px #00000006}
+html[data-material=liquid] .mv-art{border-radius:10px;box-shadow:none}
+html[data-material=liquid] .mv-row{border-radius:var(--radius-inset);padding:9px 8px;gap:10px}
+html[data-material=liquid] .mv-row:hover{background:var(--control-hover)}
+html[data-material=liquid] :is(.metric-value,.value,.score,.summary .large,.mu-window-head strong,.workday-title,.ms-row-value strong,.mf-clock){font-family:var(--font);font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.025em}
+html[data-material=liquid] :is(.meter,.mu-meter,.track,.activity-track,.feature-track,.clean-track){height:5px;background:color-mix(in srgb,var(--text) 16%,transparent);border-radius:999px;box-shadow:none}
+html[data-material=liquid] :is(.meter i,.mu-meter i,.track i){background-image:none;box-shadow:none;border-radius:999px}
+html[data-material=liquid] .mu-card{--mu-accent:var(--text)}
+html[data-material=liquid] .mu-card[data-mu-provider=claude]{--mu-accent:#d97757}
+html[data-material=liquid] .mu-card[data-mu-provider=antigravity]{--mu-accent:#7097ef}
+html[data-material=liquid] .mu-card .mu-meter i{background:var(--mu-accent)}
+html[data-material=liquid] .mu-card[data-mu-provider=antigravity] .mu-meter i{background:linear-gradient(90deg,#3d8bff,#b06bdb)}
+html[data-material=liquid] .mu-card .mu-near-limit i{background:var(--danger);background-image:none}
+html[data-material=liquid] .mu-provider-heading h3{font-size:14px;font-weight:600}
+html[data-material=liquid] .mu-identity{font-size:12px;margin:5px 0 10px}
+html[data-material=liquid] .mu-window{margin-top:10px}
+html[data-material=liquid] .mu-window-head{font-size:12px}
+html[data-material=liquid] .mu-window-head strong{font-size:15px}
+html[data-material=liquid] .mu-window-foot{font-size:11px;line-height:1.45;gap:2px 8px}
+html[data-material=liquid] .mu-status{padding:0;border:0;border-radius:0;background:transparent;font-size:10px;color:var(--muted)}
+html[data-material=liquid] :is(.mu-card-foot,.mu-setup-actions){margin-top:10px}
+html[data-material=liquid] .mu-switcher{gap:4px}
+html[data-material=liquid] .mu-switcher button{border-radius:var(--radius-control);padding:5px 8px;font-size:11px}
+html[data-material=liquid] .mu-account-picker{margin:9px 0;font-size:11px}
+html[data-material=liquid] .mu-account-picker select{min-height:32px;padding-top:6px;padding-bottom:6px;border-radius:7px;font-size:12px}
+html[data-material=liquid] :is(.ms-row,.mr-item,.path-row,.history-row){border-radius:var(--radius-inset)}
+html[data-material=liquid] .ms-row{padding-top:8px;padding-bottom:8px}
+html[data-material=liquid] .ms-detail-grid{gap:10px 14px}
+html[data-material=liquid] .mf-sound{border-radius:10px}
+html[data-material=liquid] .mf-radio p{font-size:12px;margin:8px 0}
+html[data-material=liquid] .feature-activity{font-family:var(--font);border-radius:var(--radius-panel);background:var(--panel);border-color:var(--line);box-shadow:var(--glass-shadow)}
+html[data-material=liquid] .mole-inspector :is(.card,.section,.workday-card,.mu-card,.mv-compact,.mf-timer,.mf-settings,.mf-radio){border-radius:var(--radius-panel);padding:12px}
+html[data-material=liquid] .mole-inspector .card{min-height:96px}
+html[data-material=liquid] .mole-inspector .section{margin-top:10px}
+html[data-material=liquid] .mole-inspector .grid{gap:8px}
+html[data-material=liquid] .mole-inspector :is(.meta,.display-note,.workday-detail,.workday-note,.mv-row-meta small){font-size:11px;line-height:1.45}
+html[data-material=liquid] .mole-inspector .mv-player{background:transparent;border:0;padding:0;box-shadow:none}
+html[data-material=liquid] .mole-inspector .mv-tabs{width:100%;gap:2px;border-radius:var(--radius-control);justify-content:space-between}
+html[data-material=liquid] .mole-inspector .mv-tabs button{padding:5px 7px;font-size:11px}
+html[data-material=liquid] .mole-inspector .mv-row{padding:8px 2px;gap:6px}
+html[data-material=liquid] .mole-inspector .inspector-tabs{position:relative;isolation:isolate;margin:10px 0 12px;min-height:40px;gap:1px;border-color:transparent;background:color-mix(in srgb,var(--text) 5%,transparent);backdrop-filter:none}
+html[data-material=liquid] .mole-inspector .inspector-tabs button{position:relative;z-index:1;flex:1 1 auto;min-width:0;min-height:28px;line-height:1.4;font-size:11px;font-weight:500;padding:6px 3px;color:var(--muted);background:transparent!important}
+html[data-material=liquid] .mole-inspector .inspector-tabs button[aria-pressed=true]{color:var(--text)}
+.glass-selection{display:none}
+html[data-material=liquid] .glass-selection{display:block;position:absolute;pointer-events:none;z-index:0;top:4px;left:0;height:calc(100% - 8px);border-radius:var(--radius-control);border:0;background:var(--control-selected);box-shadow:none;transition:transform .18s ease,width .18s ease}
+html[data-material=liquid] .solar-nav-pill{border-radius:var(--radius-control);background:var(--control-selected);box-shadow:none;transition:transform .18s ease,width .18s ease}
+html[data-material=liquid] #moleCustomScrollbarThumb{opacity:.65;border-radius:999px!important}
+html[data-material=liquid] :is(button,summary){transition:background-color .12s,border-color .12s}
+html[data-material=liquid] button:hover:not(:disabled){filter:none;background-color:var(--control-hover)}
+html[data-material=liquid] :is(.btn.primary,.mv-item-play,.mv-search-form>button,.mu-config-save,.ms-search>button,.mr-save):hover:not(:disabled){background:var(--accent);color:var(--accent-text);filter:brightness(.96)}
+html[data-material=liquid] .mole-stocks :is(.ms-instrument,.ms-news button){border:0;background:transparent;box-shadow:none;padding:0;min-height:0;text-align:left;font:inherit}
+html[data-material=liquid] button:active:not(:disabled){transform:none;filter:brightness(.96)}
+html[data-material=liquid] :is(.mv-icon,.mv-icon.mv-play){border-radius:50%;box-shadow:none}
+html[data-material=liquid] .workday-switch i{box-shadow:none}
+html[data-material=liquid] .workday-switch input:checked+i:after{box-shadow:0 1px 2px #0002}
+html[data-material=liquid] .mole-inspector>.footer{padding-top:8px;margin-top:10px;border-top:1px solid var(--line);font-size:10px}
+html[data-material=liquid] .mole-inspector>.top{min-height:52px;padding:0 3px 2px}
+.appearance-tints{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
+.appearance-tints button{min-width:0;font-size:11px;padding:10px 3px}
+.inspector-appearance .appearance-tints{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+@media(max-width:920px){html[data-material=liquid] .nav button{padding-left:4px;padding-right:4px;font-size:11px}html[data-material=liquid] .window-bar{grid-template-columns:80px minmax(0,1fr);gap:10px;padding-right:74px}.app-wordmark{width:80px!important}}
+@media(max-width:760px){html[data-material=liquid] .window-bar{height:auto;min-height:82px}html[data-material=liquid] .solar-heading{padding:12px!important;min-height:112px!important}html[data-material=liquid] .solar-art{width:80px;height:80px;flex-basis:80px}html[data-material=liquid] .solar-heading :is(h1,h2){font-size:21px}}
+@media(max-width:600px){.appearance-tints{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* All material choices follow the system accessibility settings. */
+html[data-material=liquid][data-reduce-transparency=true]{--glass-bg:var(--bg)!important;--glass-end:var(--theme-end)!important;--glass-panel:var(--panel)!important;--glass-surface:var(--surface)!important;--glass-sheen:none!important;--glass-light:none!important}
+html[data-material=liquid][data-reduce-transparency=true] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html[data-material=liquid][data-increase-contrast=true] :is(.card,.status-card,.section,.mu-card,.btn,button,select,input,dialog){border-color:var(--muted)}
+html[data-material=liquid][data-increase-contrast=true] .glass-selection{outline:1px solid var(--muted)}
+html[data-reduce-motion=true] *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+@media(prefers-reduced-motion:reduce){html[data-material=liquid] *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media(prefers-reduced-transparency:reduce){html[data-material=liquid]{--glass-bg:var(--bg)!important;--glass-end:var(--theme-end)!important;--glass-panel:var(--panel)!important;--glass-surface:var(--surface)!important}html[data-material=liquid] *{backdrop-filter:none!important}}
+
+/* One original artwork, rendered as a template so it stays legible in every tone. */
+.oasis-wordmark{display:block;flex:none;width:132px;height:53px;background:var(--text);mask:url('/oasis-wordmark.png') center/contain no-repeat;-webkit-mask:url('/oasis-wordmark.png') center/contain no-repeat}
+.app-wordmark{width:104px;height:44px}
+html[data-material=liquid] .inspector-title.oasis-wordmark{display:block!important;width:132px;height:53px;margin:0;line-height:0}
+html[data-material=liquid] .appearance-modes button.active{background:var(--control-selected);border-color:var(--line);color:var(--text)}
+html[data-material=liquid] .appearance-tints button{border-radius:var(--radius-inset)}
+html[data-material=liquid] .appearance-tints i{box-shadow:none;border-color:var(--line)}
+html[data-material=liquid][data-glass-available=false] body.mole-inspector{background:var(--panel)!important}
+html[data-material=liquid][data-reduce-transparency=true] body.mole-inspector{background:var(--bg)!important}
+html[data-material=liquid][data-increase-contrast=true] .inspector-tabs{border-color:var(--muted)}
+
+/* Consistent frosted modules; content and controls retain full opacity. */
+html[data-material=liquid] :is(.feature,.mf-mix-settings,.mf-lyrics,.mn-item,.mf-sound,.ms-data-sources,.ms-study-settings,.mole-account-switcher,.mas-account,.mas-add,.mu-auth-panel,.mv-playlist-row,.mr-item,.feature-warning,.activity,.cli-setup){background:radial-gradient(ellipse at 10% 0%,var(--glass-highlight),transparent 55%),var(--glass-panel);border:1px solid var(--line);border-radius:var(--radius-inset);box-shadow:inset 0 1px 0 var(--glass-highlight);color:var(--text)}
+html[data-material=liquid] :is(.ms-row-menu[open]>div,.mas-more>div,dialog,.feature-menu){background:var(--glass-surface);color:var(--text);backdrop-filter:blur(12px) saturate(1.08);-webkit-backdrop-filter:blur(12px) saturate(1.08)}
+html[data-material=liquid] :is(.dialog-head,.mu-config-dialog>header,.mu-config-dialog footer){background:var(--glass-surface);color:var(--text)}
+html[data-material=liquid] .ms-facts>div{background:color-mix(in srgb,var(--panel) 24%,transparent)}
+html[data-material=liquid] .mr-list{overflow:hidden}
+html[data-material=liquid] :is(.ms-row,.mr-item){padding:12px 16px}
+html[data-material=liquid] .mr-list .mr-item{margin:0;border:0;border-bottom:1px solid var(--line);border-radius:var(--radius-inset);background:transparent;box-shadow:none}
+html[data-material=liquid] :is(.mv-empty,.ms-empty,.mas-empty){padding:18px 16px;margin:0;line-height:1.6}
+html[data-material=liquid] :is(.mf-lyrics,.ms-data-sources,.ms-study-settings){padding:14px 16px}
+html[data-material=liquid] :is(.mr-actions,.mr-quick,.mf-actions,.mas-actions,.ms-source-actions,.mu-setup-actions){gap:8px}
+html[data-material=liquid] :is(.mr-heading,.mf-section-head,.ms-heading,.mv-heading){flex-wrap:wrap;row-gap:12px}
+html[data-material=liquid] :is(.mr-heading,.ms-heading)>div:first-child{min-width:0}
+html[data-material=liquid] .mr-search{max-width:100%;box-sizing:border-box}
+html[data-material=liquid] textarea{border-radius:var(--radius-inset)!important;padding:10px 12px}
+html[data-material=liquid] .mv-row{padding:10px 12px}
+html[data-material=liquid] .mole-inspector :is(.ms-row,.mr-item){padding:10px 12px}
+html[data-material=liquid] .mole-inspector :is(.mv-empty,.ms-empty,.mas-empty){padding:16px 12px}
+html[data-material=liquid] .mole-inspector .mv-row{padding:9px 10px}
+html[data-material=liquid] .mole-inspector :is(.ms-data-sources,.ms-study-settings,.mf-lyrics){padding:12px}
+html[data-material=liquid] .mv-icon.mv-play{background:var(--text);color:var(--bg)}
+html[data-material=liquid] .mv-icon.mv-play:hover:not(:disabled){background:var(--accent);color:var(--accent-text)}
+html[data-material=liquid] .tree-cell{color:var(--tree-color,#ffffff);border-color:#ffffff30;text-shadow:none}
+html[data-material=liquid] .donut:after{background:var(--panel)}
+html[data-material=liquid] .mole-inspector :is(.workday-card,.mu-card,.mf-timer,.mf-radio){padding:14px}
+html[data-material=liquid][data-reduce-transparency=true]{--glass-highlight:transparent!important}
+@media(prefers-reduced-transparency:reduce){html[data-material=liquid]{--glass-highlight:transparent!important}}
+/* Compact headers have a dedicated action row, including long translations. */
+html[data-material=liquid] .mr-compact .mr-heading{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start}
+html[data-material=liquid] .mr-compact .mr-heading>.mr-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+html[data-material=liquid] .mr-compact .mr-heading>.mr-actions button{width:100%;min-width:0;min-height:34px;padding:7px 10px;line-height:1.4;white-space:normal;text-align:center}
+html[data-material=liquid] .mr-compact .mr-heading p{margin:4px 0 0;line-height:1.5}
+html[data-material=liquid] .mr-compact .mr-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+html[data-material=liquid] .mr-compact .mr-filters button{min-width:0;padding:6px 3px;white-space:normal;line-height:1.4}
+html[data-material=liquid] .mr-compact .mr-fields{grid-template-columns:minmax(0,1fr)}
+html[data-material=liquid] .mole-inspector :is(.mf-noise-controls,.mf-section-head,.ms-toolbar){gap:8px;flex-wrap:wrap}
+html[data-material=liquid] .mole-inspector :is(.ms-toolbar,.mf-noise-controls) label{min-width:0;max-width:100%}
+html[data-material=liquid] .mole-inspector .mf-section-head>h3{margin:0}
+/* Selected controls must keep the foreground paired with their own fill. */
+html[data-material=liquid] .mole-stocks :is(.ms-pin,.ms-detail-tabs button)[aria-pressed=true],html[data-material=liquid] .mole-stocks :is(.ms-pin,.ms-detail-tabs button)[aria-pressed=true]:hover{background:linear-gradient(155deg,var(--glass-highlight),transparent 62%),var(--oasis-button-selected)!important;color:var(--text);border-color:color-mix(in srgb,var(--accent) 48%,transparent)}
+html[data-material=liquid] :is(.mr-filters,.ms-chart-periods,.mas-tabs,.mu-config-accounts,.mn-tools) button[aria-pressed=true]{background:var(--control-selected);color:var(--text);border-color:var(--line)}
+html[data-material=liquid] .mr-form [type=submit]{background:var(--accent);color:var(--accent-text)}
+html[data-material=liquid] .mr-form [type=submit]:hover{background:var(--accent);color:var(--accent-text);filter:brightness(.96)}
+
+/* Keep typography crisp without an offset or embossed shadow. */
+html[data-material=liquid] body{text-shadow:none}
+/* Shared optical bevel: 3× intensity; rim coverage halved after a 50% expansion.
+   Spectral coverage retains its separate 50% expansion.
+   Insets follow each existing radius without adding nested blur or hit targets. */
+html[data-material=liquid]{--glass-edge-intensity:3;--glass-edge-range:.75;--glass-chromatic-range:1.5;--glass-rim-width:calc(1.5px * var(--glass-edge-range));--glass-chromatic-width:calc(1.5px * var(--glass-chromatic-range));--glass-rim-blur:calc(1px * var(--glass-chromatic-range));--glass-rim-light:#ffffff5e;--glass-rim-shade:#00000012;--glass-rim-cool:#9cdeff42;--glass-rim-violet:#c3adff3b;--glass-rim-warm:#ffbdd338;--glass-rim-amber:#ffe2a440;--glass-optical-bevel:inset 0 var(--glass-rim-width) calc(4px * var(--glass-edge-range)) var(--glass-rim-light),inset 0 calc(-.5px * var(--glass-edge-range)) calc(3px * var(--glass-edge-range)) var(--glass-rim-shade)}
+html[data-material=liquid][data-tone=dark]{--glass-rim-light:#ffffff30}
+html[data-material=liquid] :is(.card,.status-card,.section,.solar-heading,.feature-list,.feature-inspector,.feature-device,.work-panel,.app-preview,.outcome,.process-panel,.group-list,.dock-status,.whitelist-list,.file-info,.clean-job,.workday-card,.mu-card,.mu-settings,.mv-compact,.mv-player,.mv-search-form,.ms-watchlist,.ms-search-results,.ms-detail,.ms-settings,.mf-timer,.mf-settings,.mf-radio,.mr-form,.mr-list,.mr-settings,.mas-panel,dialog,.feature-menu){box-shadow:var(--glass-optical-bevel),0 3px 12px #00000008}
+html[data-material=liquid] :is(.btn,.mu-button,.feature-chip,.mv-tabs button,.mv-network-settings,.workday-footer button,.display-shortcuts button,.mole-stocks button,.mole-focus button,.mole-reminders button,.mole-switcher button,.appearance-reset,.appearance-modes button,.icon-btn,.top .icon,input:not([type=checkbox]):not([type=range]):not([type=color]),select,textarea){box-shadow:var(--glass-optical-bevel)}
+html[data-material=liquid] :is(.nav button.active,.inspector-tabs button[aria-pressed=true],.glass-selection,.solar-nav-pill){box-shadow:var(--glass-optical-bevel)}
+html[data-material=liquid] .mole-stocks :is(.ms-instrument,.ms-news button){box-shadow:none}
+html[data-material=liquid] .mole-inspector .mv-player{box-shadow:none}
+html[data-material=liquid][data-reduce-transparency=true],html[data-material=liquid][data-increase-contrast=true]{--glass-optical-bevel:none}
+@media(prefers-reduced-transparency:reduce){html[data-material=liquid]{--glass-optical-bevel:none}}
+
+/* Stock names are text links, including hover/pressed states. This exception is
+   intentionally stronger than the shared input/control selector; pin buttons keep glass. */
+html[data-material=liquid] .mole-stocks .ms-instrument,
+html[data-material=liquid] .mole-stocks .ms-instrument:hover,
+html[data-material=liquid] .mole-stocks .ms-instrument:active{background:transparent!important;border:0!important;border-radius:var(--radius-inset)!important;box-shadow:none!important;text-shadow:none!important;filter:none!important}
+
+/* Disabling bevels affects shapes, never stock-name focus outlines. */
+html[data-material=liquid][data-glass-emboss=false] :is(.card,.status-card,.section,.solar-heading,.feature-list,.feature-inspector,.feature-device,.work-panel,.app-preview,.outcome,.process-panel,.group-list,.dock-status,.whitelist-list,.file-info,.clean-job,.workday-card,.mu-card,.mu-settings,.mv-compact,.mv-player,.mv-search-form,.ms-watchlist,.ms-search-results,.ms-detail,.ms-settings,.mf-timer,.mf-settings,.mf-radio,.mr-form,.mr-list,.mr-settings,.mas-panel,dialog,.feature-menu),
+html[data-material=liquid][data-glass-emboss=false] :is(.btn,.mu-button,.feature-chip,.mv-tabs button,.mv-network-settings,.workday-footer button,.display-shortcuts button,.mole-stocks button,.mole-focus button,.mole-reminders button,.mole-switcher button,.appearance-reset,.appearance-modes button,.icon-btn,.top .icon,input:not([type=checkbox]):not([type=range]):not([type=color]),select,textarea),
+html[data-material=liquid][data-glass-emboss=false] :is(.nav button.active,.inspector-tabs button[aria-pressed=true],.glass-selection,.solar-nav-pill){box-shadow:none!important}
+
+/* Transparent scroll rails and grips, including nested music lists. Force WebKit's
+   custom scrollbar path so macOS legacy tracks cannot paint a white gutter. */
+html[data-material=liquid] :not(html):not(body){scrollbar-width:auto;scrollbar-color:auto}
+html[data-material=liquid] *::-webkit-scrollbar{width:8px;height:8px;background:transparent!important}
+html[data-material=liquid] *::-webkit-scrollbar-track,
+html[data-material=liquid] *::-webkit-scrollbar-track-piece,
+html[data-material=liquid] *::-webkit-scrollbar-corner{background:transparent!important;border:0!important;box-shadow:none!important}
+html[data-material=liquid] *::-webkit-scrollbar-thumb,
+html[data-material=liquid] *::-webkit-scrollbar-thumb:hover{background:transparent!important;border:1px solid color-mix(in srgb,var(--text) 28%,transparent)!important;border-radius:999px;box-shadow:none!important}
+html[data-material=liquid] *::-webkit-scrollbar-button{display:none;width:0;height:0;background:transparent!important}
+html[data-material=liquid] #moleCustomScrollbar{background:transparent!important;border:0!important}
+html[data-material=liquid] #moleCustomScrollbar #moleCustomScrollbarThumb{background:transparent!important;border:1px solid color-mix(in srgb,var(--text) 38%,transparent)!important;box-shadow:none!important;box-sizing:border-box}
+/* Range tracks stay transparent; each solid thumb gets a refractive rim and
+   restrained chromatic color split, tuned by the shared glass controls. */
+html[data-material=liquid] input[type=range]{appearance:none;-webkit-appearance:none;background:transparent!important;background-image:none!important;border:0!important;box-shadow:none!important;height:18px!important;min-height:18px!important;padding:0!important;cursor:pointer}
+html[data-material=liquid] input[type=range]::-webkit-slider-runnable-track{height:5px;background:transparent!important;border:1px solid color-mix(in srgb,var(--text) 22%,transparent);border-radius:999px;box-shadow:none!important;box-sizing:border-box}
+html[data-material=liquid] input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:16px;height:16px;margin-top:-6.5px;border:1px solid transparent;border-radius:50%;background-color:#fff!important;background-image:radial-gradient(circle,#fff 0 5.55px,#fff 5.8px,transparent 6.05px),conic-gradient(from 205deg,transparent 0%,color-mix(in srgb,var(--glass-rim-cool) calc(70% * var(--glass-chromatic-range)),transparent) 11%,color-mix(in srgb,var(--glass-rim-violet) calc(70% * var(--glass-chromatic-range)),transparent) 25%,transparent 41%,transparent 61%,color-mix(in srgb,var(--glass-rim-warm) calc(70% * var(--glass-chromatic-range)),transparent) 77%,color-mix(in srgb,var(--glass-rim-amber) calc(70% * var(--glass-chromatic-range)),transparent) 89%,transparent 100%),radial-gradient(circle at 29% 23%,color-mix(in srgb,var(--glass-rim-light) 32%,transparent),transparent 49%)!important;box-shadow:0 0 0 .75px color-mix(in srgb,var(--glass-rim-light) 72%,transparent),inset 0 1px .8px color-mix(in srgb,var(--glass-rim-light) 48%,transparent),0 1px 1.5px color-mix(in srgb,var(--text) 18%,transparent)!important;box-sizing:border-box}
+html[data-material=liquid] input[type=range]::-moz-range-track,
+html[data-material=liquid] input[type=range]::-moz-range-progress{height:4px;background:transparent!important;border:1px solid color-mix(in srgb,var(--text) 22%,transparent);border-radius:999px;box-shadow:none!important}
+html[data-material=liquid] input[type=range]::-moz-range-thumb{width:14px;height:14px;border:1px solid transparent;border-radius:50%;background-color:#fff!important;background-image:radial-gradient(circle,#fff 0 4.75px,#fff 4.95px,transparent 5.2px),conic-gradient(from 205deg,transparent 0%,color-mix(in srgb,var(--glass-rim-cool) calc(70% * var(--glass-chromatic-range)),transparent) 11%,color-mix(in srgb,var(--glass-rim-violet) calc(70% * var(--glass-chromatic-range)),transparent) 25%,transparent 41%,transparent 61%,color-mix(in srgb,var(--glass-rim-warm) calc(70% * var(--glass-chromatic-range)),transparent) 77%,color-mix(in srgb,var(--glass-rim-amber) calc(70% * var(--glass-chromatic-range)),transparent) 89%,transparent 100%),radial-gradient(circle at 29% 23%,color-mix(in srgb,var(--glass-rim-light) 32%,transparent),transparent 49%)!important;box-shadow:0 0 0 .75px color-mix(in srgb,var(--glass-rim-light) 72%,transparent),inset 0 1px .8px color-mix(in srgb,var(--glass-rim-light) 48%,transparent),0 1px 1.5px color-mix(in srgb,var(--text) 18%,transparent)!important}
+html[data-material=liquid][data-reduce-transparency=true] input[type=range]::-webkit-slider-thumb,html[data-material=liquid][data-increase-contrast=true] input[type=range]::-webkit-slider-thumb{background-image:none!important;background:#fff!important;box-shadow:none!important;border-color:#fff}
+html[data-material=liquid][data-reduce-transparency=true] input[type=range]::-moz-range-thumb,html[data-material=liquid][data-increase-contrast=true] input[type=range]::-moz-range-thumb{background-image:none!important;background:#fff!important;box-shadow:none!important;border-color:#fff}
+@media(prefers-reduced-transparency:reduce){html[data-material=liquid] input[type=range]::-webkit-slider-thumb{background-image:none!important;background:#fff!important;box-shadow:none!important;border-color:#fff}}
+@media(prefers-reduced-transparency:reduce){html[data-material=liquid] input[type=range]::-moz-range-thumb{background-image:none!important;background:#fff!important;box-shadow:none!important;border-color:#fff}}
+
+/* iPhone-inspired lens: broad soft upper highlight and a short lower spectral rim.
+   Native clear glass renders desktop refraction; this noninteractive rim is decorative. */
+html[data-material=liquid] :is(.card,.status-card,.section,.solar-heading,.workday-card,.mu-card,.mu-settings,.mv-compact,.mv-player,.ms-watchlist,.ms-search-results,.ms-detail,.ms-settings,.mf-timer,.mf-settings,.mf-radio,.mr-form,.mr-list,.mr-settings,.mas-panel,.btn,.mu-button,.feature-chip,.mv-tabs button,.mv-network-settings,.workday-footer button,.display-shortcuts button,.mole-stocks button:not(.ms-instrument):not(.ms-source-link):not(.ms-news button),.mole-focus button,.mole-reminders button,.mole-switcher button,.appearance-reset,.appearance-modes button){position:relative}
+html[data-material=liquid] :is(.card,.status-card,.section,.solar-heading,.workday-card,.mu-card,.mu-settings,.mv-compact,.mv-player,.ms-watchlist,.ms-search-results,.ms-detail,.ms-settings,.mf-timer,.mf-settings,.mf-radio,.mr-form,.mr-list,.mr-settings,.mas-panel,.btn,.mu-button,.feature-chip,.mv-tabs button,.mv-network-settings,.workday-footer button,.display-shortcuts button,.mole-stocks button:not(.ms-instrument):not(.ms-source-link):not(.ms-news button),.mole-focus button,.mole-reminders button,.mole-switcher button,.appearance-reset,.appearance-modes button)::after{content:"";position:absolute;pointer-events:none;inset:0;border-radius:inherit;padding:calc(1.2px * var(--glass-chromatic-range));background:linear-gradient(100deg,transparent 0%,var(--glass-rim-cool) 8%,var(--glass-rim-violet) 18%,transparent 35%,transparent 65%,var(--glass-rim-amber) 80%,var(--glass-rim-warm) 90%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;clip-path:inset(60% 0 0 0);opacity:.8}
+html[data-material=liquid] .mole-stocks .ms-instrument::after{content:none!important;display:none!important}
+html[data-material=liquid][data-reduce-transparency=true] :is(.card,.status-card,.section,.solar-heading,.workday-card,.mu-card,.mu-settings,.mv-compact,.mv-player,.ms-watchlist,.ms-search-results,.ms-detail,.ms-settings,.mf-timer,.mf-settings,.mf-radio,.mr-form,.mr-list,.mr-settings,.mas-panel,.btn,.mu-button,.feature-chip,.mv-tabs button,.mv-network-settings,.workday-footer button,.display-shortcuts button,.mole-stocks button:not(.ms-instrument):not(.ms-source-link):not(.ms-news button),.mole-focus button,.mole-reminders button,.mole-switcher button,.appearance-reset,.appearance-modes button)::after,
+html[data-material=liquid][data-increase-contrast=true] :is(.card,.status-card,.section,.solar-heading,.workday-card,.mu-card,.mu-settings,.mv-compact,.mv-player,.ms-watchlist,.ms-search-results,.ms-detail,.ms-settings,.mf-timer,.mf-settings,.mf-radio,.mr-form,.mr-list,.mr-settings,.mas-panel,.btn,.mu-button,.feature-chip,.mv-tabs button,.mv-network-settings,.workday-footer button,.display-shortcuts button,.mole-stocks button:not(.ms-instrument):not(.ms-source-link):not(.ms-news button),.mole-focus button,.mole-reminders button,.mole-switcher button,.appearance-reset,.appearance-modes button)::after{display:none}
+@media(prefers-reduced-transparency:reduce){html[data-material=liquid] :is(.card,.status-card,.section,.solar-heading,.workday-card,.mu-card,.mu-settings,.mv-compact,.mv-player,.ms-watchlist,.ms-search-results,.ms-detail,.ms-settings,.mf-timer,.mf-settings,.mf-radio,.mr-form,.mr-list,.mr-settings,.mas-panel,.btn,.mu-button,.feature-chip,.mv-tabs button,.mv-network-settings,.workday-footer button,.display-shortcuts button,.mole-stocks button:not(.ms-instrument):not(.ms-source-link):not(.ms-news button),.mole-focus button,.mole-reminders button,.mole-switcher button,.appearance-reset,.appearance-modes button)::after{display:none}}
+
+/* Touch response belongs to the visible control, with a finite spring on release.
+   The lightweight light layer follows the pointer without extra backdrop blur. */
+html[data-material=liquid] :is(button,summary):is([data-glass-responding],[data-glass-lit]){position:var(--glass-response-position,relative);transition:scale .09s ease-out}
+html[data-material=liquid] :is(button,summary,input[type=checkbox],input[type=radio])[data-glass-pressed]{scale:var(--glass-press-x,.97) var(--glass-press-y,.94)}
+html[data-material=liquid] .solar-nav>button:active{transform:none}
+.glass-response{display:none;position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none!important;contain:paint;transition:scale .28s cubic-bezier(.22,1.16,.36,1);--glass-touch-x:50%;--glass-touch-y:50%}
+html[data-material=liquid] .glass-response{display:block}
+.glass-response::before,.glass-response::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none}
+.glass-response::before{background:radial-gradient(ellipse var(--glass-light-rx,100px) var(--glass-light-ry,70px) at var(--glass-touch-x) var(--glass-touch-y),#ffffff38,transparent 76%);opacity:.65;transition:opacity .12s ease-out}
+.glass-response::after{padding:calc(.8px + .45px * var(--glass-edge-range));background:radial-gradient(ellipse var(--glass-light-rx,100px) var(--glass-light-ry,70px) at var(--glass-touch-x) var(--glass-touch-y),#ffffff80,transparent 68%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;opacity:.42;transition:opacity .16s ease-out}
+html[data-tone=light] .glass-response::after{background:radial-gradient(ellipse var(--glass-light-rx,100px) var(--glass-light-ry,70px) at var(--glass-touch-x) var(--glass-touch-y),#ffffffc0,transparent 68%);opacity:.7}
+html[data-material=liquid] [data-glass-pressed]>.glass-response{scale:1.015;transition:scale .1s ease-out}
+button[data-glass-pressed]>.glass-response::before{opacity:1}
+button[data-glass-pressed]>.glass-response::after{opacity:1}
+html[data-material=liquid]{--glass-spring:cubic-bezier(.18,1.5,.3,1)}
+@supports(transition-timing-function:linear(0,1)){html[data-material=liquid]{--glass-spring:linear(0,.025,.097,.206,.339,.481,.623,.754,.866,.955,1.019,1.06,1.081,1.086,1.079,1.065,1.048,1.031,1.016,1.003,.994,.988,.985,.985,.987,.99,.993,.996,.998,1)}}
+html[data-material=liquid] :is(.glass-selection,.solar-nav-pill){transition:transform .5s var(--glass-spring),width .5s var(--glass-spring)}
+html[data-material=liquid] .glass-selection[data-glass-spring]{transition:none}
+html[data-material=liquid] input[type=range]::-webkit-slider-thumb{transition:transform .48s var(--glass-spring),box-shadow .18s ease-out}
+html[data-material=liquid] input[type=range]:is(:active,[data-glass-dragging])::-webkit-slider-thumb{transform:scale(1.38);transition:transform .12s ease-out;box-shadow:0 0 0 1px #ffffffb0,inset 0 1px 1px #fff,0 2px 6px #00000030!important}
+html[data-material=liquid] input[type=range]::-moz-range-thumb{transition:transform .48s var(--glass-spring),box-shadow .18s ease-out}
+html[data-material=liquid] input[type=range]:is(:active,[data-glass-dragging])::-moz-range-thumb{transform:scale(1.38);transition:transform .12s ease-out;box-shadow:0 0 0 1px #ffffffb0,inset 0 1px 1px #fff,0 2px 6px #00000030!important}
+/* Panels expand from the invoking control. Discrete transitions keep the native
+   dialog/top layer intact until its short dismissal has completed. */
+html[data-material=liquid] dialog{transform-origin:var(--glass-panel-origin,50% 35%);opacity:0;scale:.96;translate:0 10px;transition:opacity .18s ease-out,scale .42s var(--glass-spring),translate .42s var(--glass-spring),display .22s allow-discrete,overlay .22s allow-discrete}
+html[data-material=liquid] dialog[open]{opacity:1;scale:1;translate:0 0}
+html[data-material=liquid] dialog::backdrop{opacity:0;transition:opacity .18s ease-out,display .22s allow-discrete,overlay .22s allow-discrete}
+html[data-material=liquid] dialog[open]::backdrop{opacity:1}
+@starting-style{html[data-material=liquid] dialog[open]{opacity:0;scale:.94;translate:0 12px}html[data-material=liquid] dialog[open]::backdrop{opacity:0}}
+@keyframes oasis-glass-menu{0%{opacity:0;scale:.94;translate:0 6px}65%{opacity:1;scale:1.012;translate:0 -1px}100%{opacity:1;scale:1;translate:0 0}}
+html[data-material=liquid] .feature-menu{transform-origin:16px 16px;animation:oasis-glass-menu .34s both}
+/* The shared motion controller retains a dialog in the top layer for dismissal.
+   Only one animator owns its surface; the backdrop follows the same duration. */
+html[data-material=liquid][data-oasis-motion=on] dialog{opacity:1;scale:1;translate:0 0;transition:none}
+html[data-material=liquid][data-oasis-motion=on] dialog::backdrop{transition:opacity .17s ease-out}
+html[data-material=liquid][data-oasis-motion=on] dialog[data-oasis-closing]::backdrop{opacity:0}
+/* Inline forms/results retain their native hidden semantics. Discrete display
+   transitions keep the outgoing surface visible just long enough to fade. */
+@media(prefers-reduced-motion:no-preference){
+ @supports(transition-behavior:allow-discrete){
+  html[data-material=liquid][data-oasis-motion=on]:not([data-reduce-motion=true]) [data-oasis-reveal]{opacity:1;translate:0 0;transition:opacity .2s ease-out,translate .26s cubic-bezier(.2,.78,.2,1),display .2s allow-discrete}
+  html[data-material=liquid][data-oasis-motion=on]:not([data-reduce-motion=true]) [data-oasis-reveal][hidden]{opacity:0;translate:0 -5px}
+  @starting-style{html[data-material=liquid][data-oasis-motion=on]:not([data-reduce-motion=true]) [data-oasis-reveal]:not([hidden]){opacity:0;translate:0 8px}}
+ }
+}
+/* Content scrolling beneath the floating toolbar softly recedes, as on iOS 26. */
+html[data-material=liquid] .window-bar{isolation:isolate}
+html[data-material=liquid] .window-bar::before{content:"";position:absolute;pointer-events:none;inset:-12px -20px 0;z-index:-1;background:linear-gradient(to bottom,var(--glass-bg),transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);-webkit-mask-image:linear-gradient(#000 0%,#000 38%,transparent 100%);mask-image:linear-gradient(#000 0%,#000 38%,transparent 100%);opacity:var(--glass-scroll-opacity,0);transition:opacity .16s ease-out}
+html[data-reduce-motion=true] button[data-glass-pressed]>.glass-response{scale:1}
+html[data-reduce-motion=true] :is(button,summary,input[type=checkbox],input[type=radio])[data-glass-pressed]{scale:1;transition:none}
+html[data-reduce-motion=true] :is(dialog,.feature-menu,.glass-selection,.solar-nav-pill){scale:1;translate:0 0;transition:none!important;animation:none!important}
+html[data-reduce-motion=true] .glass-response::before,html[data-reduce-motion=true] .glass-response::after,html[data-reduce-motion=true] .window-bar::before{transition:none!important}
+html[data-reduce-motion=true] input[type=range]:is(:active,[data-glass-dragging])::-webkit-slider-thumb{transform:none;transition:none}
+html[data-reduce-motion=true] input[type=range]:is(:active,[data-glass-dragging])::-moz-range-thumb{transform:none;transition:none}
+html:is([data-reduce-transparency=true],[data-increase-contrast=true]) .glass-response{display:none!important}
+html[data-material=liquid][data-reduce-transparency=true] .window-bar::before{background:var(--bg);-webkit-mask-image:none;mask-image:none}
+@media(prefers-reduced-motion:reduce){html[data-material=liquid] :is(button,summary,input[type=checkbox],input[type=radio])[data-glass-pressed]{scale:1;transition:none}html[data-material=liquid] button[data-glass-pressed]>.glass-response{scale:1}html[data-material=liquid] :is(dialog,.feature-menu,.glass-selection,.solar-nav-pill){scale:1;translate:0 0;transition:none!important;animation:none!important}html[data-material=liquid] .glass-response::before,html[data-material=liquid] .glass-response::after,html[data-material=liquid] .window-bar::before{transition:none!important}html[data-material=liquid] input[type=range]:is(:active,[data-glass-dragging])::-webkit-slider-thumb{transform:none;transition:none}html[data-material=liquid] input[type=range]:is(:active,[data-glass-dragging])::-moz-range-thumb{transform:none;transition:none}}
+@media(prefers-reduced-transparency:reduce){.glass-response{display:none!important}}
+
+/* Every action shares the clear glass material. One window backdrop is reused;
+   no per-button blur layers, so large lists keep their existing rendering cost. */
+html[data-material=liquid]{--oasis-button-fill:color-mix(in srgb,var(--glass-surface) 48%,transparent);--oasis-button-hover:color-mix(in srgb,var(--glass-surface) 68%,transparent);--oasis-button-selected:color-mix(in srgb,var(--accent) 17%,var(--oasis-button-fill));--oasis-button-line:color-mix(in srgb,var(--text) 17%,transparent)}
+html[data-material=liquid] body :is(button,.btn,[role=button]):not(.ms-instrument):not(.ms-source-link):not(.mv-row-track):not(.mv-row):not(.ms-news button):not(.nav button):not(.solar-nav button):not(.inspector-tabs button):not(.appearance-tints button):not(.mf-favorite):not(.mn-favorite){
+ background:linear-gradient(155deg,color-mix(in srgb,var(--glass-highlight) 65%,transparent),transparent 62%),var(--oasis-button-fill)!important;
+ color:var(--text)!important;border:1px solid var(--oasis-button-line);border-radius:var(--radius-control);box-shadow:var(--glass-optical-bevel);box-sizing:border-box;
+ min-height:34px;padding:8px 14px;line-height:1.4;max-width:100%;overflow-wrap:anywhere;gap:7px
+}
+html[data-material=liquid] body :is(button,.btn,[role=button]):not(:disabled):not(.ms-instrument):not(.ms-source-link):not(.mv-row-track):not(.mv-row):not(.ms-news button):not(.nav button):not(.solar-nav button):not(.inspector-tabs button):not(.appearance-tints button):not(.mf-favorite):not(.mn-favorite):hover{background:linear-gradient(155deg,var(--glass-highlight),transparent 62%),var(--oasis-button-hover)!important}
+html[data-material=liquid] body :is(button[aria-pressed=true],button[aria-selected=true],button.active,.btn.primary,.mr-form [type=submit],.mf-timer-actions button:first-child):not(.ms-instrument):not(.nav button):not(.solar-nav button):not(.inspector-tabs button):not(.mf-favorite):not(.mn-favorite){background:linear-gradient(155deg,var(--glass-highlight),transparent 62%),var(--oasis-button-selected)!important;color:var(--text)!important;border-color:color-mix(in srgb,var(--accent) 48%,transparent)}
+html[data-material=liquid] body :is(button,.btn):is(.danger,[data-mr=delete],[data-mr=deleteAll]){color:var(--danger)!important;border-color:color-mix(in srgb,var(--danger) 38%,transparent)}
+html[data-material=liquid] body :is(.icon,.icon-btn,.mv-icon,.mv-play,.wx-refresh,.ms-icon-button){display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;min-width:34px;min-height:34px;padding:8px;aspect-ratio:1}
+html[data-material=liquid] body :is(.mv-icon,.mv-play) svg{flex-shrink:0}
+html[data-material=liquid] body :is(.mr-actions,.mr-quick,.mr-filters,.mf-actions,.mf-filters,.ms-chart-periods,.ms-detail-tabs,.mv-search-filters,.mv-tabs,.mu-setup-actions,.workday-footer){gap:8px}
+html[data-material=liquid] body :is(.mr-actions,.mr-quick,.ms-detail-tabs,.ms-chart-periods,.mv-tabs){flex-wrap:wrap}
+html[data-material=liquid] .mole-inspector :is(.mr-actions,.mr-filters,.mf-phases,.mf-filters,.ms-chart-periods,.ms-detail-tabs) button{min-width:0;min-height:34px;padding:8px 10px;white-space:normal;line-height:1.45}
+html[data-material=liquid] .mole-inspector .mr-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+html[data-material=liquid] .mole-inspector .mr-heading>.mr-actions{grid-template-columns:minmax(0,1fr)}
+html[data-material=liquid] body :is(.mv-row,.mv-row-track,.ms-instrument){box-shadow:none!important;background:transparent!important}
+html[data-material=liquid] body .ms-instrument{padding:6px 8px 6px 0!important;border:0!important}
+html[data-material=liquid][data-glass-emboss=false] body :is(button,.btn,[role=button]){box-shadow:none!important}
+/* Accessibility modes retain an opaque fill and visible action boundaries. */
+html[data-material=liquid]:is([data-reduce-transparency=true],[data-increase-contrast=true]){--oasis-button-fill:var(--panel);--oasis-button-hover:var(--surface);--oasis-button-selected:var(--surface);--oasis-button-line:var(--text)}
+@media(prefers-reduced-transparency:reduce){html[data-material=liquid]{--oasis-button-fill:var(--panel);--oasis-button-hover:var(--surface);--oasis-button-selected:var(--surface)}}
+
+html[data-material=liquid] .mn-item{grid-template-columns:minmax(0,1fr) auto 34px}
+
+/* Reminder storage is one glass disclosure. Its commands read as menu rows,
+   avoiding a second layer of pill buttons under the entry button. */
+html[data-material=liquid] body .mole-reminders .mr-storage{margin:12px 0 0;padding:8px 0 0;border-top:1px solid var(--line)}
+html[data-material=liquid] body .mole-reminders .mr-storage>summary{display:flex;align-items:center;gap:9px;min-height:38px;padding:8px 12px;list-style:none;border:1px solid var(--oasis-button-line);border-radius:var(--radius-control);background:var(--oasis-button-fill);color:var(--text);font-size:12px;line-height:1.4;cursor:pointer;transition:background-color .15s,border-color .15s}
+html[data-material=liquid] body .mole-reminders .mr-storage>summary::-webkit-details-marker{display:none}
+html[data-material=liquid] body .mole-reminders .mr-storage>summary::before{content:'›';display:inline-block;flex:0 0 auto;font-size:17px;line-height:1;opacity:.72;transition:transform .18s ease}
+html[data-material=liquid] body .mole-reminders .mr-storage[open]>summary::before{transform:rotate(90deg)}
+html[data-material=liquid] body .mole-reminders .mr-storage>summary:hover{background:var(--oasis-button-hover);border-color:color-mix(in srgb,var(--text) 30%,transparent)}
+html[data-material=liquid] body .mole-reminders .mr-storage>summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+html[data-material=liquid] body .mole-reminders .mr-storage>.mr-actions{display:grid;gap:0;margin:8px 6px 0;padding:3px 8px;border-left:1px solid var(--oasis-button-line)}
+html[data-material=liquid] body .mole-reminders #mrStorageActions>button{display:flex;align-items:center;justify-content:flex-start;width:100%;min-width:0;min-height:36px;padding:8px 14px!important;border:0!important;border-radius:8px;background:transparent!important;box-shadow:none!important;color:var(--text)!important;font-size:12px;line-height:1.4;text-align:left;white-space:normal}
+html[data-material=liquid] body .mole-reminders #mrStorageActions>button:hover{background:color-mix(in srgb,var(--glass-surface) 30%,transparent)!important}
+html[data-material=liquid] body .mole-reminders #mrStorageActions>button::after{display:none!important}
+html[data-material=liquid] body .mole-reminders #mrStorageActions>button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+html[data-material=liquid] body .mole-reminders #mrStorageActions>button>.glass-response{display:none!important}
+html[data-material=liquid] body .mole-reminders .mr-storage>.mr-muted{margin:7px 8px 0 14px;font-size:11px;line-height:1.45}
+html[data-material=liquid] body .mole-reminders .mr-storage>[data-mr-storage]{margin-bottom:0}
+
+
+/* Keep the inspector arrow as a compact action menu with the Dock switch inside. */
+html[data-material=liquid] body.mole-inspector .top{position:relative;z-index:20;overflow:visible}
+html[data-material=liquid] body.mole-inspector .inspector-action-menu{position:relative;flex:0 0 auto}
+html[data-material=liquid] body.mole-inspector .inspector-action-toggle{position:relative}
+html[data-material=liquid] body.mole-inspector .inspector-action-toggle .menu-chevron{position:absolute;right:1px;bottom:1px;font-size:7px;line-height:1;opacity:.86}
+html[data-material=liquid] body.mole-inspector .top-menu-popover{position:absolute;top:calc(100% + 7px);right:0;z-index:1200;display:grid;grid-template-rows:repeat(2,min-content);grid-auto-rows:min-content;align-content:start;justify-content:stretch;gap:4px;width:max-content;min-width:176px;max-width:calc(100vw - 24px);height:auto!important;min-height:0!important;max-height:calc(100vh - 40px);overflow-y:auto;padding:7px;border:1px solid color-mix(in srgb,var(--text) 18%,transparent);border-radius:14px;background:color-mix(in srgb,var(--panel) 72%,transparent);box-shadow:0 12px 30px #0005;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+html[data-material=liquid] body.mole-inspector .top-menu-popover[hidden]{display:none!important}
+html[data-material=liquid] body.mole-inspector #headerActionsMenu>button{display:block;width:100%;height:auto!important;min-height:36px;max-height:none;aspect-ratio:auto;flex:none;align-self:stretch;padding:8px 14px!important;border:0!important;border-radius:9px;background:transparent!important;box-shadow:none!important;color:var(--text)!important;text-align:left;white-space:nowrap}
+html[data-material=liquid] body.mole-inspector #headerActionsMenu>button:hover{background:color-mix(in srgb,var(--glass-surface) 34%,transparent)!important}
+html[data-material=liquid] body.mole-inspector #headerActionsMenu>button[aria-pressed=true]{color:var(--text)!important}
+html[data-material=liquid] body.mole-inspector #headerActionsMenu>button::after{display:none!important}
+html[data-material=liquid] body.mole-inspector #headerActionsMenu>button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+html[data-material=liquid] body.mole-inspector #headerActionsMenu>button>.glass-response{display:none!important}
+
+/* Source-access disclosures use one full-width glass trigger. Their secondary
+   commands stay as quiet menu rows instead of nested pill buttons. */
+html[data-material=liquid] body :is(.ms-data-sources,.mn-license){margin:12px 0 16px;padding:8px 0 0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none}
+html[data-material=liquid] body :is(.ms-data-sources,.mn-license)>summary{display:flex;align-items:center;gap:9px;min-height:40px;padding:8px 12px;list-style:none;border:1px solid var(--oasis-button-line);border-radius:var(--radius-control);background:var(--oasis-button-fill);color:var(--text);font-size:12px;line-height:1.4;cursor:pointer;transition:background-color .15s,border-color .15s}
+html[data-material=liquid] body :is(.ms-data-sources,.mn-license)>summary::-webkit-details-marker{display:none}
+html[data-material=liquid] body :is(.ms-data-sources,.mn-license)>summary::before{content:'›';display:inline-block;flex:0 0 auto;font-size:17px;line-height:1;opacity:.72;transition:transform .18s ease}
+html[data-material=liquid] body :is(.ms-data-sources,.mn-license)[open]>summary::before{transform:rotate(90deg)}
+html[data-material=liquid] body :is(.ms-data-sources,.mn-license)>summary:hover{background:var(--oasis-button-hover);border-color:color-mix(in srgb,var(--text) 30%,transparent)}
+html[data-material=liquid] body .ms-data-sources>summary{font-weight:600}
+html[data-material=liquid] body .ms-data-sources[open]>summary{margin-bottom:0}
+html[data-material=liquid] body .ms-data-sources>[data-ms-sources]{padding:10px 12px 12px}
+html[data-material=liquid] body .ms-data-sources .ms-source-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:0;margin:8px 6px 0;padding:3px 8px;border-left:1px solid var(--oasis-button-line)}
+html[data-material=liquid] body .ms-data-sources .ms-source-actions>button{display:flex;align-items:center;justify-content:flex-start;width:100%;min-width:0;min-height:36px;margin:0;padding:8px 14px!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:8px!important;background:transparent!important;box-shadow:none!important;color:var(--text)!important;font-size:12px;line-height:1.4;text-align:left;white-space:normal}
+html[data-material=liquid] body .ms-data-sources .ms-source-actions>button:last-child{border-bottom:0!important}
+html[data-material=liquid] body .ms-data-sources .ms-source-actions>button:hover:not(:disabled){background:var(--oasis-button-hover)!important;border-color:transparent!important}
+html[data-material=liquid] body .ms-data-sources .ms-source-actions>button>.glass-response{display:none!important}
+html[data-material=liquid] body .mn-license>p{margin:8px 12px;line-height:1.6}
+html[data-material=liquid] body .mn-license>button{display:flex;align-items:center;justify-content:flex-start;width:calc(100% - 24px);min-height:36px;margin:0 12px;padding:8px 14px!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:8px!important;background:transparent!important;box-shadow:none!important;color:var(--text)!important;font-size:12px;line-height:1.4;text-align:left;white-space:normal}
+html[data-material=liquid] body .mn-license>button:last-of-type{border-bottom:0!important}
+html[data-material=liquid] body .mn-license>button:hover:not(:disabled){background:var(--oasis-button-hover)!important;border-color:transparent!important}
+html[data-material=liquid] body .mn-license>button>.glass-response{display:none!important}
+
+
+/* Every disclosure owns its pointer-light surface. Keep its marker, label and
+   focus ring inset even when a feature's compact stylesheet removes padding. */
+html[data-material=liquid] body :is(details,details[class])>summary{box-sizing:border-box;min-height:40px;padding:10px 14px;line-height:1.45;list-style-position:inside;overflow-wrap:anywhere}
+html[data-material=liquid] body details:is(.ms-row-menu,.mas-more)>summary{display:flex;align-items:center;justify-content:center;min-width:36px;min-height:36px;padding:8px 10px;line-height:1;list-style:none}
+/* Text fields need the same breathing room; selects also reserve their arrow. */
+html[data-material=liquid] body :is(input,textarea):not([type=range]):not([type=checkbox]):not([type=radio]):not([type=color]):not([type=hidden]):not([type=file]){box-sizing:border-box;min-width:0;min-height:38px;padding:9px 14px}
+html[data-material=liquid] body :is(select,select[class]){box-sizing:border-box;min-width:0;min-height:38px;padding:9px 32px 9px 14px;max-width:100%}
+html[data-material=liquid] body .mu-account h4{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 8px;overflow-wrap:anywhere}
+html[data-material=liquid] body .mu-account h4>span{min-width:0}
+html[data-material=liquid] body .mu-account h4>small{margin-left:0}
+/* Menu Bar usage cards are narrow; keep their headings and disclosure labels
+   visibly inside the glass edge instead of relying on their compact defaults. */
+html[data-material=liquid] body .mole-usage.mu-compact .mu-card{padding:16px!important}
+html[data-material=liquid] body .mole-usage.mu-compact .mu-card-expand>summary,
+html[data-material=liquid] body .mole-usage.mu-compact .mu-accounts>summary{padding:8px 12px!important}
+/* Navigation keeps readable insets in long translations instead of squeezing
+   labels. Only the tab strip scrolls; the window and scenery stay anchored. */
+html[data-material=liquid] body.mole-inspector .inspector-tabs{gap:1px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;max-width:100%}
+html[data-material=liquid] body.mole-inspector .inspector-tabs>button{flex:1 0 auto;min-width:38px;padding:6px 8px;white-space:nowrap}
+html[data-material=liquid] body .window-bar .nav{overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;justify-content:flex-start;scrollbar-width:none}
+html[data-material=liquid] body .window-bar .nav>button{flex:1 0 auto;min-width:max-content;padding:7px 10px;white-space:nowrap}
+html[data-material=liquid] body :is(.inspector-tabs,.window-bar .nav)::-webkit-scrollbar{display:none}
+html[data-material=liquid] body .appearance-tints{grid-template-columns:repeat(auto-fit,minmax(min(100%,104px),1fr));gap:8px}
+html[data-material=liquid] body .appearance-tints>button{padding:10px 14px;white-space:normal;overflow-wrap:anywhere}
+
+/* Sound-row icon geometry must override the shared text-button padding. */
+html[data-material=liquid] body .mole-focus .mf-sound .mf-favorite{min-width:var(--mf-favorite-size,28px)!important;min-height:var(--mf-favorite-size,28px)!important;width:var(--mf-favorite-size,28px);height:var(--mf-favorite-size,28px);padding:0!important;display:grid;place-items:center;border-radius:50%;line-height:1!important;gap:0!important}
+html[data-material=liquid] .mf-sounds .mf-sound[data-mf-active=true]{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));background:linear-gradient(130deg,color-mix(in srgb,var(--accent) 10%,transparent),transparent 75%),var(--glass-panel)}
+html[data-material=liquid] body .mole-focus .mf-download button{min-height:24px!important;padding:3px 7px!important;font-size:10px;line-height:1.4;white-space:nowrap}
+/* Icon-only player actions need their own geometry: shared text-button insets
+   otherwise leave a 2–4 px content area for the SVG in compact controls. */
+html[data-material=liquid] body .mole-volumio button.mv-icon{display:inline-grid;place-items:center;flex:none;width:38px;height:38px;min-width:38px!important;min-height:38px!important;padding:0!important;gap:0!important;border-radius:50%;aspect-ratio:1}
+html[data-material=liquid] body .mole-volumio button.mv-icon>svg{display:block;flex:none;width:20px;height:20px;max-width:none;max-height:none}
+html[data-material=liquid] body .mole-volumio button.mv-play{width:46px;height:46px;min-width:46px!important;min-height:46px!important}
+html[data-material=liquid] body .mole-volumio button.mv-play>svg{width:24px;height:24px}
+html[data-material=liquid] body .mv-compact button.mv-play{width:44px;height:44px;min-width:44px!important;min-height:44px!important}
+html[data-material=liquid] body .mv-compact button.mv-play>svg{width:22px;height:22px}
+html[data-material=liquid] body .mv-compact .mv-controls{gap:6px;flex-wrap:wrap}

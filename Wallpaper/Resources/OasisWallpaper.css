@@ -1,0 +1,152 @@
+:root{color-scheme:dark;--bg:#15232b;--text:#f6f8fa;--muted:#b1bfc7;--panel:#20313a;--surface:#ffffff0d;--line:#ffffff20;--accent:#d2e7e4;--accent-text:#13272a;--danger:#ffb5b5;--glass-bg:#16242b;--glass-panel:#ffffff0b;--glass-surface:#ffffff0d;--glass-highlight:#ffffff0b;--font:-apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;color:var(--text);background:transparent;font-family:var(--font)}body{padding:0 28px 36px}button,input,select{font:inherit}button,summary{cursor:pointer}
+html[data-material=liquid] body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rgba(13,24,31,.86)!important}
+html[data-material=liquid] body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:rgba(10,19,25,.53)}
+.wallpaper-header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:32px 0 20px;border-bottom:1px solid var(--line)}.wallpaper-header>div{display:flex;align-items:baseline;gap:16px}.wallpaper-header img{width:112px;height:auto;object-fit:contain}.wallpaper-header h1{font-family:"Snell Roundhand","Apple Chancery",cursive;font-size:30px;font-weight:400;margin:0}.startup-toggle{display:flex;align-items:center;gap:10px;color:var(--muted);white-space:nowrap}.intro{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:20px 0 24px;color:var(--muted)}.intro p{margin:0}main{max-width:1040px;margin:auto}#owner-warning,#import-status{padding:14px 16px;border:1px solid #e4bd7780;border-radius:14px;color:#f9ddae;line-height:1.6}#owner-warning[hidden],#import-status[hidden]{display:none}
+html[data-material=liquid] .wallpaper-header h1{font-family:"Snell Roundhand","Apple Chancery",cursive;font-weight:400}
+.wx-background-settings>.wx-location-bar,.wx-background-settings>.wx-search-results{display:flex!important}.wx-background-settings>.wx-search-results[hidden]{display:none!important}.wx-background-settings>.wx-location-bar{margin:0 0 18px}.wx-background-settings>.wx-background-picker{margin-top:18px}.wx-desktop-body{padding-bottom:18px}
+.wallpaper-tabs{display:flex;align-items:center;gap:9px;max-width:1040px;margin:18px auto 0;padding-bottom:16px;border-bottom:1px solid var(--line)}.wallpaper-tabs button[aria-current=page]{border-color:var(--accent);background:var(--glass-surface);color:var(--text)}
+#workshop-browser[hidden]{display:none!important}
+body[data-page=library] .wx-background-settings>:is(.wx-location-bar,.wx-search-results,.wx-desktop-settings,.wx-settings){display:none!important}
+body[data-page=library] .wx-background-picker{margin-top:0;border:0;background:transparent;box-shadow:none}body[data-page=library] .wx-background-picker>summary{display:none}
+body[data-page=library] .wx-background-body{display:grid;grid-template-columns:minmax(0,1fr) 280px;grid-template-areas:'filters preview' 'upload preview' 'gallery adjust' 'gallery particles' 'gallery archived' 'status city' 'off off';gap:14px;padding:0;align-items:start}
+body[data-page=library] .wx-upload-bar{grid-area:upload;margin:0}body[data-page=library] .wx-workshop{display:none}
+body[data-page=library] .ow-library-filters{grid-area:filters;display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:10px;align-items:end}.ow-library-filters>strong{display:none}.ow-library-filters label{display:grid;gap:7px;color:var(--muted);font-size:11px}.ow-library-filters :is(input,select){width:100%;min-width:0}
+body[data-page=library] .wx-scenery-grid{grid-area:gallery;grid-template-columns:repeat(auto-fill,minmax(145px,1fr))}
+body[data-page=library] .ow-selected-preview{grid-area:preview;display:grid;gap:10px;padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--glass-panel)}.ow-selected-preview span{color:var(--muted);font-size:11px}.ow-selected-preview img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px}.ow-selected-preview strong{overflow-wrap:anywhere}
+body[data-page=library] .wx-wallpaper-adjustments{grid-area:adjust}body[data-page=library] .wx-particle-controls{grid-area:particles}body[data-page=library] .wx-archived{grid-area:archived}body[data-page=library] .wx-scene-status{grid-area:status}body[data-page=library] .wx-city-controls{grid-area:city}body[data-page=library] .wx-background-off{grid-area:off}
+body[data-page=workshop] main{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,320px);gap:16px;align-items:start}body[data-page=workshop] main>.intro,body[data-page=workshop] main>#import-status,body[data-page=workshop] main>#owner-warning{grid-column:1/-1}body[data-page=workshop] #workshop-browser{min-width:0}body[data-page=workshop] #wallpaper-settings{min-width:0}body[data-page=workshop] .wx-background-settings>:not(.wx-background-picker){display:none!important}body[data-page=workshop] .wx-background-picker{margin:0;border:0;background:transparent;box-shadow:none}body[data-page=workshop] .wx-background-picker>summary{display:none}body[data-page=workshop] .wx-background-body{padding:0}body[data-page=workshop] .wx-background-body>:not(.wx-workshop){display:none!important}body[data-page=workshop] .wx-workshop{margin:0}
+body[data-page=settings] .wx-background-settings>.wx-background-picker{display:none!important}body[data-page=settings] main{padding-top:20px}body[data-page=settings] .intro{margin-bottom:20px}body[data-page=settings] .wx-desktop-settings{margin-bottom:16px}
+.ow-workshop-preview{display:grid;gap:10px;width:100%}.ow-workshop-preview[hidden]{display:none}.ow-workshop-preview img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px}.ow-workshop-preview strong{line-height:1.5;overflow-wrap:anywhere}
+@media(max-width:720px){body[data-page=workshop] main{grid-template-columns:minmax(0,1fr)}body[data-page=workshop] main>.intro,body[data-page=workshop] main>#import-status,body[data-page=workshop] main>#owner-warning{grid-column:1}body[data-page=library] .wx-background-body{grid-template-columns:minmax(0,1fr);grid-template-areas:'filters' 'upload' 'preview' 'gallery' 'adjust' 'particles' 'archived' 'status' 'city' 'off'}}
+@media(max-width:600px){body{padding:0 16px 24px}.wallpaper-header{padding-top:24px}.wallpaper-header>div{gap:10px}.wallpaper-header img{width:85px}.wallpaper-header h1{font-size:25px}.startup-toggle{font-size:11px}.wallpaper-tabs{gap:6px}.intro{align-items:flex-start;flex-wrap:wrap}}
+
+/* The native window supplies the frosted backdrop. Do not paint an opaque
+   weather layer over it; the desktop wallpaper itself lives in separate windows. */
+html[data-material=liquid] body:before,html[data-material=liquid] body:after,.oasis-weather-atmosphere{display:none!important}
+html[data-material=liquid] body:before{display:block!important;z-index:-1;background:var(--glass-bg)!important}
+body[data-page=appearance] main{padding-top:20px}
+#wallpaper-appearance:not([hidden]){padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--glass-panel)}
+#wallpaper-settings[hidden],#wallpaper-appearance[hidden]{display:none!important}
+#wallpaper-appearance [hidden]{display:none!important}
+.wallpaper-chrome{position:sticky;top:0;z-index:50;margin:0 -28px;padding:0 28px;background:rgba(20,31,37,.48);backdrop-filter:blur(22px) saturate(1.1);-webkit-backdrop-filter:blur(22px) saturate(1.1);border-bottom:1px solid var(--line)}
+.wallpaper-header{padding:34px 0 13px;border:0;min-height:76px}
+.wallpaper-header img.wallpaper-wordmark{display:block;width:250px;max-width:45%;height:54px;object-fit:contain;object-position:left center}
+.wallpaper-tabs{margin:0 auto;padding:0 0 13px;border:0}
+body[data-page=library] .wx-background-settings>:is(.wx-location-bar,.wx-search-results,.wx-desktop-settings,.wx-settings),
+body[data-page=settings] .wx-background-settings>:is(.wx-location-bar,.wx-search-results,.wx-settings),
+body[data-page=workshop] .wx-background-settings>:is(.wx-location-bar,.wx-search-results,.wx-settings),
+.wx-background-settings .wx-scenery-grid>[data-background]:not([data-custom-background]),
+.wx-background-settings :is(.wx-particle-controls,.wx-city-controls,.wx-background-off),
+.wx-desktop-displays>h3,.wx-desktop-screen-list{display:none!important}
+body[data-page=library] .wx-wallpaper-surface{display:none!important}
+body[data-page=library] .wx-background-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,280px);grid-template-areas:'target side' 'filters side' 'upload side' 'progress side' 'gallery side' 'status side';gap:12px 18px;align-items:start}
+body[data-page=library] .ow-library-target{grid-area:target;display:flex;align-items:end;gap:10px;flex-wrap:wrap}
+body[data-page=library] .ow-library-filters{grid-area:filters}
+body[data-page=library] .wx-upload-bar{grid-area:upload}
+body[data-page=library] .ow-library-progress{grid-area:progress}
+body[data-page=library] .wx-scenery-grid{grid-area:gallery;max-height:none;overflow:visible;grid-template-columns:repeat(auto-fill,minmax(145px,1fr))}
+body[data-page=library] .wx-scene-status{grid-area:status}
+body[data-page=library] .ow-library-sidebar{grid-area:side;display:grid;gap:12px;min-width:0;align-content:start}
+body[data-page=library] .ow-library-sidebar>*{grid-area:auto}
+body[data-page=library] .ow-library-sidebar .wx-wallpaper-adjustments,body[data-page=library] .ow-library-sidebar .wx-archived{margin:0}
+.ow-target{display:grid;gap:7px;min-width:0;color:var(--muted);font-size:11px}.ow-target select{width:100%;min-width:190px}.ow-workshop-target{width:100%}
+.ow-library-target .ow-clear-display{min-height:40px}
+.ow-library-progress[hidden],.wx-scenery-grid [hidden]{display:none!important}
+.ow-library-progress>div{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ow-library-progress img{max-width:180px}
+html[data-material=liquid] body :is(.owb-select,.wx-scenery-option){border-radius:14px!important;text-align:left;box-shadow:none}
+html[data-material=liquid] body :is(.owb-select,.wx-scenery-option)::before,
+html[data-material=liquid] body :is(.owb-select,.wx-scenery-option)::after{content:none!important;display:none!important}
+body[data-page=workshop] .wx-workshop-body{padding-top:10px}
+body[data-page=workshop] .wx-workshop-result strong{display:none}
+/* The shared card clips its children; that makes sticky use the card as its
+   scroll container instead of the window. The standalone library has no card
+   border to clip, so allow the side panel to follow the window scroll. */
+body[data-page=library] .wx-background-picker{overflow:visible}
+@media(min-width:721px){
+ body[data-page=library] .ow-library-sidebar,
+ body[data-page=workshop] #wallpaper-settings{position:sticky;align-self:start;top:calc(var(--chrome-height, 160px) + 16px);max-height:calc(100vh - var(--chrome-height, 160px) - 32px);overflow:auto;overscroll-behavior:contain}
+}
+@media(max-width:720px){
+ body[data-page=library] .wx-background-body{grid-template-columns:minmax(0,1fr);grid-template-areas:'target' 'filters' 'upload' 'progress' 'gallery' 'side' 'status'}
+}
+@media(max-width:600px){.wallpaper-chrome{margin:0 -16px;padding:0 16px}.wallpaper-header{padding-top:30px}.wallpaper-header img.wallpaper-wordmark{width:200px;max-width:52%;height:44px}}
+
+/* Keep filters beside the gallery and the selected wallpaper within reach. */
+@media(min-width:901px){
+ body[data-page=library] .wx-background-body{grid-template-columns:minmax(170px,200px) minmax(0,1fr) minmax(230px,280px);grid-template-areas:'target gallery side' 'filters gallery side' 'upload gallery side' 'progress gallery side' 'status gallery side';align-content:start}
+ body[data-page=library] .ow-library-target{align-items:stretch;flex-direction:column}
+ body[data-page=library] .ow-library-filters{grid-template-columns:minmax(0,1fr)}
+ body[data-page=library] .ow-library-sidebar{position:sticky;top:calc(var(--chrome-height, 160px) + 16px);max-height:calc(100vh - var(--chrome-height, 160px) - 32px);overflow:auto;overscroll-behavior:contain}
+ body[data-page=workshop] main{grid-template-columns:minmax(170px,200px) minmax(0,1fr) minmax(230px,280px);grid-template-areas:'intro intro intro' 'notice notice notice' 'warning warning warning' 'search grid detail' 'filters grid detail' '. status detail' '. more detail';align-content:start}
+ body[data-page=workshop] main>.intro{grid-area:intro}
+ body[data-page=workshop] main>#import-status{grid-area:notice}
+ body[data-page=workshop] main>#owner-warning{grid-area:warning}
+ body[data-page=workshop] #workshop-browser:not([hidden]){display:contents}
+ body[data-page=workshop] .owb-search{grid-area:search;flex-direction:column;align-items:stretch}
+ body[data-page=workshop] .owb-filters{grid-area:filters;grid-template-columns:minmax(0,1fr);align-content:start}
+ body[data-page=workshop] .owb-grid{grid-area:grid}
+ body[data-page=workshop] .owb-status{grid-area:status}
+ body[data-page=workshop] .owb-more{grid-area:more}
+ body[data-page=workshop] #wallpaper-settings{grid-area:detail;position:sticky;top:calc(var(--chrome-height, 160px) + 16px);max-height:calc(100vh - var(--chrome-height, 160px) - 32px);overflow:auto;overscroll-behavior:contain}
+}
+
+/* Search and filters form one panel so they stay together while browsing. */
+.ow-library-controls,.ow-workshop-controls{display:grid;gap:14px;min-width:0;padding:6px;align-content:start}
+body:is([data-page=library],[data-page=workshop]) main{max-width:none}
+body[data-page=library] .wx-background-settings{max-width:none}
+body .wallpaper-chrome :is(.wallpaper-tabs,.intro){max-width:none}
+body .wallpaper-chrome .intro{max-width:none;margin:0 auto;padding:3px 0 14px}
+body .wallpaper-chrome :is(#import-status,#owner-warning):not([hidden]){max-width:1040px;margin:0 auto 14px}
+body[data-page=library] .ow-library-controls{grid-area:controls}
+body[data-page=library] .ow-library-controls>*{grid-area:auto}
+body[data-page=workshop] .ow-workshop-controls>*{grid-area:auto}
+@media(min-width:721px){
+ body[data-page=library],body[data-page=workshop]{padding-bottom:0}
+ body[data-page=library] .wx-background-picker{margin-bottom:0}
+ body[data-page=library] .wx-background-body{grid-template-columns:minmax(145px,200px) minmax(0,1fr) minmax(190px,280px);grid-template-areas:'controls gallery side' 'controls status side';align-content:start}
+ body[data-page=library] .ow-library-controls,
+ body[data-page=workshop] .ow-workshop-controls{position:sticky;align-self:start;top:calc(var(--chrome-height, 160px) + 16px);max-height:calc(100vh - var(--chrome-height, 160px) - 32px);overflow:auto;overscroll-behavior:auto}
+ body[data-page=library] .ow-library-target{align-items:stretch;flex-direction:column}
+ body[data-page=library] .ow-library-filters{grid-template-columns:minmax(0,1fr)}
+ body[data-page=library] :is(.ow-library-controls,.ow-library-sidebar){top:calc(var(--chrome-height, 160px) + 20px);max-height:calc(100vh - var(--chrome-height, 160px) - 56px)}
+ body[data-page=library] .ow-target select{min-width:0}
+ body[data-page=workshop] main{grid-template-columns:minmax(145px,200px) minmax(0,1fr) minmax(190px,280px);grid-template-areas:'controls grid detail' 'controls status detail' 'controls more detail';align-content:start}
+ body[data-page=workshop] main>.intro{grid-area:intro}
+ body[data-page=workshop] main>#import-status{grid-area:notice}
+ body[data-page=workshop] main>#owner-warning{grid-area:warning}
+ body[data-page=workshop] #workshop-browser:not([hidden]){display:contents}
+ body[data-page=workshop] .ow-workshop-controls{grid-area:controls}
+ body[data-page=workshop] .owb-search{flex-direction:column;align-items:stretch}
+ body[data-page=workshop] .owb-filters{grid-template-columns:minmax(0,1fr)}
+ body[data-page=workshop] .owb-grid{grid-area:grid}
+ body[data-page=workshop] .owb-status{grid-area:status}
+ body[data-page=workshop] .owb-more{grid-area:more}
+ body[data-page=workshop] #wallpaper-settings{grid-area:detail}
+}
+@media(max-width:720px){
+ body[data-page=library],body[data-page=workshop]{padding-bottom:0}
+ body[data-page=library] .wx-background-picker{margin-bottom:0}
+ html[data-material=liquid] body[data-page=library] .wx-background-picker>.wx-background-body{padding:16px 0!important}
+ body[data-page=library] .wx-background-body{grid-template-columns:minmax(105px,125px) minmax(0,1fr) minmax(140px,160px);grid-template-areas:'controls gallery side' 'controls status side';gap:10px}
+ body[data-page=library] :is(.ow-library-controls,.ow-library-sidebar){position:sticky;align-self:start;top:calc(var(--chrome-height, 160px) + 20px);max-height:calc(100vh - var(--chrome-height, 160px) - 56px);overflow:auto;overscroll-behavior:auto}
+ body[data-page=library] .ow-library-target{align-items:stretch;flex-direction:column}
+ body[data-page=library] .ow-library-filters{grid-template-columns:minmax(0,1fr)}
+ body[data-page=library] .ow-target select{min-width:0}
+ body[data-page=workshop] main{grid-template-columns:minmax(105px,125px) minmax(0,1fr) minmax(140px,160px);grid-template-areas:'controls grid detail' 'controls status detail' 'controls more detail';gap:10px}
+ body[data-page=workshop] #workshop-browser:not([hidden]){display:contents}
+ body[data-page=workshop] .ow-workshop-controls{grid-area:controls;position:sticky;align-self:start;top:calc(var(--chrome-height, 160px) + 16px);max-height:calc(100vh - var(--chrome-height, 160px) - 32px);overflow:auto;overscroll-behavior:auto}
+ body[data-page=workshop] .owb-search{flex-direction:column;align-items:stretch}
+ body[data-page=workshop] .owb-filters{grid-template-columns:minmax(0,1fr)}
+ body[data-page=workshop] .owb-grid{grid-area:grid}
+ body[data-page=workshop] .owb-status{grid-area:status}
+ body[data-page=workshop] .owb-more{grid-area:more}
+ body[data-page=workshop] #wallpaper-settings{grid-area:detail;position:sticky;align-self:start;width:100%;max-width:100%;top:calc(var(--chrome-height, 160px) + 16px);max-height:calc(100vh - var(--chrome-height, 160px) - 32px);overflow:auto;overscroll-behavior:auto}
+ html[data-material=liquid] body[data-page=workshop] .wx-background-picker>.wx-background-body{padding:12px 0!important}
+ body[data-page=workshop] .wx-workshop-body{padding:6px 10px 12px}
+ body[data-page=workshop] .ow-target select{min-width:0}
+ body[data-page=library] .wx-wallpaper-slider,
+ body[data-page=library] .wx-author-row:has(input[type=range]){grid-template-columns:minmax(0,1fr) 40px;gap:7px 8px}
+ body[data-page=library] :is(.wx-wallpaper-slider,.wx-author-row:has(input[type=range]))>span{grid-column:1/-1}
+}

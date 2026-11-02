@@ -1,0 +1,88 @@
+:root{color:var(--text)}
+/* App surfaces behave as controls; only editable fields support text selection. */
+html, body, body * { -webkit-user-select: none; user-select: none; }
+body :is(input, textarea, [contenteditable=""], [contenteditable="true"]) {
+    -webkit-user-select: text;
+    user-select: text;
+}
+html[data-appearance] body{color:var(--text)}
+html[data-appearance] body:before{background:linear-gradient(155deg,var(--theme-bg),var(--theme-end))}
+html[data-appearance] body.mole-inspector{background:linear-gradient(155deg,var(--theme-bg),var(--theme-end))}
+html[data-appearance] :is(button,input,select,textarea){color:var(--text)}
+html[data-appearance] :is(input,select,textarea){background:var(--panel);border-color:var(--line);accent-color:var(--accent)}
+html[data-appearance] select option{background:var(--panel);color:var(--text)}
+html[data-appearance] :is(.btn,.icon,.icon-btn,.action,.feature,.feature-chip,.tag,.hardware span,.whitelist-type){background:var(--surface);color:var(--text);border-color:var(--line)}
+html[data-appearance] :is(.btn:hover,.icon:hover,.icon-btn:hover,.action:hover,.feature:hover,.folder-row:hover,.app-row:hover){background:var(--surface);color:var(--text);filter:brightness(1.06)}
+html[data-appearance] :is(.btn.primary,.nav button.active,.feature-tabs button.active){background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+html[data-appearance] :is(.nav,.subnav){background:var(--surface);border-color:var(--line)}
+html[data-appearance] .nav button:not(.active){color:var(--muted)}
+html[data-appearance] :is(.nav button:not(.active):hover,.subnav button.active){background:var(--surface);color:var(--text)}
+html[data-appearance] :is(.card,.status-card,.section,.feature-list,.feature-inspector,.feature-device,.work-panel,.app-preview,.outcome,.process-panel,.group-list,.dock-status,.whitelist-list,.file-info,.clean-job){background:var(--panel);border-color:var(--line)}
+html[data-appearance] :is(dialog,.dialog-head,.feature-menu,.activity,.feature-activity,.cli-setup,.action-bar,.app-footer){background:var(--panel);color:var(--text);border-color:var(--line)}
+html[data-appearance] :is(.card-head,.section-head,.feature-group,.feature-proc th,.proc-row,.history-row,.loading,.clean-job-head,.activity-percent,.feature-warning,.feature-path,.display-value,.display-title,.metric-value small,.feature-note,.meta,.hint,.note,.notice,.display-note,.footer,.footer button){color:var(--muted)}
+html[data-appearance] :is(.value,.metric-value,.score,.feature-value,.display-value,.history-row b,.clean-job-head){color:var(--text)}
+html[data-appearance] :is(.feature-row,.feature-proc td,.feature-proc th,.proc-row,.feature-path-row,.detail-table td,.detail-table th,.path-row,.display-row,.category,.summary,.summary .stat){border-color:var(--line)}
+html[data-appearance] :is(.meter,.track,.activity-track,.feature-track,.clean-track){background:var(--line)}
+html[data-appearance] :is(.meter i,.track i,.activity-track i,.feature-track i,.clean-track i,.core-bars i,.bars i){background:var(--accent)}
+html[data-appearance] :is(.spark polyline,.chart polyline){stroke:var(--accent)}
+html[data-appearance] .donut:after{background:var(--theme-bg)}
+html[data-appearance] :is(.pill,.pill.warn,.action.active,.sun){color:var(--accent)}
+html[data-appearance] :is(.error,.btn.danger,.display-error,.cli-setup-error){color:var(--danger)}
+html[data-tone=light] .brand svg{filter:brightness(.2)}
+html[data-appearance] *{scrollbar-color:var(--scroll-thumb) transparent}
+html[data-appearance] *::-webkit-scrollbar-thumb{background-color:var(--scroll-thumb)!important}
+html[data-appearance] #moleCustomScrollbarThumb{background:var(--scroll-thumb)!important;box-shadow:none}
+html[data-appearance] #moleCustomScrollbar:hover #moleCustomScrollbarThumb{background:var(--scroll-hover)!important}
+html[data-appearance] #moleCustomScrollbar:focus-visible{outline-color:var(--accent)}
+.appearance-settings{display:grid;gap:16px;max-width:620px}.appearance-copy strong,.appearance-copy small{display:block}.appearance-copy small{font-size:12px;color:var(--muted);margin-top:5px}.appearance-settings label{display:flex;justify-content:space-between;align-items:center;gap:16px}.appearance-settings select{min-width:145px;border-radius:9px;padding:8px}.appearance-colors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.appearance-settings input[type=color]{padding:3px;width:48px;height:34px;cursor:pointer}.appearance-hint{font-size:12px;color:var(--muted);margin:0;line-height:1.7}.appearance-reset{justify-self:start}.inspector-appearance{margin:10px 0}.inspector-appearance summary{cursor:pointer;padding:9px 0;color:var(--muted)}.inspector-appearance .appearance-colors{grid-template-columns:1fr}.inspector-appearance .appearance-settings{gap:12px;padding:10px}.inspector-appearance select{min-width:115px;font:inherit}.window-bar{padding-right:78px}.nav button{min-width:0;padding:8px 12px}.nav{min-width:0;max-width:100%}.nav .brand{margin-right:4px;flex:none}.nav button[data-page=ai]{padding-left:10px;padding-right:10px}.nav button[data-page=usage],.nav button[data-page=music]{white-space:nowrap}#view-usage,#view-music{padding-bottom:20px}.mole-inspector .integration-section{margin:10px 0}.mole-inspector .integration-section>summary{cursor:pointer;padding:10px 2px;font-size:13px;color:var(--text);border-bottom:1px solid var(--line)}
+@media(max-width:920px){.nav button{padding:8px 8px;font-size:12px}.nav button[data-page=ai]{padding:8px}.window-bar{padding-right:70px}.nav .brand{width:25px}}
+@media(max-width:760px){.window-bar{height:auto;min-height:94px;padding-top:24px;padding-bottom:12px}.nav{flex-wrap:wrap;justify-content:center}.nav button{min-width:45px}.appearance-colors{grid-template-columns:1fr}}
+
+html[data-appearance] :is(.proc-row span:not(:first-child),.history-row span:last-child,.display-slider span,.display-title output,.whitelist-icon,.display-value){color:var(--muted)}
+html[data-appearance] .display-title output{color:var(--text)}
+
+html[data-appearance] .mv-icon.mv-play{color:var(--bg);background:var(--text)}
+html[data-appearance] .mv-icon.mv-play:hover:not(:disabled){background:var(--accent);color:var(--accent-text)}
+
+.appearance-modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.appearance-modes button{padding:10px 8px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;cursor:pointer}html[data-appearance] .appearance-modes button.active{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}.inspector-appearance .appearance-modes{grid-template-columns:repeat(2,minmax(0,1fr))}
+.inspector-tabs{display:flex;gap:5px;border:1px solid var(--line);border-radius:999px;padding:4px;background:var(--surface);margin:12px 0}.inspector-tabs button{flex:1;border:0;border-radius:999px;color:var(--muted);background:transparent;font:inherit;font-size:13px;padding:7px 8px;cursor:pointer;transition:background .15s}.inspector-tabs button[aria-pressed=true]{background:var(--accent);color:var(--accent-text)}.mole-inspector[data-inspector-panel=usage]>:not(.top):not(.inspector-tabs):not(.inspector-planet):not([data-integration=usage]):not(.footer):not(#moleCustomScrollbar):not(.oasis-weather-atmosphere):not(.oasis-weather-media):not(dialog):not(.wx-background-menu),.mole-inspector[data-inspector-panel=music]>:not(.top):not(.inspector-tabs):not(.inspector-planet):not([data-integration=music]):not(.footer):not(#moleCustomScrollbar):not(.oasis-weather-atmosphere):not(.oasis-weather-media):not(dialog):not(.wx-background-menu){display:none!important}.mole-inspector .integration-section>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px}.mole-inspector .integration-section>summary::-webkit-details-marker{display:none}.mole-inspector .integration-section>summary:after{content:'›';font-size:20px;color:var(--muted);transform:rotate(0);transition:transform .15s}.mole-inspector .integration-section[open]>summary:after{transform:rotate(90deg)}.mole-inspector[data-inspector-panel=usage] [data-integration=usage]>summary,.mole-inspector[data-inspector-panel=music] [data-integration=music]>summary{display:none}button:active:not(:disabled){filter:brightness(.94)}button,summary{touch-action:manipulation}
+@media(prefers-reduced-motion:reduce){.inspector-tabs button,.mole-inspector .integration-section>summary:after{transition:none}}
+html[data-appearance] body.mole-inspector{min-height:0}
+/* Keep the Mole mark clear of the capsule edge at every window width. */
+.window-bar .nav{padding:6px 9px 6px 18px}
+
+/* Appearance controls have the same shape in the main window and inspector. */
+.appearance-settings button{appearance:none;-webkit-appearance:none;font:inherit}
+.appearance-settings .appearance-modes button{border-radius:999px;min-height:38px}
+.appearance-settings .appearance-reset{appearance:none;-webkit-appearance:none;display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);font:inherit;line-height:1.4;cursor:pointer}
+.appearance-settings .appearance-reset:hover{filter:brightness(1.06)}
+.appearance-settings :is(button,input[type=color]):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.appearance-settings input[type=color]{appearance:none;-webkit-appearance:none;display:block;flex:none;width:52px;height:38px;min-height:38px;padding:4px;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:none;cursor:pointer;overflow:hidden}
+.appearance-settings input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.appearance-settings input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
+.appearance-settings input[type=color]::-moz-color-swatch{border:0;border-radius:8px}
+
+/* One copy of each feature across the inspector panels. */
+.mole-inspector>[data-inspector-inactive=true]{display:none!important}
+.mole-inspector .inspector-tabs button{white-space:nowrap;min-width:0;padding-left:6px;padding-right:6px}
+.mole-inspector:not([data-inspector-panel=mac])>.top :is(.sun,.score,.health-label){display:none}
+.mole-inspector[data-inspector-panel=mac]>.top .inspector-title{display:none}
+.inspector-title{font-size:16px;font-weight:600}
+
+.mole-inspector .inspector-tabs{gap:1px}.mole-inspector .inspector-tabs button{flex:1 1 auto;font-size:12px;padding-left:4px;padding-right:4px}
+
+/* Adjustable glass controls follow the same inset and keyboard rules as settings. */
+.appearance-glass-controls{display:grid;gap:14px;border-top:1px solid var(--line);padding-top:18px;min-width:0}
+.appearance-glass-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.appearance-glass-heading h3{font-size:14px;margin:0}
+.appearance-glass-heading button{min-height:32px;padding:6px 12px;white-space:normal}
+.appearance-glass-sliders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 22px;min-width:0}
+.appearance-settings .appearance-glass-slider{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;font-size:12px;min-width:0;align-items:center}
+.appearance-glass-slider>span{min-width:0;overflow-wrap:anywhere}
+.appearance-glass-slider output{font-variant-numeric:tabular-nums;color:var(--text);text-align:right}
+.appearance-glass-slider input[type=range]{grid-column:1/-1;width:100%;min-width:0;margin:0;accent-color:var(--accent)}
+.appearance-settings .appearance-glass-emboss{justify-content:flex-start;gap:12px;font-size:12px}
+.appearance-glass-emboss input{width:17px;height:17px;accent-color:var(--accent)}
+.appearance-glass-controls input:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.inspector-appearance .appearance-glass-sliders{grid-template-columns:minmax(0,1fr)}
+@media(max-width:600px){.appearance-glass-sliders{grid-template-columns:minmax(0,1fr)}}

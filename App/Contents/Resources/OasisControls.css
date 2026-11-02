@@ -1,0 +1,131 @@
+/* The shared control contract is loaded after every feature stylesheet. */
+html[data-material=liquid]{--oasis-control-height:36px;--oasis-field-height:40px;--oasis-control-gap:8px;--oasis-inset:16px;--oasis-control-border:1px;--oasis-control-radius:18px}
+html[data-material=liquid] body :is(button,.btn,[role=button]):not(.ms-instrument):not(.ms-source-link):not(.mv-row-track):not(.mv-row):not(.nav button):not(.solar-nav button):not(.inspector-tabs button):not(.mf-favorite):not(.mv-icon):not(.mv-play){
+ box-sizing:border-box;min-height:var(--oasis-control-height);padding-block:8px;padding-inline:14px;border-width:var(--oasis-control-border);border-radius:var(--oasis-control-radius);font-size:12px;font-weight:600;line-height:1.45;gap:var(--oasis-control-gap);min-width:0;max-width:100%;text-align:center
+}
+html[data-material=liquid] body :is(input,textarea):not([type=range]):not([type=checkbox]):not([type=radio]):not([type=color]):not([type=hidden]):not([type=file]),
+html[data-material=liquid] body select{min-height:var(--oasis-field-height);border-radius:14px;border-width:1px;padding-block:10px;line-height:1.45;max-width:100%;min-width:0}
+html[data-material=liquid] body textarea{resize:vertical;min-height:96px}
+html[data-material=liquid] body :is(input,textarea)::placeholder{color:var(--muted);opacity:1}
+/* WebKit's native popup ignores min-height; opt out of that small square bezel. */
+html[data-material=liquid] body select{
+ appearance:none!important;-webkit-appearance:none!important;min-height:40px!important;
+ border:1px solid var(--line)!important;border-radius:14px!important;padding:9px 34px 9px 12px!important;
+ background-color:var(--glass-panel);color:var(--text);font:inherit;font-size:12px;line-height:1.5;
+ background-image:linear-gradient(45deg,transparent 50%,var(--text) 50%),linear-gradient(135deg,var(--text) 50%,transparent 50%)!important;
+ background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%!important;background-size:5px 5px!important;background-repeat:no-repeat!important;text-overflow:ellipsis;white-space:nowrap;overflow:hidden
+}
+html[data-material=liquid] body :is(.mr-actions,.mr-quick,.mr-filters,.mf-actions,.mf-filters,.ms-detail-tabs,.ms-chart-periods,.mv-tabs,.mv-controls,.mu-actions,.mu-setup-actions,.oc-selection){gap:var(--oasis-control-gap)}
+html[data-material=liquid] body :is(.mu-card,.mr-card,.mf-card,.ms-detail,.mv-card,.oc-row,.wx-card){border-radius:20px;min-width:0}
+html[data-material=liquid] body :is(details,details[class])>summary{min-height:42px;padding:10px 16px!important;border-radius:16px!important;line-height:1.5;gap:10px}
+html[data-material=liquid] body details:is(.ms-row-menu,.mas-more)>summary{min-height:36px!important;min-width:36px;padding:8px!important;border-radius:50%!important}
+html[data-material=liquid] body :is(.mu-card,.mu-account,.ms-detail,.mv-browser,.mr-form,.oasis-cleanup) :is(h3,h4,p,label){min-width:0;overflow-wrap:anywhere}
+html[data-material=liquid] body :is(.mu-card-expand,.mu-accounts)>summary{padding-inline:16px!important}
+html[data-material=liquid] body .mu-provider-heading{gap:12px!important}
+html[data-material=liquid] body .mu-account{padding-block:14px}
+html[data-material=liquid] body .mv-row-track{border-radius:12px!important}
+html[data-material=liquid] body :is(.ms-search,.mv-search,.mr-form-actions,.mu-setup-actions){gap:10px;min-width:0}
+html[data-material=liquid] body :is(.ms-search,.mv-search)>:is(input,select){flex:1 1 160px;min-width:0}
+html[data-material=liquid] body :is(.ms-search,.mv-search)>button{flex:0 0 auto}
+html[data-material=liquid] body :is(.mr-form,.mu-config-dialog,.ms-study-settings) :is(select,input:not([type=checkbox]):not([type=radio]):not([type=range])){width:100%}
+html[data-material=liquid] body :is(.mr-form,.mu-config-dialog,.ms-study-settings) label:has(:is(select,textarea,input:not([type=checkbox]):not([type=radio]))){display:grid;gap:7px;min-width:0}
+html[data-material=liquid] body :is(button,input,select,textarea,summary):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+html[data-material=liquid] body .mole-focus .mf-download button{min-height:30px!important;padding:5px 10px!important;border-radius:15px!important}
+@media(max-width:480px){
+ html[data-material=liquid] body .ms-list-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;gap:10px}
+ html[data-material=liquid] body .ms-list-toolbar>label{display:grid;gap:6px;min-width:0}
+ html[data-material=liquid] body .ms-list-toolbar select{width:100%}
+ html[data-material=liquid] body :is(.ms-search,.mv-search){display:flex;flex-wrap:wrap}
+ html[data-material=liquid] body :is(.mr-actions,.mu-setup-actions){flex-wrap:wrap}
+ html[data-material=liquid] body :is(.ms-chart-periods,.ms-detail-tabs){display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ html[data-material=liquid] body :is(.ms-chart-periods,.ms-detail-tabs)>button{width:100%;padding-inline:8px}
+}
+html[data-material=liquid] body .mu-card-foot:empty{display:none}
+html[data-material=liquid] body .mu-card-foot time{margin-inline-start:auto}
+/* Header glyphs have square hit targets. The general text-button padding and
+   minimum height must not turn their older 28 px width into a vertical oval. */
+html[data-material=liquid] body.mole-inspector>.top>.right{
+ flex:0 0 auto;align-items:center;gap:10px;min-width:82px
+}
+html[data-material=liquid] body.mole-inspector>.top .inspector-title.oasis-wordmark{
+ flex-shrink:1;min-width:0;max-width:calc(100% - 94px)
+}
+html[data-material=liquid] body.mole-inspector>.top .inspector-action-menu{display:flex;align-items:center;flex:none}
+/* Two 36 px circles + their 7 px gap + 12 px clear of the tab bar. */
+html[data-material=liquid] body .window-bar{padding-right:91px}
+html[data-material=liquid] body :is(.top>.right>.icon,.top>.right>.inspector-action-menu>.icon,.window-bar>.window-tools>.icon-btn){
+ display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;
+ flex:0 0 36px!important;width:36px!important;height:36px!important;
+ min-width:36px!important;max-width:36px!important;min-height:36px!important;max-height:36px!important;
+ padding:0!important;aspect-ratio:1;border-radius:50%!important;font-size:16px!important;line-height:1!important;
+ white-space:nowrap;overflow-wrap:normal;align-self:center
+}
+/* The compact tabs already have a spring-driven glass selection. */
+html[data-material=liquid] body.mole-inspector .inspector-tabs>.solar-nav-pill{display:none}
+/* A closed disclosure is one trigger, never a glass button inside another shell. */
+html[data-material=liquid] body details:not([open]):not(.ms-row-menu):not(.mas-more){
+ padding:0!important;border:0!important;border-radius:18px!important;background:none!important;box-shadow:none!important
+}
+html[data-material=liquid] body details:not([open]):not(.ms-row-menu):not(.mas-more)::before,
+html[data-material=liquid] body details:not([open]):not(.ms-row-menu):not(.mas-more)::after,
+html[data-material=liquid] body details:not([open]):not(.ms-row-menu):not(.mas-more)>.glass-response{display:none!important}
+html[data-material=liquid] body details:not([open]):not(.ms-row-menu):not(.mas-more)>summary{
+ border:1px solid var(--line)!important;background:var(--glass-surface)!important;box-shadow:none!important
+}
+html[data-material=liquid] body details[open]:not(.ms-row-menu):not(.mas-more)>summary{
+ border:0!important;border-bottom:1px solid var(--line)!important;background:transparent!important;box-shadow:none!important
+}
+html[data-material=liquid] body details[open]:not(.ms-row-menu):not(.mas-more)>summary::after{display:none!important}
+/* Circular glyph controls share one geometry contract across every page.
+   Width alone cannot protect them from text-button padding, min-height,
+   legacy inline dimensions, or a flex/grid parent's stretch behaviour. */
+html[data-material=liquid] body :is(button.icon,button.icon-btn,button.mv-icon,button.wx-refresh,button.mf-favorite,button.mn-favorite,button.ms-icon-button,.oasis-circle,details.ms-row-menu>summary,details.mas-more>summary){
+ --oasis-circular-control:1;
+ display:inline-flex;align-items:center;justify-content:center;align-self:center;justify-self:center;
+ box-sizing:border-box;flex:0 0 var(--oasis-circle-size,36px)!important;
+ width:var(--oasis-circle-size,36px)!important;height:var(--oasis-circle-size,36px)!important;
+ min-width:var(--oasis-circle-size,36px)!important;max-width:var(--oasis-circle-size,36px)!important;
+ min-height:var(--oasis-circle-size,36px)!important;max-height:var(--oasis-circle-size,36px)!important;
+ padding:0!important;gap:0!important;aspect-ratio:1!important;border-radius:50%!important;
+ line-height:1!important;white-space:nowrap;overflow-wrap:normal;text-align:center
+}
+html[data-material=liquid] body button.mv-icon{--oasis-circle-size:38px}
+html[data-material=liquid] body button.mv-icon.mv-play{--oasis-circle-size:46px}
+html[data-material=liquid] body .mv-compact button.mv-icon.mv-play{--oasis-circle-size:44px}
+html[data-material=liquid] body button.mf-favorite{--oasis-circle-size:var(--mf-favorite-size,28px)}
+html[data-material=liquid] body button.mn-favorite{--oasis-circle-size:28px}
+html[data-material=liquid] body details:is(.ms-row-menu,.mas-more)>summary{list-style:none}
+html[data-material=liquid] body details:is(.ms-row-menu,.mas-more)>summary::-webkit-details-marker{display:none}
+
+/* Favorite stars are bare symbols; keep the established target size and focus
+   outline, but never reintroduce a glass disc on hover or selection. */
+html[data-material=liquid] body button:is(.mf-favorite,.mn-favorite){
+ border:0!important;background:none!important;box-shadow:none!important;
+ color:var(--muted)!important;transition:color .15s ease,scale .15s ease
+}
+html[data-material=liquid] body button:is(.mf-favorite,.mn-favorite):is(:hover,[aria-pressed=true]){color:var(--text)!important}
+html[data-material=liquid] body button:is(.mf-favorite,.mn-favorite):active:not(:disabled){scale:.92}
+html[data-material=liquid] body button:is(.mf-favorite,.mn-favorite)::before,
+html[data-material=liquid] body button:is(.mf-favorite,.mn-favorite)::after,
+html[data-material=liquid] body button:is(.mf-favorite,.mn-favorite)>.glass-response{display:none!important}
+html[data-material=liquid] body button:is(.mf-favorite,.mn-favorite)>svg{
+ display:block;flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round;pointer-events:none
+}
+html[data-material=liquid] body button:is(.mf-favorite,.mn-favorite)[aria-pressed=true]>svg{fill:color-mix(in srgb,currentColor 28%,transparent)}
+@media(prefers-reduced-motion:reduce){html[data-material=liquid] body button:is(.mf-favorite,.mn-favorite){transition:none}html[data-material=liquid] body button:is(.mf-favorite,.mn-favorite):active{scale:1}}
+
+/* Settings destinations need card spacing, rather than compact pill metrics. */
+#toolBody>.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px;padding:6px 2px 12px;align-items:stretch}
+html[data-material=liquid] body #toolBody .feature-grid>button.feature{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;width:100%;min-width:0;min-height:104px;height:auto;padding:20px 22px!important;border-radius:22px!important;white-space:normal;text-align:left;line-height:1.5}
+#toolBody .feature-grid>button.feature>strong{display:block;max-width:100%;margin:0;font-size:14px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+#toolBody .feature-grid>button.feature>span{display:block;max-width:100%;margin:0;font-size:12px;font-weight:400;line-height:1.65;overflow-wrap:anywhere}
+@media(max-width:600px){#toolBody>.feature-grid{grid-template-columns:minmax(0,1fr);gap:12px}html[data-material=liquid] body #toolBody .feature-grid>button.feature{min-height:96px;padding:18px 20px!important}}
+
+/* An expanded scenic picker has its own content inset, not a second button rim. */
+html[data-material=liquid] body .wx-background-picker[open]>summary{margin:0;border-bottom:1px solid var(--line)}
+html[data-material=liquid] body .wx-background-picker>.wx-background-body{padding:20px 20px 22px!important}
+html[data-material=liquid] body .wx-background-body>.wx-upload-bar{gap:12px;margin:0 0 20px;padding:0}
+html[data-material=liquid] body .wx-upload-bar>.wx-upload{min-height:38px;padding:9px 16px!important;margin:0;line-height:1.5}
+html[data-material=liquid] body .wx-background-body>.wx-scenery-grid{gap:12px;margin:0;padding:4px}
+html[data-material=liquid] body .wx-compact .wx-background-picker>.wx-background-body{padding:16px 16px 18px!important}
+html[data-material=liquid] body .wx-compact .wx-background-body>.wx-upload-bar{margin-bottom:16px}

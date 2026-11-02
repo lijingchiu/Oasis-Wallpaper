@@ -1,0 +1,70 @@
+Oasis seasonal background photographs
+
+sakura: sakura
+Photograph by Eterna Media
+https://www.pexels.com/photo/sakura-28120254/
+Pexels License: https://www.pexels.com/license/
+JPEG resized/compressed for the app. Display crops and color veils are applied at runtime. No generative image edits.
+
+autumn: Reflection of trees on body of water during daytime
+Photograph by Jonathan Farber
+https://unsplash.com/photos/reflection-of-trees-on-body-of-water-during-daytime-hVuyDGfiR3k
+Unsplash License: https://unsplash.com/license
+JPEG resized/compressed for the app. Display crops and color veils are applied at runtime. No generative image edits.
+
+coast: Beautiful Tropical Beach with Palm Trees and Turquoise Water
+Photograph by Asad Photo Maldives
+https://www.pexels.com/photo/beautiful-tropical-beach-with-palm-trees-and-turquoise-water-12858512/
+Pexels License: https://www.pexels.com/license/
+JPEG resized/compressed for the app. Display crops and color veils are applied at runtime. No generative image edits.
+
+winterCity: Snow Covered Village Houses During Winter
+Photograph by 光曦 刘 (Liu Guangxi)
+https://www.pexels.com/photo/snow-covered-village-houses-during-winter-11360895/
+Pexels License: https://www.pexels.com/license/
+JPEG resized/compressed for the app. Display crops and color veils are applied at runtime. No generative image edits.
+
+Verified 2026-10-24. These licenses permit application use and do not require visible attribution in the scene. Keep this file and CREDITS.json with redistributed app resources.
+
+
+Additional real photographs, 2026-10-24. See CREDITS.json for source, author, modifications and license links.
+
+vatican.jpg / vatican-thumb.jpg: Igor Meghega — Pexels License
+Source: https://www.pexels.com/photo/interior-of-st-peter-basilica-13996797/
+License: https://www.pexels.com/license/
+Changes: resized and recompressed only. CC BY-SA images remain under the original stated CC BY-SA license.
+
+aurora.jpg / aurora-thumb.jpg: Alec Cooks — Unsplash License
+Source: https://unsplash.com/photos/aurora-borealis-QaS_xVHjq0o
+License: https://unsplash.com/license
+Changes: resized and recompressed only. CC BY-SA images remain under the original stated CC BY-SA license.
+
+florence.jpg / florence-thumb.jpg: Corbett Campbell — Unsplash License
+Source: https://unsplash.com/photos/ponte-vecchio-over-a-river-with-buildings-on-either-side-of-it-mdqCP8VuBas
+License: https://unsplash.com/license
+Changes: resized and recompressed only. CC BY-SA images remain under the original stated CC BY-SA license.
+
+earth.jpg / earth-thumb.jpg: NASA / Jessica Meir — NASA media usage guidelines (US government photograph)
+Source: https://www.nasa.gov/image-article/space-station-view-of-earth-at-night/
+License: https://www.nasa.gov/nasa-brand-center/images-and-media/
+Changes: resized and recompressed only. CC BY-SA images remain under the original stated CC BY-SA license.
+
+harajuku.jpg / harajuku-thumb.jpg: Olivier Bruchez — CC BY-SA 2.0
+Source: https://commons.wikimedia.org/wiki/File:Takeshita_Street_2017_(34124176381).jpg
+License: https://creativecommons.org/licenses/by-sa/2.0/
+Changes: resized and recompressed only. CC BY-SA images remain under the original stated CC BY-SA license.
+
+oaxaca.jpg / oaxaca-thumb.jpg: Eduardo Ruiz Mondragón — CC BY-SA 4.0
+Source: https://commons.wikimedia.org/wiki/File:03_Velaci%C3%B3n_noche_1_de_noviembre.jpg
+License: https://creativecommons.org/licenses/by-sa/4.0/
+Changes: resized and recompressed only. CC BY-SA images remain under the original stated CC BY-SA license.
+
+wineglass.jpg / wineglass-thumb.jpg: 风刀逸青 — CC BY-SA 4.0
+Source: https://commons.wikimedia.org/wiki/File:Scenery_of_Wineglass_Bay_Lookout_with_trees.jpg
+License: https://creativecommons.org/licenses/by-sa/4.0/
+Changes: resized and recompressed only. CC BY-SA images remain under the original stated CC BY-SA license.
+
+quebec.jpg / quebec-thumb.jpg: Surinder Singh — Unsplash License
+Source: https://unsplash.com/photos/historic-street-with-old-buildings-and-people-walking-BmeDfuklzyA
+License: https://unsplash.com/license
+Changes: resized and recompressed only. CC BY-SA images remain under the original stated CC BY-SA license.

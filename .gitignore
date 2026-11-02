@@ -1,0 +1,8 @@
+.build/
+dist*/
+*.app/
+.DS_Store
+*.p12
+*.pfx
+.env
+.env.*

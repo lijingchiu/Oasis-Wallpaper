@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-Hant" data-tone="dark" data-material="liquid">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>Oasis Wallpaper</title>
+ <link rel="stylesheet" href="/weather.css"><link rel="stylesheet" href="/glass.css"><link rel="stylesheet" href="/controls.css"><link rel="stylesheet" href="/theme.css"><link rel="stylesheet" href="/workshop-browser.css"><link rel="stylesheet" href="/wallpaper-app.css">
+ <script>window.oasisWallpaperStandalone=true;</script>
+ <script defer src="/theme.js"></script><script defer src="/weather-catalog.js"></script><script defer src="/weather-landscapes.js"></script><script defer src="/weather-scene.js"></script><script defer src="/wallpaper-properties.js"></script><script defer src="/workshop-browser.js"></script><script defer src="/weather.js"></script><script defer src="/wallpaper-app.js"></script>
+</head>
+<body data-page="library">
+ <div class="wallpaper-chrome">
+  <header class="wallpaper-header"><img class="wallpaper-wordmark" src="/wallpaper-wordmark.png" alt="Oasis Wallpaper"><label class="startup-toggle"><span>登入時啟動</span><input id="login" type="checkbox"></label></header>
+  <nav class="wallpaper-tabs" aria-label="桌布頁面"><button type="button" class="btn" data-page-tab="library" aria-current="page">桌布庫</button><button type="button" class="btn" data-page-tab="workshop">Steam 工作坊</button><button type="button" class="btn" data-page-tab="settings">播放設定</button><button type="button" class="btn" data-page-tab="appearance">外觀設定</button></nav>
+  <div class="intro"><p id="page-description">選擇螢幕，點選桌布即可套用。</p><button id="import-oasis" type="button" class="btn">匯入 Oasis 桌布</button></div><p id="import-status" role="status" hidden></p><p id="owner-warning" role="status" hidden>另一個 Oasis 正在使用桌面壁紙。請先在該 App 關閉桌面壁紙，再回到這裡啟用。</p>
+ </div>
+ <main><section id="workshop-browser" aria-label="Steam 工作坊" hidden></section><div id="wallpaper-settings"></div><section id="wallpaper-appearance" hidden></section></main>
+</body></html>

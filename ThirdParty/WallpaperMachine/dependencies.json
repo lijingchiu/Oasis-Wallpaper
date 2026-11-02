@@ -1,0 +1,27 @@
+[
+  {
+    "name": "quickjs",
+    "url": "https://api.github.com/repos/quickjs-ng/quickjs/tarball/refs/tags/v0.17.0",
+    "sha256": "92212ea9a257a387a35abca50505d59ad9edddba4580e064929d396511b89dcf"
+  },
+  {
+    "name": "lz4",
+    "url": "https://api.github.com/repos/lz4/lz4/tarball/refs/tags/v1.10.0",
+    "sha256": "235f3d43bebb0a471c428030bdc847fe39a408af73e0e63562bce7950dc60a65"
+  },
+  {
+    "name": "freetype",
+    "url": "https://api.github.com/repos/freetype/freetype/tarball/refs/tags/VER-2-13-3",
+    "sha256": "9ba6ead83d9a8664a104e464c2c51a6f2aec22c256bec49ee3dbba5cc5cff356"
+  },
+  {
+    "name": "json",
+    "url": "https://api.github.com/repos/nlohmann/json/tarball/refs/tags/v3.12.0",
+    "sha256": "d1ce167200e5ccf007e00fa5f29aecf5daeeeed3e40c329fa8e9587978059eab"
+  },
+  {
+    "name": "argparse",
+    "url": "https://api.github.com/repos/p-ranav/argparse/tarball/refs/tags/v3.2",
+    "sha256": "412af3c7c5ddcb9116667703dc6b91a4c34a5d2a6ee7093a3a554d814b693158"
+  }
+]

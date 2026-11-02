@@ -1,0 +1,320 @@
+/* One atmosphere, below content and above the existing translucent backdrop. */
+body{isolation:isolate}
+body:before{z-index:-3!important}
+.oasis-weather-atmosphere{position:fixed;inset:0;width:100%;height:100%;z-index:-2;pointer-events:none!important;user-select:none;contain:strict}
+/* Match native text sizing when eight English tabs share the compact panel. */
+html[data-language=en] .mole-inspector .inspector-tabs:has([data-inspector-tab=weather]){gap:0}
+
+.mole-inspector[data-inspector-panel=weather] [data-integration=weather]>summary{display:none}
+html[data-weather-active=true] :is(.wx-card,.card,.status-card,.workday-card,.mu-card,.mv-compact,.ms-watchlist,.ms-detail,.mf-timer,.mf-settings,.mr-list){border-top-color:rgb(var(--weather-rim)/.24)}
+.oasis-weather{--wx-line:color-mix(in srgb,var(--text) 12%,transparent);--wx-fill:color-mix(in srgb,var(--panel) 76%,transparent);max-width:1200px;margin:0 auto;padding-bottom:12px;font-family:var(--font,-apple-system,sans-serif);color:var(--text)}
+.wx-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:10px 0 20px;padding:0 4px}
+.wx-eyebrow{font-size:10px;font-weight:600;letter-spacing:.16em;color:var(--muted);line-height:1.7;text-transform:uppercase}
+.wx-heading h1{font-size:24px;margin:3px 0 0;font-weight:600;letter-spacing:-.03em}
+.wx-refresh{display:grid;place-items:center;width:36px;height:36px;padding:8px!important;flex:none}
+.wx-refresh svg{width:18px;height:18px}
+.wx-location-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:14px;padding:0 3px}
+.wx-location-bar .wx-locate{white-space:nowrap;padding:8px 13px!important}
+.wx-search{display:flex;gap:7px;align-items:center;max-width:440px;flex:1}
+.wx-search input{min-width:0;width:100%!important;flex:1;padding:9px 13px!important}
+.wx-search button{white-space:nowrap;min-height:34px!important}
+.wx-search-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px;padding:10px;margin:10px 2px;border:1px solid var(--wx-line);border-radius:18px;background:var(--glass-panel,var(--wx-fill))}
+.wx-search-results button{display:flex;flex-direction:column;gap:4px;text-align:left;border:0;border-radius:12px!important;padding:11px 13px;background:var(--glass-surface,var(--surface));color:var(--text)}
+.wx-search-results button:hover{background:var(--control-hover)}
+.wx-search-results span{font-size:11px;color:var(--muted)}
+.wx-search-results p{margin:8px;font-size:12px;color:var(--muted)}
+.wx-status{display:flex;align-items:center;gap:9px;line-height:1.7;font-size:12px;margin:10px 3px;padding:10px 13px;border-radius:12px;background:var(--surface);color:var(--text)}
+.wx-status[hidden]{display:none!important}
+.wx-card{border:1px solid var(--wx-line);border-radius:22px;background:linear-gradient(145deg,var(--glass-highlight,#ffffff12),transparent 65%),var(--glass-panel,var(--wx-fill));box-shadow:inset 0 1px 0 var(--glass-highlight,#ffffff12),0 7px 22px #00000004;overflow:hidden}
+.wx-hero{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;min-height:282px;padding:32px 28px 30px;margin:8px 0 18px;border-radius:28px;border:1px solid var(--wx-line);background:linear-gradient(150deg,rgba(185,218,244,.09),rgba(225,237,247,.025) 50%,rgba(130,169,208,.08));text-shadow:0 1px 12px color-mix(in srgb,var(--panel) 35%,transparent)}
+.wx-hero h2{font-size:30px;margin:4px 0 0;line-height:1.25;font-weight:500!important;letter-spacing:-.04em}
+.wx-region{font-size:11px;color:var(--muted);display:block;margin-top:5px}
+.wx-now{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:3px}
+.wx-temperature{font-size:104px;font-weight:200;letter-spacing:-.075em;line-height:1.22;font-variant-numeric:tabular-nums}
+.wx-now .wx-icon{width:90px;height:90px;filter:drop-shadow(0 4px 14px #8dbce038)}
+.wx-condition{font-size:18px;font-weight:500;margin:0 0 9px;letter-spacing:-.02em}
+.wx-highlow{font-size:13px;color:var(--text);margin:0;display:flex;gap:15px;flex-wrap:wrap;justify-content:center}
+.wx-highlow span:last-child{color:var(--muted)}
+.wx-card h2,.wx-card h3{font-size:12px!important;font-weight:500!important;letter-spacing:.025em!important;color:var(--muted);margin:0}
+.wx-hourly{padding:17px 17px 12px;margin-bottom:16px}
+.wx-hourly>header{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:0 3px 13px;border-bottom:1px solid var(--wx-line)}
+.wx-hourly>header>span{font-size:10px;color:var(--muted)}
+.wx-hours{display:flex;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;gap:4px;padding:13px 0 8px;scrollbar-width:thin}
+.wx-hours .wx-hour{display:flex;flex-direction:column;gap:7px;align-items:center;flex:0 0 68px;min-width:0;scroll-snap-align:start;border:1px solid transparent;border-radius:15px!important;padding:10px 5px!important;background:transparent;box-shadow:none!important;color:var(--text);font-size:12px;line-height:1.3}
+.wx-hours .wx-hour:hover{background:var(--surface)}
+.wx-hours .wx-hour[aria-pressed=true]{border-color:var(--wx-line);background:var(--glass-surface,var(--surface))}
+.wx-hour strong{font-size:18px;font-weight:500}
+.wx-hour small{font-size:10px;color:var(--muted)}
+.wx-icon{display:inline-block;width:34px;height:34px;flex:none;overflow:visible;vertical-align:middle}
+.wx-hour-detail{display:flex;flex-direction:column;gap:7px;font-size:11px;line-height:1.6;padding:12px 5px 4px;border-top:1px solid var(--wx-line)}
+.wx-hour-detail span{color:var(--muted)}
+.wx-forecast-grid{display:grid;grid-template-columns:minmax(260px,1fr) minmax(0,1.22fr);gap:16px;align-items:start}
+.wx-daily{padding:19px 20px 12px}
+.wx-daily>h2{padding-bottom:10px}
+.wx-day{display:grid;grid-template-columns:52px 40px 34px minmax(30px,1fr) 34px;gap:9px;align-items:center;min-height:56px;border-top:1px solid var(--wx-line);font-size:13px}
+.wx-day-name{font-weight:500}
+.wx-day strong{font-weight:500;text-align:right}
+.wx-day-weather{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 0}
+.wx-day-weather .wx-icon{width:28px;height:28px}
+.wx-day-weather small{color:var(--muted);font-size:9px;line-height:1.1}
+.wx-low{color:var(--muted);text-align:right}
+.wx-temp-track{height:5px;position:relative;border-radius:8px;background:color-mix(in srgb,var(--text) 9%,transparent)}
+.wx-temp-track i{position:absolute;height:100%;border-radius:8px;background:linear-gradient(90deg,#80c6d7,#a4cfb7,#dec47d,#e4ae81)}
+.wx-temp-track b{position:absolute;top:50%;width:5px;height:5px;border-radius:50%;transform:translate(-50%,-50%);background:white;outline:1.5px solid #8da6b3}
+.wx-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.wx-metric{min-height:135px;padding:18px}
+.wx-metric>strong{display:block;font-size:32px;font-weight:400!important;letter-spacing:-.04em!important;margin-top:12px;line-height:1.25}
+.wx-metric>strong small{font-size:13px;color:var(--muted);font-weight:400}
+.wx-metric p{font-size:10px;color:var(--muted);line-height:1.6;margin:9px 0 0}
+.wx-sun{padding:16px 18px}
+.wx-sun svg{display:block;width:100%;height:62px;margin-top:3px}
+.wx-sun>div{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10px;color:var(--muted)}
+.wx-sun b{display:block;font-size:12px;font-weight:500;color:var(--text);margin-top:3px}
+.wx-sun>div>span:last-child{text-align:right}
+.wx-settings{margin-top:8px}
+.wx-settings summary{padding:16px 20px;cursor:pointer;font-size:12px;font-weight:500}
+.wx-settings-body{padding:2px 20px 20px}
+.wx-setting-row{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:46px;font-size:12px;border-top:1px solid var(--wx-line)}
+.wx-setting-row input[type=range]{width:min(48%,250px);min-width:80px}
+.wx-setting-row select{min-width:70px;padding:5px 10px}
+.wx-intensity output{font-size:11px;color:var(--muted);margin-left:6px}
+.wx-preview{padding-top:16px;border-top:1px solid var(--wx-line)}
+.wx-preview>strong{font-size:12px;font-weight:500}
+.wx-preview>p,.wx-motion-note{font-size:11px;line-height:1.7;color:var(--muted);margin:6px 0 12px}
+.wx-scenes{display:flex;flex-wrap:wrap;gap:7px}
+.wx-scenes button[aria-pressed=true]{color:var(--accent-text)!important;background:var(--accent)!important;border-color:transparent!important}
+.wx-preview-banner{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;background:var(--glass-panel,var(--surface));border:1px solid var(--wx-line);border-radius:14px;padding:10px 13px;margin:10px 2px;font-size:11px}
+.wx-preview-banner[hidden]{display:none!important}
+.wx-empty{padding:38px 28px;text-align:center;margin:18px 0}
+.wx-empty-sky .wx-icon{width:82px;height:82px;margin-bottom:12px}
+.wx-empty h2{font-size:21px!important;color:var(--text);font-weight:500!important}
+.wx-empty p{max-width:340px;margin:12px auto 0;font-size:13px;line-height:1.8;color:var(--muted)}
+.wx-compact{padding-bottom:2px}
+.wx-compact .wx-heading{margin:4px 0 15px;padding:0}
+.wx-compact .wx-heading h1{font-size:21px}
+.wx-compact .wx-location-bar{flex-direction:column;align-items:stretch;padding:0;gap:9px}
+.wx-compact .wx-locate{align-self:flex-start}
+.wx-compact .wx-search{max-width:none;flex:none;width:100%}
+.wx-compact .wx-card{border-radius:18px}
+.wx-compact .wx-hero{min-height:248px;padding:24px 14px;border-radius:22px;margin:14px 0}
+.wx-compact .wx-hero h2{font-size:26px}
+.wx-compact .wx-temperature{font-size:82px}
+.wx-compact .wx-now .wx-icon{width:64px;height:64px}
+.wx-compact .wx-condition{font-size:15px}
+.wx-compact .wx-highlow{font-size:11px;gap:10px}
+.wx-compact .wx-forecast-grid{grid-template-columns:1fr;gap:13px}
+.wx-compact .wx-hourly{padding:14px 12px 10px;margin-bottom:13px}
+.wx-compact .wx-hour{flex-basis:57px}
+.wx-compact .wx-daily{padding:16px 14px 8px}
+.wx-compact .wx-day{grid-template-columns:43px 30px 27px minmax(24px,1fr) 28px;gap:6px;min-height:52px;font-size:12px}
+.wx-compact .wx-metrics{gap:10px}
+.wx-compact .wx-metric{min-height:124px;padding:15px}
+.wx-compact .wx-metric>strong{font-size:28px}
+.wx-compact .wx-sun{padding:14px}
+.wx-compact .wx-setting-row{gap:9px}
+.wx-compact .wx-settings-body{padding:0 15px 16px}
+.wx-compact .wx-settings summary{padding:15px}
+.wx-compact .wx-settings{margin-top:5px}
+@media(max-width:850px){.oasis-weather:not(.wx-compact) .wx-forecast-grid{grid-template-columns:minmax(250px,1fr) minmax(0,1fr)}.wx-day{gap:6px}.wx-metric{padding:15px}}
+@media(prefers-reduced-transparency:reduce),(prefers-contrast:more){.wx-card,.wx-hero{background:var(--panel)!important;border-color:var(--text)}.oasis-weather-atmosphere{display:none!important}}
+html[data-reduce-transparency=true] .wx-card,html[data-increase-contrast=true] .wx-card{background:var(--panel)!important}
+/* Saved scenic backgrounds. Real forecast content keeps its own hierarchy. */
+.wx-background-picker{margin:4px 0 16px}
+.wx-background-picker>summary{display:flex;align-items:center;gap:12px;list-style:none;cursor:pointer;padding:15px 18px;font-size:12px;min-height:49px}
+.wx-background-picker>summary::-webkit-details-marker{display:none}
+.wx-background-picker>summary:before{content:'›';font-size:18px;line-height:1;opacity:.6;transform:rotate(0);transition:transform .2s ease}
+.wx-background-picker[open]>summary:before{transform:rotate(90deg)}
+.wx-background-name{font-size:11px;font-weight:500!important;color:var(--muted);margin-left:auto;text-align:right;max-width:58%;line-height:1.5}
+.wx-background-body{padding:0 17px 15px}
+.wx-scenery-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.wx-scenery-grid .wx-live-background{grid-column:1/-1;position:relative;display:flex;align-items:center;gap:8px;padding:10px 13px!important;text-align:left;min-height:40px}
+.wx-live-background>span{font-size:18px;color:var(--muted)}
+.wx-live-background strong{font-weight:500!important;font-size:12px!important}
+.wx-scenery-grid .wx-scenery-option{position:relative;display:flex;flex-direction:column;align-items:stretch;padding:0!important;min-width:0;text-align:left;border-radius:15px!important;overflow:hidden;gap:0;background:var(--glass-panel,var(--surface));color:var(--text);border:1px solid var(--wx-line)}
+.wx-scenery-thumb{display:block;flex:none;width:100%;aspect-ratio:16/9;background-size:cover;background-position:center;background-repeat:no-repeat;background-color:#a0b6ba;filter:none!important;box-shadow:none!important}
+.wx-thumb-0{background-image:url('/weather-scenes/sakura-thumb.jpg')}.wx-thumb-1{background-image:url('/weather-scenes/autumn-thumb.jpg')}.wx-thumb-2{background-image:url('/weather-scenes/coast-thumb.jpg')}.wx-thumb-3{background-image:url('/weather-scenes/winterCity-thumb.jpg')}
+.wx-scenery-caption{display:flex;flex-direction:column;gap:5px;padding:11px 12px 12px;min-width:0;line-height:1.5}
+.wx-scenery-caption strong{font-size:12px!important;font-weight:600!important;letter-spacing:0!important;color:var(--text)!important;white-space:normal;word-break:normal}
+.wx-scenery-caption small{display:block;font-size:10px;line-height:1.6;color:var(--muted);white-space:normal;word-break:normal}
+.wx-selected-mark{display:none;position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:var(--accent,#d5d4dd);color:var(--accent-text,#243144);font-size:13px;font-style:normal;font-weight:600;text-align:center;line-height:22px;box-shadow:0 1px 6px #0002}
+.wx-live-background .wx-selected-mark{top:50%;transform:translateY(-50%)}
+.wx-scenery-grid button[aria-pressed=true]{border-color:var(--accent)!important}
+.wx-scenery-grid button[aria-pressed=true] .wx-selected-mark{display:block}
+.wx-scenery-grid button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wx-background-note,.wx-background-off{margin:12px 1px 0;font-size:10px;color:var(--muted);line-height:1.7}
+.wx-compact .wx-scenery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.wx-compact .wx-background-picker>summary{padding:14px;gap:8px;font-size:11px}
+.wx-compact .wx-background-body{padding:0 13px 13px}
+.wx-compact .wx-scenery-caption{padding:9px 10px 10px;gap:3px}
+.wx-compact .wx-scenery-caption small{font-size:9px}
+@media(max-width:760px){.wx-scenery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.wx-background-picker>summary:before{transition:none}}
+
+/* Local photo library: fixed rhythm and bounded scrolling in both surfaces. */
+.wx-upload-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+.wx-upload-bar .wx-upload{flex:none;padding:9px 13px!important;min-height:36px;font-size:12px}
+.wx-scenery-grid{max-height:414px;overflow:auto;overscroll-behavior:contain;padding:4px;margin:-4px;scrollbar-width:thin;scrollbar-color:#82949a70 transparent;align-content:start}
+img.wx-scenery-thumb{object-fit:cover;object-position:center;min-height:0;max-width:100%}
+.wx-scenery-option::before,.wx-scenery-option::after{pointer-events:none}
+.wx-particle-controls{margin-top:16px;padding-top:8px;border-top:1px solid var(--wx-line)}
+.wx-wallpaper-adjustments{margin:16px 0 4px;border:1px solid var(--wx-line);border-radius:16px;overflow:hidden}
+.wx-wallpaper-adjustments>summary{padding:13px 15px;cursor:pointer;font-size:12px;font-weight:600}
+.wx-wallpaper-adjustments-body{padding:0 15px 16px}
+.wx-wallpaper-surface select{max-width:70%;min-width:0}
+.wx-wallpaper-target{margin:4px 0 12px;font-size:11px;line-height:1.6;color:var(--muted);overflow-wrap:anywhere}
+.wx-wallpaper-adjustments .wx-wallpaper-slider{display:grid;grid-template-columns:minmax(68px,max-content) minmax(80px,1fr) 46px;gap:14px;min-height:46px}
+.wx-wallpaper-adjustments .wx-wallpaper-slider input{width:100%;min-width:0;margin:0}
+.wx-wallpaper-slider output{font-size:11px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.wx-wallpaper-audio-note{font-size:11px;line-height:1.6;color:var(--muted);margin:6px 0 12px}
+.wx-wallpaper-reset{margin-top:12px}
+.wx-wallpaper-properties{margin-top:20px}
+.wx-wallpaper-properties h3{margin:0 0 8px;font-size:12px}
+.wx-wallpaper-properties input[type=text]{max-width:60%}
+.wx-author-group{margin:10px 0;border:1px solid var(--wx-line);border-radius:14px;overflow:hidden}
+.wx-author-group>summary{padding:11px 13px;cursor:pointer;font-size:12px;font-weight:600}
+.wx-author-group>div{padding:0 13px 6px}
+.wx-author-row:has(input[type=range]){display:grid;grid-template-columns:minmax(75px,1fr) minmax(80px,2fr) 48px;gap:12px}
+.wx-author-row:has(input[type=range]) input{width:100%;min-width:0;margin:0}
+.wx-author-row output{color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.wx-author-file{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px;padding:7px 0}
+.wx-author-file small{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.wx-author-file .btn{padding:6px 11px}
+.wx-author-row small{color:var(--muted);font-size:10px}
+.wx-compact .wx-wallpaper-adjustments .wx-wallpaper-slider{gap:9px;grid-template-columns:minmax(58px,max-content) minmax(60px,1fr) 42px}
+.wx-desktop-settings{margin:0 0 18px}
+.wx-desktop-settings>summary{padding:15px 18px;font-size:12px;font-weight:600;cursor:pointer}
+.wx-desktop-body{padding:12px 18px 18px}
+.wx-desktop-body>p{font-size:11px;line-height:1.65;color:var(--muted);margin:0 0 14px}
+.wx-desktop-displays{margin:18px 0}
+.wx-desktop-displays h3{margin:0 0 10px;font-size:12px}
+.wx-desktop-screen{display:grid;grid-template-columns:minmax(155px,1fr) minmax(180px,2fr);align-items:center;gap:18px;padding:12px 0;border-top:1px solid var(--wx-line)}
+.wx-desktop-screen>span{display:flex;flex-direction:column;gap:4px;min-width:0;overflow-wrap:anywhere}
+.wx-desktop-screen strong{font-size:12px}.wx-desktop-screen small{font-size:10px;color:var(--muted)}
+.wx-desktop-screen select,html[data-material=liquid] body .wx-desktop-screen>select{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
+.wx-desktop-screen-list>p{font-size:11px;color:var(--muted)}
+.wx-desktop-access{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:12px 14px;border:1px solid var(--wx-line);border-radius:14px;background:var(--wx-fill);font-size:11px;line-height:1.6}
+.wx-desktop-access[hidden]{display:none!important}
+.wx-desktop-access .btn{flex:none;padding:6px 12px}
+.wx-desktop-download{margin:12px 0 0;padding:12px 14px;border:1px solid var(--wx-line);border-radius:14px;background:var(--wx-fill);font-size:11px;line-height:1.6}
+.wx-desktop-download[hidden],.wx-desktop-download [hidden]{display:none!important}
+.wx-desktop-download>div{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.wx-desktop-download .btn{flex:none;padding:6px 12px}
+.wx-desktop-download img{display:block;max-width:180px;margin:12px auto 2px;border-radius:12px}
+.wx-desktop-download.is-error{color:var(--danger,#f3a59b)}
+.wx-desktop-performance{border:1px solid var(--wx-line);border-radius:16px;overflow:hidden}
+.wx-desktop-performance>summary{padding:12px 14px;cursor:pointer;font-size:12px;font-weight:600}
+.wx-desktop-performance>div{padding:8px 14px 10px}
+.wx-desktop-performance .wx-wallpaper-slider{display:grid;grid-template-columns:minmax(85px,1fr) minmax(80px,2fr) 48px;gap:12px}
+.wx-desktop-performance .wx-wallpaper-slider input{width:100%;min-width:0;margin:0}
+.wx-desktop-performance output{text-align:right;font-size:11px;color:var(--muted);white-space:nowrap}
+.wx-compact .wx-desktop-body{padding:12px 14px 15px}
+.wx-compact .wx-desktop-screen{grid-template-columns:minmax(0,1fr);align-items:stretch;gap:8px}
+.wx-compact .wx-desktop-screen select{max-width:100%;width:100%}
+/* Nested settings lose another two card insets in the Menu Bar. Keep authored
+   labels above their controls rather than forcing three minimum-width columns. */
+.wx-compact .wx-desktop-performance .wx-wallpaper-slider,
+.wx-compact .wx-author-row:has(input[type=range]){grid-template-columns:minmax(0,1fr) auto;gap:7px 10px;padding:10px 0;min-height:0}
+.wx-compact .wx-desktop-performance .wx-wallpaper-slider>span,
+.wx-compact .wx-author-row:has(input[type=range])>span{grid-column:1/-1;min-width:0;overflow-wrap:anywhere;line-height:1.5}
+.wx-compact .wx-author-row:has(.wx-author-file){flex-direction:column;align-items:stretch;gap:6px;padding:10px 0}
+.wx-compact .wx-author-file{min-width:0;max-width:100%;justify-content:flex-start}
+.wx-compact .wx-author-file small{flex-basis:100%;max-width:100%}
+.wx-particle-controls .wx-setting-row{gap:16px;padding:9px 2px;min-height:43px}
+.wx-falling{max-width:210px;min-width:140px;padding:8px 10px;font:inherit;font-size:12px;border-radius:11px;color:var(--text);background:var(--glass-panel,var(--surface));border:1px solid var(--wx-line)}
+.wx-particle-note{font-size:10px;color:var(--muted);line-height:1.65;margin:1px 2px 9px}
+.wx-particle-details>summary,.wx-archived>summary{font-size:11px;line-height:1.7;padding:9px 2px;cursor:pointer;color:var(--muted)}
+/* Keep labels, tracks and values in separate columns on both App and Menu Bar. */
+.wx-particle-controls .wx-setting-row.wx-particle-slider{display:grid!important;grid-template-columns:minmax(48px,max-content) minmax(80px,1fr) 40px;align-items:center;gap:12px;min-height:48px;padding:10px 12px}
+.wx-particle-slider>span{min-width:0;line-height:1.5}
+.wx-particle-slider output{display:block;min-width:0;text-align:right;white-space:nowrap;font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.wx-particle-slider input[type=range]{width:100%;min-width:0;margin:0}
+.wx-archive-image{margin-top:8px;min-height:32px;padding:7px 11px!important;font-size:11px;color:var(--muted)}
+.wx-archived{border-top:1px solid var(--wx-line);margin-top:12px;padding-top:5px}
+.wx-archived-list{display:flex;flex-direction:column;gap:8px;padding:4px 2px}
+.wx-archived-list>div{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px}
+.wx-archived-list>div>span{min-width:0;overflow-wrap:anywhere}
+.wx-archived-list .btn{flex:none;font-size:11px;padding:6px 10px!important;min-height:30px}
+.wx-scene-status{display:flex;align-items:center;gap:8px;min-height:24px;margin:12px 2px 2px;font-size:11px;line-height:1.6;color:var(--muted)}
+.wx-scene-status button{flex:none;font-size:10px;padding:5px 9px!important}
+.wx-background-name{max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wx-compact .wx-upload-bar{gap:8px;margin-bottom:12px}
+.wx-compact .wx-scenery-grid{max-height:314px}
+.wx-compact .wx-falling{min-width:125px;max-width:170px;font-size:11px}
+.wx-compact .wx-particle-controls .wx-setting-row{font-size:11px}
+.wx-compact .wx-particle-note{font-size:9px}
+.wx-compact .wx-scenery-caption strong{font-size:11px!important;line-height:1.6}
+.wx-background-body [hidden]{display:none!important}
+.wx-scenery-grid .wx-city-background{grid-column:1/-1;display:flex;flex-direction:row;align-items:center;min-height:64px;gap:0}
+.wx-city-background .wx-scenery-caption{flex:1;padding:10px 14px;gap:2px}
+.wx-city-thumb{object-fit:cover;width:92px;height:66px;flex:none;align-self:stretch}
+.wx-city-symbol{display:grid;place-items:center;width:72px;min-height:64px;font-size:31px;color:var(--muted);font-weight:300}
+.wx-city-background .wx-selected-mark{top:50%;transform:translateY(-50%)}
+.wx-city-controls{margin-top:14px;padding:12px 2px;border-bottom:1px solid var(--wx-line)}
+.wx-city-note{display:flex;align-items:center;gap:8px;font-size:11px;line-height:1.7;margin:0 0 10px;color:var(--text)}
+.wx-city-actions{display:flex;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.wx-city-next{min-height:34px;padding:8px 13px!important;font-size:11px}
+.wx-city-info{flex:1;min-width:120px;font-size:10px;color:var(--muted)}
+.wx-city-info>summary{cursor:pointer;padding:9px 2px;line-height:1.6}
+.wx-city-info>div{display:flex;flex-direction:column;gap:7px;line-height:1.7;overflow-wrap:anywhere;padding:9px 2px}
+.wx-city-info strong{font-size:10px;color:var(--text)}
+.wx-city-info a{color:var(--text);text-underline-offset:3px}
+.wx-city-cache-note{font-size:9px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.wx-compact .wx-city-thumb{width:70px;height:62px}
+.wx-compact .wx-city-background .wx-scenery-caption{padding:9px 11px}
+.wx-compact .wx-city-note{font-size:10px}
+
+.wx-city-symbol svg{width:33px;height:33px;opacity:.8}
+
+.wx-scenery-caption strong{overflow-wrap:anywhere}
+
+/* The same viewport coordinates are used by photographs and imported loops. */
+.oasis-weather-media{position:fixed;inset:0;z-index:-2;pointer-events:none;user-select:none;contain:strict;overflow:hidden}
+.oasis-weather-media[hidden]{display:none!important}
+.oasis-weather-media>img,.oasis-weather-media>video,.oasis-weather-media>canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none}
+.oasis-weather-media>[hidden]{display:none!important}
+.oasis-weather-media-tint{position:absolute;inset:0;pointer-events:none}
+
+/* Background controls live in Settings in both surfaces. The forecast keeps
+   only temperature preferences, while sharing the same state and renderer. */
+.oasis-weather:not(.wx-background-settings)>.wx-background-picker,
+.oasis-weather:not(.wx-background-settings)>.wx-preview-banner,
+.oasis-weather:not(.wx-background-settings)>.wx-settings .wx-setting-row:has([data-wx=enabled]),
+.oasis-weather:not(.wx-background-settings)>.wx-settings .wx-intensity,
+.oasis-weather:not(.wx-background-settings)>.wx-settings .wx-preview{display:none!important}
+.wx-background-settings>.wx-heading,.wx-background-settings>.wx-location-bar,
+.wx-background-settings>.wx-search-results,.wx-background-settings>.wx-content,
+.wx-background-settings>.wx-settings .wx-setting-row:has([data-wx=unit]){display:none!important}
+.wx-background-settings>.wx-background-picker{margin:0 0 18px}
+.wx-background-settings>.wx-settings{margin-bottom:0}
+#toolBody > .tool-back + #backgroundSettingsPanel{margin-top:16px}
+.wx-background-settings-dialog{box-sizing:border-box;width:min(880px,calc(100vw - 32px));max-height:calc(100vh - 32px);padding:0;border:1px solid var(--line);border-radius:24px;color:var(--text);background:var(--glass-bg,var(--panel));backdrop-filter:blur(26px) saturate(1.15);overflow:auto}
+.wx-background-settings-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.wx-background-settings-dialog h2{margin:0;font-size:17px}
+.wx-background-settings-host{padding:20px}
+html[data-material=liquid] body .wx-dialog-close{flex:0 0 36px;width:36px;height:36px;min-height:36px;max-height:36px;aspect-ratio:1;border-radius:50%!important;padding:0!important;font-size:20px}
+.wx-background-menu{position:fixed;z-index:100000;box-sizing:border-box;min-width:156px;max-width:200px;padding:4px;border:1px solid var(--line);border-radius:12px;background:var(--glass-bg,var(--panel));backdrop-filter:blur(28px) saturate(1.15);box-shadow:0 8px 26px #0003}
+html[data-material=liquid] body .wx-background-menu>button{display:block;width:100%;min-height:30px;padding:6px 10px!important;border:0!important;border-radius:8px!important;background:transparent!important;box-shadow:none!important;text-align:left;font:500 12px/1.4 var(--font,-apple-system,sans-serif);color:var(--text)}
+html[data-material=liquid] body .wx-background-menu>button:hover{background:var(--control-hover,var(--surface))!important}
+.wx-background-menu [data-delete],.wx-delete-background [data-delete]{color:var(--danger)!important}
+.wx-delete-background{box-sizing:border-box;max-width:min(420px,calc(100vw - 32px));padding:24px;border:1px solid var(--line);border-radius:24px;color:var(--text);background:var(--glass-bg,var(--panel));backdrop-filter:blur(28px)}
+.wx-delete-background h2{margin:0 0 14px;font-size:18px}.wx-delete-background p{margin:0 0 16px;line-height:1.7;overflow-wrap:anywhere}
+.wx-delete-name{font-weight:600}.wx-dialog-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;margin-top:22px}
+.wx-dialog-actions button{min-width:76px;min-height:38px;padding:9px 16px!important}
+.mole-inspector .wx-background-settings-host{padding:14px}.mole-inspector .wx-background-settings-dialog>header{padding:14px 16px}
+
+/* Workshop uses the existing glass surfaces and a single disclosure control. */
+.wx-workshop{margin:18px 0 22px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:transparent}
+.wx-workshop>summary{padding:14px 18px;cursor:pointer;font-weight:600;line-height:1.5}
+.wx-workshop-body{display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding:6px 18px 18px;min-width:0}
+.wx-workshop-form{display:flex;align-items:center;flex-wrap:wrap;gap:12px;width:100%;min-width:0}
+.wx-workshop-form input{box-sizing:border-box;flex:1 1 250px;min-width:0;max-width:100%;min-height:40px;padding:10px 14px;border:1px solid var(--line);border-radius:20px;color:var(--text);background:transparent}
+.wx-workshop .btn{min-height:38px;padding:9px 16px!important;line-height:1.4;white-space:normal}
+.wx-workshop-result{display:flex;flex-direction:column;gap:6px;overflow-wrap:anywhere;line-height:1.5}
+.wx-workshop-result strong{font-size:14px}.wx-workshop-result small,.wx-workshop-note{color:var(--muted);font-size:12px}
+.wx-workshop-note,.wx-workshop-status{margin:0;line-height:1.7;overflow-wrap:anywhere}
+.wx-workshop-status.is-error{color:var(--danger,var(--text))}
+.wx-workshop-qr{display:block;width:216px;height:216px;box-sizing:content-box;max-width:calc(100% - 24px);object-fit:contain;padding:12px;border-radius:16px;background:white;filter:none;mix-blend-mode:normal;align-self:center;image-rendering:pixelated}
+.wx-workshop-session:not([hidden]){display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.wx-workshop-actions{display:flex;flex-wrap:wrap;gap:12px}.wx-workshop-actions:empty{display:none}
+.wx-compact .wx-workshop-body{padding:4px 14px 16px}.wx-compact .wx-workshop>summary{padding:13px 14px}
+.wx-compact .wx-workshop-form input{flex-basis:100%}

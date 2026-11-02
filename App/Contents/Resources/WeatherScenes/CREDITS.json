@@ -1,0 +1,241 @@
+[
+  {
+    "id": "sakura",
+    "title": "sakura",
+    "photographer": "Eterna Media",
+    "source": "https://www.pexels.com/photo/sakura-28120254/",
+    "license": "Pexels License",
+    "licenseURL": "https://www.pexels.com/license/",
+    "originalSize": [
+      5472,
+      3648
+    ],
+    "camera": "Canon EOS 7D Mark II",
+    "takenAt": "2018-04-08",
+    "publishedAt": "2024-08-30",
+    "file": "sakura.jpg",
+    "sha256": "88d991d1e885aa79f5cfc55dfd91d32fd8594bbb0af76628ff3c27b640f480c9",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "JPEG resized to at most 3840 px; no generative edits. Display crop and readability veil are applied at runtime."
+  },
+  {
+    "id": "autumn",
+    "title": "Reflection of trees on body of water during daytime",
+    "photographer": "Jonathan Farber",
+    "source": "https://unsplash.com/photos/reflection-of-trees-on-body-of-water-during-daytime-hVuyDGfiR3k",
+    "license": "Unsplash License",
+    "licenseURL": "https://unsplash.com/license",
+    "camera": "Canon EOS R",
+    "publishedAt": "2019-11-24",
+    "file": "autumn.jpg",
+    "sha256": "b253af5b100202d3ebe1a7acf4dfe7a29f7e7530db25fcf045906c220839a0aa",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "JPEG resized to at most 3840 px; no generative edits. Display crop and readability veil are applied at runtime."
+  },
+  {
+    "id": "coast",
+    "title": "Beautiful Tropical Beach with Palm Trees and Turquoise Water",
+    "photographer": "Asad Photo Maldives",
+    "source": "https://www.pexels.com/photo/beautiful-tropical-beach-with-palm-trees-and-turquoise-water-12858512/",
+    "license": "Pexels License",
+    "licenseURL": "https://www.pexels.com/license/",
+    "originalSize": [
+      7360,
+      4912
+    ],
+    "camera": "NIKON D800E",
+    "takenAt": "2017-01-17",
+    "publishedAt": "2022-07-16",
+    "file": "coast.jpg",
+    "sha256": "bb083c87f84c52bc875de1ecf9052e82db1123e6b535294e3600c234c1db3f6c",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "JPEG resized to at most 3840 px; no generative edits. Display crop and readability veil are applied at runtime."
+  },
+  {
+    "id": "winterCity",
+    "title": "Snow Covered Village Houses During Winter",
+    "photographer": "光曦 刘 (Liu Guangxi)",
+    "source": "https://www.pexels.com/photo/snow-covered-village-houses-during-winter-11360895/",
+    "license": "Pexels License",
+    "licenseURL": "https://www.pexels.com/license/",
+    "originalSize": [
+      5000,
+      3333
+    ],
+    "camera": "SONY ILCE-7RM4",
+    "takenAt": "2022-01-17",
+    "publishedAt": "2022-03-04",
+    "file": "winterCity.jpg",
+    "sha256": "3acbd202e9a6602602076c230d05979b063a7b1b6071b5708b9e4f0b2af2faf2",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "JPEG resized to at most 3840 px; no generative edits. Display crop and readability veil are applied at runtime."
+  },
+  {
+    "id": "vatican",
+    "title": "梵蒂岡聖彼得大教堂",
+    "photographer": "Igor Meghega",
+    "source": "https://www.pexels.com/photo/interior-of-st-peter-basilica-13996797/",
+    "license": "Pexels License",
+    "licenseURL": "https://www.pexels.com/license/",
+    "publishedOrTakenAt": "2022-10-12",
+    "camera": "",
+    "originalSize": [
+      2943,
+      3924
+    ],
+    "file": "vatican.jpg",
+    "sha256": "7dbdb72aefec36e0f5a1d4e3a2cb6dc4c6f42cd18c5fa6e0218f99d888027fc8",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "Resized/recompressed JPEG only. Runtime crop, readability veil and procedural animation do not alter the stored photograph. CC BY-SA photo derivatives remain under the stated license."
+  },
+  {
+    "id": "aurora",
+    "title": "極光之境",
+    "photographer": "Alec Cooks",
+    "source": "https://unsplash.com/photos/aurora-borealis-QaS_xVHjq0o",
+    "license": "Unsplash License",
+    "licenseURL": "https://unsplash.com/license",
+    "publishedOrTakenAt": "2018-01-17",
+    "camera": "Nikon D7100",
+    "originalSize": [
+      3840,
+      2560
+    ],
+    "file": "aurora.jpg",
+    "sha256": "3d6ff27668d1f3f089708f8faf3132203bc7810ebb2b352b3ad2b6ed610cc465",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "Resized/recompressed JPEG only. Runtime crop, readability veil and procedural animation do not alter the stored photograph. CC BY-SA photo derivatives remain under the stated license."
+  },
+  {
+    "id": "florence",
+    "title": "佛羅倫斯老橋",
+    "photographer": "Corbett Campbell",
+    "source": "https://unsplash.com/photos/ponte-vecchio-over-a-river-with-buildings-on-either-side-of-it-mdqCP8VuBas",
+    "license": "Unsplash License",
+    "licenseURL": "https://unsplash.com/license",
+    "publishedOrTakenAt": "2022-07-12",
+    "camera": "Canon EOS R5",
+    "originalSize": [
+      3840,
+      2561
+    ],
+    "file": "florence.jpg",
+    "sha256": "38553536d82d87a4446d3c74003486adc5f63a5cb81dd92cabc634af647eb614",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "Resized/recompressed JPEG only. Runtime crop, readability veil and procedural animation do not alter the stored photograph. CC BY-SA photo derivatives remain under the stated license."
+  },
+  {
+    "id": "earth",
+    "title": "俯瞰夜晚地球",
+    "photographer": "NASA / Jessica Meir",
+    "source": "https://www.nasa.gov/image-article/space-station-view-of-earth-at-night/",
+    "license": "NASA media usage guidelines (US government photograph)",
+    "licenseURL": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+    "publishedOrTakenAt": "2026-09-08",
+    "camera": "ISS astronaut photograph",
+    "originalSize": [
+      8256,
+      5504
+    ],
+    "file": "earth.jpg",
+    "sha256": "a651862ce5c73d2f779d765ed9000c3f809a28eacc45dbc650149adcde18bab5",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "Resized/recompressed JPEG only. Runtime crop, readability veil and procedural animation do not alter the stored photograph. CC BY-SA photo derivatives remain under the stated license."
+  },
+  {
+    "id": "harajuku",
+    "title": "夜遊原宿",
+    "photographer": "Olivier Bruchez",
+    "source": "https://commons.wikimedia.org/wiki/File:Takeshita_Street_2017_(34124176381).jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "publishedOrTakenAt": "2017-04-14",
+    "camera": "Apple iPhone 6s Plus",
+    "originalSize": [
+      4032,
+      3024
+    ],
+    "file": "harajuku.jpg",
+    "sha256": "5cfd501b6d2fd415bb0b977fc22dfda9f4adb4eb7899d70afd0d0185a5ed73b7",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "Resized/recompressed JPEG only. Runtime crop, readability veil and procedural animation do not alter the stored photograph. CC BY-SA photo derivatives remain under the stated license."
+  },
+  {
+    "id": "oaxaca",
+    "title": "瓦哈卡墓地亡靈節",
+    "photographer": "Eduardo Ruiz Mondragón",
+    "source": "https://commons.wikimedia.org/wiki/File:03_Velaci%C3%B3n_noche_1_de_noviembre.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "publishedOrTakenAt": "2019-11-02",
+    "camera": "Samsung SM-A105M",
+    "originalSize": [
+      4128,
+      3096
+    ],
+    "file": "oaxaca.jpg",
+    "sha256": "878be908710412421723c3017337aca5c962ad6b99e8c299ef39d9396973286a",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "Resized/recompressed JPEG only. Runtime crop, readability veil and procedural animation do not alter the stored photograph. CC BY-SA photo derivatives remain under the stated license."
+  },
+  {
+    "id": "wineglass",
+    "title": "酒杯灣",
+    "photographer": "风刀逸青",
+    "source": "https://commons.wikimedia.org/wiki/File:Scenery_of_Wineglass_Bay_Lookout_with_trees.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "publishedOrTakenAt": "2019-04-19",
+    "camera": "",
+    "originalSize": [
+      4032,
+      3024
+    ],
+    "file": "wineglass.jpg",
+    "sha256": "8da0b1a0a1fcf52bb2cf4619ca2f7c15fe66ac3f86f84cf94b50fe97362a3b97",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "Resized/recompressed JPEG only. Runtime crop, readability veil and procedural animation do not alter the stored photograph. CC BY-SA photo derivatives remain under the stated license."
+  },
+  {
+    "id": "quebec",
+    "title": "魁北克老城",
+    "photographer": "Surinder Singh",
+    "source": "https://unsplash.com/photos/historic-street-with-old-buildings-and-people-walking-BmeDfuklzyA",
+    "license": "Unsplash License",
+    "licenseURL": "https://unsplash.com/license",
+    "publishedOrTakenAt": "2026-05-31",
+    "camera": "Fujifilm X-T5",
+    "originalSize": [
+      3840,
+      2560
+    ],
+    "file": "quebec.jpg",
+    "sha256": "95ac1eb94f19ee5f1cf9ec7ffb4a568aaae516cfd764c4a8de8b92e7b78fe890",
+    "kind": "photograph",
+    "aiGenerated": false,
+    "verifiedAt": "2026-10-24",
+    "processing": "Resized/recompressed JPEG only. Runtime crop, readability veil and procedural animation do not alter the stored photograph. CC BY-SA photo derivatives remain under the stated license."
+  }
+]
