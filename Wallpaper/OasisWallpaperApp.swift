@@ -32,7 +32,16 @@ final class WallpaperApp:NSObject,NSApplicationDelegate,WKScriptMessageHandler,W
   menu.addItem(withTitle:"檢查更新…",action:#selector(checkForUpdates),keyEquivalent:"").target=self
   menu.addItem(.separator());menu.addItem(withTitle:"隱藏 Oasis Wallpaper",action:#selector(NSApplication.hide(_:)),keyEquivalent:"h")
   menu.addItem(.separator());menu.addItem(withTitle:"結束 Oasis Wallpaper",action:#selector(NSApplication.terminate(_:)),keyEquivalent:"q")
-  appItem.submenu=menu;NSApp.mainMenu=main
+  appItem.submenu=menu
+  let editItem = NSMenuItem()
+  let edit = NSMenu(title: MoleLanguage.text("編輯"))
+  edit.addItem(withTitle: MoleLanguage.text("剪下"), action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+  edit.addItem(withTitle: MoleLanguage.text("拷貝"), action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+  edit.addItem(withTitle: MoleLanguage.text("貼上"), action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+  edit.addItem(withTitle: MoleLanguage.text("全選"), action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+  editItem.submenu = edit
+  main.addItem(editItem)
+  NSApp.mainMenu=main
  }
  @objc private func checkForUpdates() {
   window?.makeKeyAndOrderFront(nil)

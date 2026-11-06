@@ -52,7 +52,17 @@
    if(page==='workshop'){
     picker.open=true;picker.querySelector('.wx-workshop').open=true;
     if(!browser){
-     const mounted=window.OasisWorkshopBrowser.mount(workshop,{onClear:()=>{workshopDetail.hidden=true;window.OasisWeather.clearWorkshopSelection()},onSelect:item=>{workshopDetail.hidden=false;workshopDetail.querySelector('img').src=item.preview;workshopDetail.querySelector('strong').textContent=item.title;window.OasisWeather.inspectWorkshop(item.url)}});
+     const mounted=window.OasisWorkshopBrowser.mount(workshop,{
+      onClear:()=>{workshopDetail.hidden=true;window.OasisWeather.clearWorkshopSelection()},
+      onSelect:item=>{
+       const image=workshopDetail.querySelector('img');
+       image.hidden=!item.preview;
+       if(item.preview)image.src=item.preview;else image.removeAttribute('src');
+       workshopDetail.querySelector('strong').textContent=item.title;
+       workshopDetail.hidden=false;
+       window.OasisWeather.inspectWorkshop(item.url);
+      }
+     });
      const controls=document.createElement('aside');controls.className='ow-workshop-controls';const form=workshop.querySelector('.owb-search'),filters=workshop.querySelector('.owb-filters');form.before(controls);controls.append(form,filters);mounted.search();browser=mounted;
     }
    }else if(page==='library')picker.open=true;

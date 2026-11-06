@@ -55,6 +55,64 @@ final class StartupChecks: NSObject, WKNavigationDelegate {
             """, "Tab did not report the expected state: \(tab), available=\(available)")
     }
 
+    private func checkWorkshopSearch() async throws {
+        let passed = try await web.callAsyncJavaScript("""
+            const host = document.createElement('section');
+            document.body.append(host);
+            const originalFetch = window.fetch;
+            const item = {id:'12345', title:'Clouds', preview:null, url:'https://steamcommunity.com/sharedfiles/filedetails/?id=12345'};
+            const calls = [];
+            let selected = null;
+            try {
+                window.fetch = async (path, request) => {
+                    const body = JSON.parse(request.body);
+                    calls.push({path, body});
+                    if (path.endsWith('/browse')) return new Response(JSON.stringify({ok:true, items:[item], hasMore:true}));
+                    if (body.url === 'https://example.invalid/wallpaper') {
+                        return new Response(JSON.stringify({ok:false, error:'workshop-link'}), {status:400});
+                    }
+                    return new Response(JSON.stringify({ok:true, item}));
+                };
+                const browser = window.OasisWorkshopBrowser.mount(host, {onSelect: row => { selected = row }});
+                const field = host.querySelector('input'), more = host.querySelector('.owb-more');
+                field.value = 'Clouds';
+                await browser.search();
+                if (calls[0].path !== '/api/weather/workshop/browse' || calls[0].body.query !== 'Clouds' || more.hidden) return false;
+                // Editing the field does not change the previously submitted query for Load more.
+                field.value = item.url;
+                more.click();
+                await new Promise(done => setTimeout(done, 0));
+                if (calls[1].body.page !== 2 || calls[1].body.query !== 'Clouds') return false;
+                for (const [input,expected] of [
+                    [item.url + '&searchtext=' + 'x'.repeat(160), item.url + '&searchtext=' + 'x'.repeat(160)],
+                    ['www.steamcommunity.com/workshop/filedetails/?id=12345','https://steamcommunity.com/workshop/filedetails/?id=12345'],
+                    ['steam://url/CommunityFilePage/12345', item.url]
+                ]) {
+                    field.value = input;
+                    host.querySelector('button[type=submit]').click();
+                    await new Promise(done => setTimeout(done, 0));
+                    const last = calls.at(-1);
+                    if (last.path !== '/api/weather/workshop' || last.body.action !== 'inspect' || last.body.url !== expected ||
+                        selected?.id !== item.id || !more.hidden || host.querySelectorAll('.owb-card').length !== 1 ||
+                        host.querySelector('.owb-card img')) return false;
+                }
+                field.value = 'https://example.invalid/wallpaper';
+                await browser.search();
+                if (host.querySelector('.owb-card') || !host.querySelector('.owb-status').textContent) return false;
+                field.value = '雨';
+                await browser.search();
+                return calls.at(-1).body.query === '雨' && !calls.some(call => call.body.action === 'download');
+            } finally {
+                window.fetch = originalFetch;
+                host.remove();
+            }
+            """, arguments: [:], in: nil, contentWorld: .page) as? Bool
+        guard passed == true else {
+            throw NSError(domain: "WorkshopSearch", code: 1, userInfo: [NSLocalizedDescriptionKey: "Name or item-link search failed"])
+        }
+        print("PASS Workshop names, links, preview, pagination and invalid-link recovery")
+    }
+
     func run(at url: URL) async throws {
         let controller = web.configuration.userContentController
         let store = WKContentRuleListStore.default()!
@@ -102,6 +160,7 @@ final class StartupChecks: NSObject, WKNavigationDelegate {
             try await store.removeContentRuleList(forIdentifier: id)
             print("PASS \(asset).js failure and recovery")
         }
+        try await checkWorkshopSearch()
     }
 }
 

@@ -20,7 +20,7 @@ export function parseWorkshopCards(html){
  return items;
 }
 export function workshopBrowseURL({query='',sort='trend',page=1,rating='Everyone',type='',genre=''}={}){
- if(typeof query!=='string'||query.length>120||/[\u0000-\u001f]/.test(query)||!sorts.has(sort)||!Number.isInteger(page)||page<1||page>100||!ratings.has(rating)||type&&!types.has(type)||genre&&!genres.has(genre))throw Error('workshop-browse-input');
+ if(typeof query!=='string'||query.length>160||/[\u0000-\u001f]/.test(query)||!sorts.has(sort)||!Number.isInteger(page)||page<1||page>100||!ratings.has(rating)||type&&!types.has(type)||genre&&!genres.has(genre))throw Error('workshop-browse-input');
  const url=new URL('https://steamcommunity.com/workshop/browse/');for(const [k,v] of Object.entries({appid:'431960',browsesort:sort,actualsort:sort,section:'readytouseitems',p:String(page),searchtext:query.trim(),l:'tchinese'}))url.searchParams.set(k,v);
  for(const tag of [rating,type,genre].filter(Boolean))url.searchParams.append('requiredtags[]',tag);return url;
 }
