@@ -3,13 +3,13 @@
 <plist version="1.0"><dict>
  <key>CFBundleDisplayName</key><string>Oasis Wallpaper</string>
  <key>CFBundleExecutable</key><string>Oasis</string>
- <key>CFBundleIconFile</key><string>Oasis.icns</string>
+ <key>CFBundleIconFile</key><string>OasisWallpaper.icns</string>
  <key>CFBundleIdentifier</key><string>local.oasis.wallpaper</string>
  <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
  <key>CFBundleName</key><string>Oasis Wallpaper</string>
  <key>CFBundlePackageType</key><string>APPL</string>
- <key>CFBundleShortVersionString</key><string>1.0.4</string>
- <key>CFBundleVersion</key><string>5</string>
+ <key>CFBundleShortVersionString</key><string>1.0.5</string>
+ <key>CFBundleVersion</key><string>6</string>
  <key>LSMinimumSystemVersion</key><string>13.0</string>
  <key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict>
  <key>NSHighResolutionCapable</key><true/>

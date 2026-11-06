@@ -21,7 +21,6 @@ final class WallpaperApp:NSObject,NSApplicationDelegate,WKScriptMessageHandler,W
  func applicationDidFinishLaunching(_ notification:Notification){
   OasisKeychainAccess.disableInteraction()
   NSApp.setActivationPolicy(.regular)
-  if let icon=NSImage(contentsOf:resources.appendingPathComponent("Oasis.icns")){NSApp.applicationIconImage=icon}
   createMenu();createWindow()
   login.changed={[weak self] state in self?.publish("window.oasisWallpaperLoginState",state)}
   startBackend()
