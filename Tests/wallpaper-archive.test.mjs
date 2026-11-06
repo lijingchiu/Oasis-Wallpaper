@@ -223,7 +223,31 @@ test(
       assert.deepEqual(await (await fetch(new URL('_oasis/controls', reopened))).json(), choices);
       await weather.action({action: 'deleteImage', id: imported.id});
       await weather.action({action: 'settings', settings: {background: beta.id}});
-      // No Windows executable is ever launched; a readme or a thumbnail is not a wallpaper.
+      // A desktop EXE retains its directory and appears only on the requested screen.
+      const pe=Buffer.alloc(1024);pe.writeUInt16LE(0x5a4d);pe.writeUInt32LE(0x80,60);
+      pe.writeUInt32LE(0x4550,0x80);pe.writeUInt16LE(0x8664,0x84);pe.writeUInt16LE(1,0x86);pe.writeUInt16LE(240,0x94);pe.writeUInt16LE(2,0x96);pe.writeUInt16LE(0x20b,0x98);
+      const desktopID='EXECUTABLE-TEST',scope={screen:desktopID,expected:'follow',enable:true,expectedEnabled:true,displays:[desktopID]};
+      await mkdir(join(work,'Game'));await writeFile(join(work,'Game','Original.exe'),pe);
+      await writeFile(join(work,'Game','Original.dll'),'asset');await writeFile(join(work,'Game','UnityCrashHandler64.exe'),pe);
+      execFileSync('/usr/bin/zip',['-qr',join(tmp,'game.zip'),'Game'],{cwd:work});
+      const packageBytes=await readFile(join(tmp,'game.zip'));
+      const importedApp=await upload(packageBytes,'game.zip',scope);
+      const game=importedApp.customImages.find(x=>x.mediaType==='application');
+      assert.ok(game);assert.equal(game.entry,'files/Game/Original.exe');assert.match(game.digest,/^[a-f0-9]{64}$/);
+      let session=(await weather.nativeScene({desktopManagement:true,desktopScreens:[desktopID]})).applications[desktopID];
+      assert.equal(session.id,game.id);assert.deepEqual(await readFile(join(session.root,session.entry)),pe);
+      assert.equal(await readFile(join(session.root,'files/Game/Original.dll'),'utf8'),'asset');
+      assert.deepEqual((await weather.nativeScene({desktopHost:true,screen:desktopID})).applications,{});
+      const {workshopProject}=await import(join(resources,'OasisWorkshopPackages.mjs'));
+      await assert.rejects(workshopProject(session.root),/workshop-format/);
+      weather.close();weather=createWeather({path});
+      assert.equal((await weather.nativeScene({desktopManagement:true,desktopScreens:[desktopID]})).applications[desktopID].digest,game.digest);
+      await assert.rejects(upload(Buffer.from('invalid'),'broken.exe',{...scope,expected:game.id}),/archive-invalid/);
+      const arm=Buffer.from(pe);arm.writeUInt16LE(0xaa64,0x84);
+      await assert.rejects(upload(arm,'arm.exe',{...scope,expected:game.id}),/archive-architecture/);
+      const single=await upload(pe,'Standalone.exe',{...scope,expected:game.id});
+      assert.equal(single.customImages.find(x=>x.entry==='files/Standalone.exe').mediaType,'application');
+      // The main app's non-desktop ZIP importer still rejects Windows-only files.
       execFileSync('python3', [
         '-c',
         `import zipfile,sys

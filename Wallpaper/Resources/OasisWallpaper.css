@@ -155,3 +155,5 @@ body[data-page=workshop] .ow-workshop-controls>*{grid-area:auto}
  body[data-page=library] .wx-author-row:has(input[type=range]){grid-template-columns:minmax(0,1fr) 40px;gap:7px 8px}
  body[data-page=library] :is(.wx-wallpaper-slider,.wx-author-row:has(input[type=range]))>span{grid-column:1/-1}
 }
+
+.ow-original-status:not([hidden]){display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;line-height:1.5}.ow-original-status button{flex:none}

@@ -78,10 +78,10 @@ const server=http.createServer(async(req,res)=>{
  }
  if(req.method==='POST'&&req.url==='/api/weather/image'){
   const contentType=String(req.headers['content-type']||'').split(';')[0],limit=contentType.startsWith('video/')?MAX_MEDIA_BYTES:MAX_IMAGE_BYTES;
-  if(!['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/quicktime','video/x-m4v','application/zip'].includes(contentType))return send(res,415,{ok:false,error:'image-type'});
+  if(!['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/quicktime','video/x-m4v','application/zip','application/vnd.microsoft.portable-executable'].includes(contentType))return send(res,415,{ok:false,error:'image-type'});
   let name='';try{name=decodeURIComponent(String(req.headers['x-oasis-image-name']||'').slice(0,1200))}catch{}
   let desktopTarget=null;const screen=req.headers['x-oasis-desktop-screen'];if(screen!==undefined){const expected=req.headers['x-oasis-desktop-expected'],enabled=req.headers['x-oasis-desktop-enabled'],displays=String(req.headers['x-oasis-desktop-displays']||'').split(',').filter(Boolean);if(typeof screen!=='string'||!/^[A-Za-z0-9_-]{1,80}$/.test(screen)||typeof expected!=='string'||!/^[A-Za-z0-9_-]{1,100}$/.test(expected)||!['0','1'].includes(enabled)||displays.length>32||displays.some(id=>!/^[A-Za-z0-9_-]{1,80}$/.test(id)))return send(res,400,{ok:false,error:'workshop-target'});desktopTarget={screen,expected,enable:true,expectedEnabled:enabled==='1',displays}}
-  if(contentType==='application/zip'){
+  if(contentType==='application/zip'||contentType==='application/vnd.microsoft.portable-executable'){
    try{return send(res,200,await uploadWallpaperArchive(req,{settingsPath,name,length:req.headers['content-length'],weather,desktopTarget}))}
    catch(error){return send(res,400,{ok:false,error:/^(?:archive-|image-|workshop-)/.test(error.message)?error.message:'archive-invalid'})}
   }

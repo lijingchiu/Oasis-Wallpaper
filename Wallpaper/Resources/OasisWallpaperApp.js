@@ -16,6 +16,14 @@
    if(select.dataset.key!==key){select.dataset.key=key;select.replaceChildren();if(!screens.length){const option=document.createElement('option');option.textContent='找不到螢幕';select.append(option)}for(const row of screens){const option=document.createElement('option');option.value=row.id;option.textContent=row.name;select.append(option)}}
    select.disabled=!screens.length;select.value=selectedScreen;
   }
+  const appStatus=document.querySelector('.ow-original-status');
+  if(appStatus){
+   const screen=screens.find(row=>row.id===selectedScreen),status=screen?.applicationStatus||'',needsInput=status==='ready'&&screen.desktopInputTrusted===false;
+   const error=status.startsWith('error '),retry=error||status==='cancelled';
+   const notes={preparing:'首次使用，正在下載 Windows 執行環境…',starting:'正在啟動原始 Windows 桌布…',confirm:'請確認是否執行此桌布。',cancelled:'已取消執行。','error rosetta-required':'請先安裝 Apple 的 Rosetta，再重試。','error engine-space':'可用空間不足。請先保留至少 1.3 GB 以準備執行環境。','error engine-checksum':'執行環境下載不完整，請重試。','error engine-download':'無法下載執行環境，請檢查網路後重試。'};
+   appStatus.querySelector('span').textContent=needsInput?'桌布已啟動。允許輔助使用即可點選桌布內的按鈕。':notes[status]||(status.startsWith('progress ')?'正在準備執行環境 '+status.slice(9)+'%':error?'原始程式未能啟動。若使用單一 EXE，請將配套檔案與它一起打包成 ZIP。':'');
+   appStatus.hidden=!appStatus.querySelector('span').textContent;const button=appStatus.querySelector('button');button.hidden=!retry&&!needsInput;button.textContent=needsInput?'允許點按':'重試';button.dataset.action=needsInput?'desktopInputAccess':'retryDesktopProgram';
+  }
   document.querySelectorAll('.ow-clear-display').forEach(button=>button.disabled=!selectedScreen);
   if(selectedScreen)window.OasisWeather.selectDesktopScreen(selectedScreen);
  }
@@ -33,7 +41,9 @@
   const preview=document.createElement('aside');preview.className='ow-selected-preview';preview.innerHTML='<span>此螢幕目前的桌布</span><img alt="" hidden><strong></strong>';
   const controls=document.createElement('aside');controls.className='ow-library-controls';gallery.before(controls);
   const progress=desktop.querySelector('.wx-desktop-download');progress.classList.add('ow-library-progress');controls.append(target,filters,body.querySelector('.wx-upload-bar'),progress);
-  const sidebar=document.createElement('aside');sidebar.className='ow-library-sidebar';sidebar.append(preview,body.querySelector('.wx-wallpaper-adjustments'),body.querySelector('.wx-archived'));body.append(sidebar);
+  const originalStatus=document.createElement('div');originalStatus.className='ow-original-status';originalStatus.hidden=true;originalStatus.innerHTML='<span role="status" aria-live="polite"></span><button type="button" class="btn" hidden>重試</button>';
+  originalStatus.querySelector('button').onclick=event=>window.webkit?.messageHandlers?.mole?.postMessage({action:event.currentTarget.dataset.action,screen:selectedScreen});
+  const sidebar=document.createElement('aside');sidebar.className='ow-library-sidebar';sidebar.append(preview,originalStatus,body.querySelector('.wx-wallpaper-adjustments'),body.querySelector('.wx-archived'));body.append(sidebar);
   const workshopTarget=document.createElement('div');workshopTarget.className='ow-workshop-target';workshopTarget.innerHTML=targetMarkup();picker.querySelector('.wx-workshop-actions').before(workshopTarget);
   document.querySelectorAll('.ow-target select').forEach(select=>select.addEventListener('change',event=>{selectedScreen=event.target.value;renderTargets();refreshLibrary()}));
   target.querySelector('.ow-clear-display').addEventListener('click',()=>window.OasisWeather.clearDesktopWallpaper(selectedScreen).catch(()=>{}));

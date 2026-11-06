@@ -1,12 +1,12 @@
 import {createWriteStream} from 'node:fs';
-import {mkdir, readFile, statfs, writeFile} from 'node:fs/promises';
+import {copyFile, mkdir, open, readFile, statfs, writeFile} from 'node:fs/promises';
 import {basename, dirname, extname, join, posix} from 'node:path';
 import {pipeline} from 'node:stream/promises';
 import {Transform} from 'node:stream';
 import {crc32} from 'node:zlib';
 import yauzl from 'yauzl';
 
-const [archive, output] = process.argv.slice(2);
+const [archive, output, mode, originalName = 'Wallpaper.exe'] = process.argv.slice(2);
 const MB = 1024 * 1024;
 const fail = (code) => {
   throw Error(code);
@@ -15,7 +15,39 @@ const signature = (s) => s.normalize('NFC').toLowerCase();
 const playable = /\.(mp4|m4v|mov|gif|png|jpe?g|webp)$/i;
 const binary = /\.(?:exe|dll|msi|cmd|bat|com|ps1|vbs|dylib|so|sh)$/i;
 
+async function checkApplication(file) {
+  const handle = await open(file, 'r');
+  try {
+    const header = Buffer.alloc(64), pe = Buffer.alloc(26);
+    if ((await handle.read(header, 0, 64, 0)).bytesRead !== 64 || header.readUInt16LE(0) !== 0x5a4d) fail('archive-invalid');
+    const offset = header.readUInt32LE(60);
+    if (offset < 64 || (await handle.read(pe, 0, pe.length, offset)).bytesRead !== pe.length ||
+        pe.readUInt32LE(0) !== 0x4550 || !(pe.readUInt16LE(22) & 2) || pe.readUInt16LE(22) & 0x2000) fail('archive-invalid');
+    const size=(await handle.stat()).size,sections=pe.readUInt16LE(6),optional=pe.readUInt16LE(20);
+    if (!sections || sections>96 || optional<96 || offset+24+optional+sections*40>size) fail('archive-invalid');
+    const table=Buffer.alloc(sections*40);await handle.read(table,0,table.length,offset+24+optional);
+    for(let i=0;i<table.length;i+=40){
+      const bytes=table.readUInt32LE(i+16),start=table.readUInt32LE(i+20);
+      if(bytes&&(start<offset+24+optional+table.length||start+bytes>size))fail('archive-invalid');
+    }
+    if (![[0x8664,0x20b],[0x14c,0x10b]].some(([machine, magic]) => pe.readUInt16LE(4) === machine && pe.readUInt16LE(24) === magic)) fail('archive-architecture');
+  } finally { await handle.close(); }
+}
+async function applicationManifest(entry, preview) {
+  const directory = join(output, 'application');
+  await checkApplication(join(directory, entry));
+  await writeFile(join(directory, 'project.json'), JSON.stringify({type:'application', file:entry, preview}), {mode:0o600});
+  return {kind:'application', file:'application'};
+}
 async function convert() {
+  if (mode === 'exe') {
+    const name = basename(originalName);
+    if (!/\.exe$/i.test(name) || /[\\:\x00-\x1f]/.test(name) || name.startsWith('.')) fail('archive-invalid');
+    const directory = join(output,'application','files');
+    await mkdir(directory,{recursive:true,mode:0o700});
+    await copyFile(archive,join(directory,name));
+    return applicationManifest('files/'+name);
+  }
   const zip = await yauzl.openPromise(archive, {autoClose: false, strictFileNames: true});
   try {
     const entries = new Map(),
@@ -106,6 +138,13 @@ async function convert() {
       );
       return {kind: 'web', file: 'web'};
     };
+    const application = async (target) => {
+      await space(files.reduce((total, f) => total + f.uncompressedSize, 0));
+      const directory = join(output,'application','files');
+      for (const f of files) await read(f, Number.MAX_SAFE_INTEGER, join(directory, f.fileName));
+      const preview = files.find(f => /^(preview|cover)\.(png|jpe?g|gif)$/i.test(basename(f.fileName)));
+      return applicationManifest('files/'+target.fileName, preview ? 'files/'+preview.fileName : undefined);
+    };
     const manifests = files
       .filter((f) => basename(f.fileName).toLowerCase() === 'project.json')
       .sort((a, b) => a.fileName.length - b.fileName.length);
@@ -120,6 +159,7 @@ async function convert() {
         target =
           typeof project?.file === 'string' ? lookup(root + project.file.replaceAll('\\', '/')) : null;
       if (!target) continue;
+      if (mode === 'desktop' && ['application','exe'].includes(String(project.type).toLowerCase()) && /\.exe$/i.test(target.fileName)) return await application(target);
       if (String(project.type).toLowerCase() === 'web' && /\.html?$/i.test(target.fileName))
         return await web(target, root, project);
       if (String(project.type).toLowerCase() === 'video' && playable.test(target.fileName))
@@ -129,6 +169,17 @@ async function convert() {
       .filter((f) => /\.exe$/i.test(f.fileName))
       .map((f) => f.fileName.slice(0, -4) + '_Data/')
       .find((root) => lookup(root + 'globalgamemanagers'));
+    if (mode === 'desktop') {
+      const candidates = files.filter(f => /\.exe$/i.test(f.fileName) && !/^(?:UnityCrashHandler\d*|unins\d*|uninstall(?:er)?|setup|install(?:er)?|vc_redist[^.]*)\.exe$/i.test(basename(f.fileName)));
+      if (candidates.length) {
+        const games = candidates.filter(f => lookup(f.fileName.slice(0,-4)+'_Data/globalgamemanagers'));
+        const list = games.length ? games : candidates;
+        const top = Math.min(...list.map(f => f.fileName.split('/').length));
+        const leaders = list.filter(f => f.fileName.split('/').length === top);
+        if (leaders.length !== 1) fail('archive-ambiguous');
+        return await application(leaders[0]);
+      }
+    }
     if (unity) {
       const {makeUnityWallpaper} = await import('./unity.mjs');
       const records = files
@@ -178,7 +229,7 @@ try {
   process.stdout.write(JSON.stringify(await convert()));
 } catch (e) {
   process.stderr.write(
-    /^(?:archive-(?:invalid|size|format|executable|rig|controls)|image-space)$/.test(e.message)
+    /^(?:archive-(?:invalid|size|format|executable|rig|controls|architecture|ambiguous)|image-space)$/.test(e.message)
       ? e.message
       : 'archive-invalid'
   );

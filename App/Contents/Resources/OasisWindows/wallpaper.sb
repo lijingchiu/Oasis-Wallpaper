@@ -1,0 +1,13 @@
+(version 1)
+; The original program can read its bundle and write its own Windows profile.
+(allow default)
+(deny file-write*)
+(deny file-read-data (subpath "/Users") (subpath "/Volumes") (subpath "/private/tmp") (subpath "/private/var/folders") (subpath "/private/var/root") (subpath "/private/var/run") (subpath "/Library/Keychains"))
+(allow file-read-data (subpath (param "ENGINE")) (subpath (param "FILES")) (subpath (param "RUNDIR")) (subpath (param "WINESOCK")) (literal (param "PLAYER")) (literal (param "AUDIO")))
+(allow file-read* file-write* (subpath (param "RUNDIR")) (subpath (param "WINESOCK")) (literal "/dev/null") (literal "/dev/zero") (literal "/dev/dtracehelper"))
+(deny network*)
+(allow network* (local unix-socket (subpath (param "WINESOCK"))) (remote unix-socket (subpath (param "WINESOCK"))))
+(deny appleevent-send)
+(deny mach-lookup (global-name "com.apple.lsd.open") (global-name "com.apple.securityd") (global-name "com.apple.pasteboard.1"))
+(deny process-exec)
+(allow process-exec (subpath "/Library/Apple/usr/libexec/oah") (subpath "/usr/libexec/rosetta") (subpath (param "ENGINE")) (literal (param "PLAYER")))

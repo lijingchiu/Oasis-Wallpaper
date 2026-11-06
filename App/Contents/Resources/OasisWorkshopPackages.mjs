@@ -1,4 +1,6 @@
 import http from 'node:http';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
 import {readFile,readdir,lstat,mkdir,copyFile,rm,open,chmod} from 'node:fs/promises';
 import {constants} from 'node:fs';
 import {join,dirname,extname,resolve,sep} from 'node:path';
@@ -11,14 +13,15 @@ import {workshopRuntime} from './OasisWorkshopRuntime.mjs';
 import {archivePreferences} from './OasisArchive/preferences.mjs';
 const health=await readFile(new URL('./OasisWallpaperHealth.js',import.meta.url),'utf8');
 
+const runFile=promisify(execFile);
 export const safePackagePath=value=>typeof value==='string'&&value.length>0&&value.length<=1024&&!/[\\:\u0000-\u001f]/.test(value)&&!value.startsWith('/')&&value.split('/').every(x=>x&&x!=='.'&&x!=='..'&&x.toLowerCase()!=='.depotdownloader');
 export async function readWorkshopManifest(folder){
  const file=await open(join(folder,'project.json'),constants.O_RDONLY|constants.O_NOFOLLOW);
  try{const stat=await file.stat();if(!stat.isFile()||stat.size>8*1024*1024)throw Error('workshop-files');const project=JSON.parse((await file.readFile('utf8')).replace(/^\uFEFF/,''));if(!project||typeof project!=='object'||Array.isArray(project))throw Error('workshop-format');return project}finally{await file.close()}
 }
 export function isWorkshopPreset(project){return !!(project&&project.dependency&&project.preset&&typeof project.preset==='object'&&!Array.isArray(project.preset)&&(!project.type||String(project.type).toLowerCase()==='preset'||!project.file))}
-export async function workshopProject(folder){
- const project=await readWorkshopManifest(folder);project.type=isWorkshopPreset(project)?'preset':String(project.type||'').toLowerCase();if(typeof project.file==='string')project.file=project.file.replace(/\\/g,'/');if(project.type==='preset')return project;if(!['video','web','scene'].includes(project.type)||!safePackagePath(project.file))throw Error('workshop-format');return project;
+export async function workshopProject(folder,allowApplication=false){
+ const project=await readWorkshopManifest(folder);project.type=isWorkshopPreset(project)?'preset':String(project.type||'').toLowerCase();if(typeof project.file==='string')project.file=project.file.replace(/\\/g,'/');if(project.type==='preset')return project;if(!(allowApplication&&project.type==='application'&&/^files\/.+\.exe$/i.test(project.file)||['video','web','scene'].includes(project.type))||!safePackagePath(project.file))throw Error('workshop-format');return project;
 }
 export async function workshopPackageFile(root,relative){
  if(!safePackagePath(relative))throw Error('workshop-files');
@@ -67,7 +70,7 @@ export function createWorkshopPackages({settingsPath,images,fetchImpl=globalThis
   }catch{fail()}finally{await file?.close().catch(()=>{})}
  });await new Promise((yes,no)=>{webServer.once('error',no);webServer.listen(0,'127.0.0.1',yes)});origin='http://127.0.0.1:'+webServer.address().port;webServer.unref();}
  async function prepare(source,item,{replace=false}={}){
-  const project=await workshopProject(source);if(!['web','scene'].includes(project.type))throw Error('workshop-format');
+  const project=await workshopProject(source,item.localExecutable===true&&!item.id);if(!['web','scene','application'].includes(project.type))throw Error('workshop-format');
   const input=resolve(source),extension=extname(project.file),archive=(extension?project.file.slice(0,-extension.length):project.file)+'.pkg';
   // Standard Scene packages name scene.json inside scene.pkg. The renderer mounts
   // that archive; it must not require the virtual JSON entry to exist on disk.
@@ -80,13 +83,26 @@ export function createWorkshopPackages({settingsPath,images,fetchImpl=globalThis
   // Cover artwork is optional. Never reject a working renderer because its
   // preview is absent, corrupt, unsupported, or temporarily unavailable online.
   if(!row){const placeholder=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=','base64');row=await images.importImage(placeholder,item.title,{replace,posterOnly:true})}
-  await images.evict(row.id);const target=join(folder,row.id);try{await copyTree(source,target);return{...row,mediaType:project.type,entry:project.file,...(item.id?{workshopID:item.id}:{}),...(['actor','band'].includes(item.archivePlayer)?{archivePlayer:item.archivePlayer}:{}),sourceBytes:item.size,cached:true,properties:properties(project)}}catch(error){await images.discard(row.id).catch(()=>{});await rm(target,{recursive:true,force:true});throw error}
+  await images.evict(row.id);const target=join(folder,row.id);try{await copyTree(source,target);return{...row,mediaType:project.type,entry:project.file,...(project.type==='application'?{digest:item.digest}:{}),...(item.id?{workshopID:item.id}:{}),...(['actor','band'].includes(item.archivePlayer)?{archivePlayer:item.archivePlayer}:{}),sourceBytes:item.size,cached:true,properties:properties(project)}}catch(error){await images.discard(row.id).catch(()=>{});await rm(target,{recursive:true,force:true});throw error}
  }
  const properties=project=>validateWallpaperProperties(project.general?.properties);
  async function evict(id){if(validCustomID(id))await rm(join(folder,id),{recursive:true,force:true})}
  const source=id=>validCustomID(id)?join(folder,id):null;
- async function cached(row){try{const root=join(folder,row.id);if((await lstat(root)).isSymbolicLink())return false;const project=await workshopProject(root);if(project.type==='web'&&!await workshopPackageFile(root,row.entry))return false;row.properties=properties(project);const extension=extname(project.file),archive=(extension?project.file.slice(0,-extension.length):project.file)+'.pkg';return !!(await workshopPackageFile(root,project.file)||project.type==='scene'&&await workshopPackageFile(root,archive))}catch{return false}}
- return{start,origin:()=>origin,close:()=>webServer?.close(),setRecords,url,prepare,evict,source,cached};
+ async function cached(row){try{const root=join(folder,row.id);if((await lstat(root)).isSymbolicLink())return false;const project=await workshopProject(root,row.mediaType==='application'&&!row.workshopID);if(project.type==='web'&&!await workshopPackageFile(root,row.entry))return false;row.properties=properties(project);const extension=extname(project.file),archive=(extension?project.file.slice(0,-extension.length):project.file)+'.pkg';return !!(await workshopPackageFile(root,project.file)||project.type==='scene'&&await workshopPackageFile(root,archive))}catch{return false}}
+ async function discardProfile(id){
+  if(!validCustomID(id))return;
+  const profile=join(dirname(settingsPath),'weather-windows',id);
+  let screens;try{screens=await readdir(profile,{withFileTypes:true})}catch(e){if(e.code==='ENOENT')return;throw e}
+  await Promise.all(screens.filter(s=>s.isDirectory()&&/^[a-zA-Z0-9_-]{1,80}$/.test(s.name)).map(async s=>{
+   const slot=join(profile,s.name);
+   // The native host sees the removed library entry on its next poll. Keep
+   // Windows saves available until that process finishes its graceful shutdown.
+   await runFile('/usr/bin/lockf',['-k','-t','180',join(slot,'play.lock'),'/bin/rm','-rf',join(slot,'session')],{timeout:190000});
+   await rm(slot,{recursive:true,force:true});
+  }));
+  await rm(profile,{recursive:true,force:true});
+ }
+ return{discardProfile,start,origin:()=>origin,close:()=>webServer?.close(),setRecords,url,prepare,evict,source,cached};
 }
 
 async function directoryFiles(root,property){

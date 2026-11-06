@@ -2,6 +2,7 @@ import Cocoa
 import WebKit
 import CoreGraphics
 import CoreAudio
+import CryptoKit
 import IOKit.ps
 import ApplicationServices
 
@@ -11,9 +12,10 @@ import ApplicationServices
 final class OasisDesktopWallpapers {
  @MainActor private final class Session {
   let id:String,display:CGDirectDisplayID,window:NSWindow,anchor:WKWebView,bridge:Bridge
+  let program=OasisOriginalDesktopProgram()
   var scenes:OasisNativeScenes!,web:OasisNativeWebWallpapers!,paused=false,audible=false
   init(id:String,display:CGDirectDisplayID,window:NSWindow,anchor:WKWebView,bridge:Bridge){self.id=id;self.display=display;self.window=window;self.anchor=anchor;self.bridge=bridge}
-  func close(){scenes?.stop();web?.stop();anchor.configuration.userContentController.removeScriptMessageHandler(forName:"mole");anchor.stopLoading();window.orderOut(nil);window.close()}
+  func close(){program.stop();scenes?.stop();web?.stop();anchor.configuration.userContentController.removeScriptMessageHandler(forName:"mole");anchor.stopLoading();window.orderOut(nil);window.close()}
  }
  @MainActor private final class Bridge:NSObject,WKScriptMessageHandler,WKNavigationDelegate {
   weak var session:Session?
@@ -51,14 +53,15 @@ final class OasisDesktopWallpapers {
   for name in [NSWorkspace.screensDidWakeNotification,NSWorkspace.didWakeNotification]{observers.append((workspace,workspace.addObserver(forName:name,object:nil,queue:.main){[weak self] _ in Task{@MainActor in self?.screensSleeping=false;await self?.poll()}}))}
  }
  private func screens()->[Screen] {NSScreen.screens.compactMap{screen in guard let value=screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber else{return nil};let id=CGDirectDisplayID(value.uint32Value),uuid=CGDisplayCreateUUIDFromDisplayID(id)?.takeRetainedValue(),name=uuid.map{CFUUIDCreateString(nil,$0) as String} ?? String(id);return Screen(id:name,name:screen.localizedName,display:id,frame:screen.frame)}}
- func publishScreens(force:Bool=false){let trusted=AXIsProcessTrusted(),rows=screens().enumerated().map{index,screen in ["id":screen.id,"name":screen.name,"primary":index==0,"width":Int(screen.frame.width),"height":Int(screen.frame.height),"desktopInputTrusted":trusted,"desktopOwnershipBlocked":ownershipBlocked] as [String:Any]};guard let data=try? JSONSerialization.data(withJSONObject:rows,options:.sortedKeys),let key=String(data:data,encoding:.utf8) else{return};if force || key != lastScreens{lastScreens=key;publish(rows)}}
+ func publishScreens(force:Bool=false){let trusted=AXIsProcessTrusted(),rows=screens().enumerated().map{index,screen in ["id":screen.id,"name":screen.name,"primary":index==0,"width":Int(screen.frame.width),"height":Int(screen.frame.height),"applicationStatus":sessions[screen.id]?.program.status ?? "","desktopInputTrusted":trusted,"desktopOwnershipBlocked":ownershipBlocked] as [String:Any]};guard let data=try? JSONSerialization.data(withJSONObject:rows,options:.sortedKeys),let key=String(data:data,encoding:.utf8) else{return};if force || key != lastScreens{lastScreens=key;publish(rows)}}
+ func retryProgram(_ screen:String){sessions[screen]?.program.stop();Task{await poll()}}
  func requestInputAccess(){_ = AXIsProcessTrustedWithOptions([kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String:true] as CFDictionary);publishScreens(force:true)}
  private func request() async->[String:Any]? {var r=URLRequest(url:URL(string:"http://127.0.0.1:\(port)/api/native-scene")!);r.httpMethod="POST";r.timeoutInterval=5;r.setValue("application/json",forHTTPHeaderField:"Content-Type");r.setValue(token,forHTTPHeaderField:"X-Mole-Native");r.httpBody=try? JSONSerialization.data(withJSONObject:["desktopManagement":true,"desktopScreens":screens().map(\.id)]);guard let (data,response)=try? await URLSession.shared.data(for:r),(response as? HTTPURLResponse)?.statusCode==200 else{return nil};return (try? JSONSerialization.jsonObject(with:data)) as? [String:Any]}
  private func poll() async {
   guard !busy else{return};busy=true;defer{busy=false};guard let data=await request(),let desktop=data["desktop"] as? [String:Any] else{return};config=desktop;publishScreens()
   guard desktop["enabled"] as? Bool == true else{closeSessions();ownership.release();ownershipBlocked=false;publishScreens();return}
   guard !legacyOasisMayOwnDesktop(),ownership.claim() else{closeSessions();ownership.release();ownershipBlocked=true;publishScreens();return};ownershipBlocked=false;publishScreens()
-  let screens=screens(),choices=desktop["screens"] as? [String:String] ?? [:],battery=Self.onBattery(),front=NSWorkspace.shared.frontmostApplication,other=front?.bundleIdentifier.map{!["com.apple.finder","com.apple.dock","local.mole.dashboard","local.oasis.wallpaper"].contains($0)} ?? false,windows=Self.frontWindows(front?.processIdentifier),muteOther=desktop["otherAudio"] as? String == "mute" && Self.otherAudioPlaying()
+  let screens=screens(),choices=desktop["screens"] as? [String:String] ?? [:],battery=Self.onBattery(),front=NSWorkspace.shared.frontmostApplication,other=front?.bundleIdentifier.map{!["com.apple.finder","com.apple.dock","local.mole.dashboard","local.oasis.wallpaper"].contains($0)} ?? false,windows=Self.frontWindows(front?.processIdentifier),muteOther=desktop["otherAudio"] as? String == "mute" && Self.otherAudioPlaying(excluding:Set(sessions.values.map{$0.program.ownerPID}))
   var desired:[(Screen,String)]=[]
   for screen in screens {guard choices[screen.id] != "off" else{continue};let coverage=Self.coverage(screen.display,windows),action=Self.action(desktop,battery:battery,asleep:screensSleeping,focused:other,maximized:coverage==1,fullscreen:coverage==2);if action != "stop"{desired.append((screen,action))}}
   let ids=Set(desired.map{$0.0.id});for (id,session) in Array(sessions) where !ids.contains(id){session.close();sessions.removeValue(forKey:id)}
@@ -68,6 +71,9 @@ final class OasisDesktopWallpapers {
    guard let session=sessions[screen.id] else{continue};if session.window.frame != screen.frame {session.window.setFrame(screen.frame,display:true)}
    let paused=action=="pause";session.paused=paused;session.anchor.evaluateJavaScript("window.oasisDesktopSetPaused?.(\(paused ? "true":"false"));",completionHandler:nil)
    session.audible=screen.id==audioID && !muteOther && !paused
+   let program=(data["applications"] as? [String:[String:Any]])?[screen.id]
+   session.program.update(program,screen:screen.id,display:screen.display,frame:screen.frame,resources:resources,audible:session.audible,paused:paused)
+   session.window.level=NSWindow.Level(rawValue:Int(CGWindowLevelForKey(.desktopIconWindow))-(program==nil ? 1:2))
   }
   if sessions.isEmpty {pointerTimer?.invalidate();pointerTimer=nil}
   else if pointerTimer==nil {pointerTimer=Timer.scheduledTimer(withTimeInterval:1.0/30,repeats:true){[weak self] _ in Task{@MainActor in self?.pointer()}}}
@@ -83,10 +89,10 @@ final class OasisDesktopWallpapers {
   session.web=OasisNativeWebWallpapers(port:port,token:token,views:{[weak session] in guard let session else{return []};return [(session.anchor,true,false)]},compactHeight:{screen.frame.height},desktopScreen:screen.id,audioAllowed:{[weak session] in session?.audible == true},shouldPause:{[weak session] in session?.paused ?? true})
   window.orderFrontRegardless();anchor.load(URLRequest(url:URL(string:"http://127.0.0.1:\(port)/desktop-wallpaper")!));session.scenes.start();session.web.start();return session
  }
- private func pointer(){guard !sessions.isEmpty else{return};let point=NSEvent.mouseLocation;if point==lastPointer{return};lastPointer=point;for session in sessions.values where !session.paused && session.window.frame.contains(point){let rect=session.window.frame,x=Double((point.x-rect.minX)/max(1,rect.width)),y=Double((rect.maxY-point.y)/max(1,rect.height)),value:[String:Any]=["kind":"move","x":x,"y":y];session.scenes.pointer(session.anchor,value:value);session.web.pointer(session.anchor,value:value);session.anchor.evaluateJavaScript("window.oasisDesktopPointer?.(\(x),\(y));",completionHandler:nil)}}
+ private func pointer(){guard !sessions.isEmpty else{return};let point=NSEvent.mouseLocation;if point==lastPointer{return};lastPointer=point;for session in sessions.values where !session.paused && session.window.frame.contains(point){let rect=session.window.frame,x=Double((point.x-rect.minX)/max(1,rect.width)),y=Double((rect.maxY-point.y)/max(1,rect.height)),value:[String:Any]=["kind":"move","x":x,"y":y];if session.program.ownsInput{session.program.pointer("move",at:point,in:rect);continue};session.scenes.pointer(session.anchor,value:value);session.web.pointer(session.anchor,value:value);session.anchor.evaluateJavaScript("window.oasisDesktopPointer?.(\(x),\(y));",completionHandler:nil)}}
  private func removeMouseMonitor(){if let mouseMonitor{NSEvent.removeMonitor(mouseMonitor)};mouseMonitor=nil;mouseSession=nil}
  private func updateMouseMonitor(){
-  let needed=AXIsProcessTrusted() && sessions.values.contains{!$0.paused && $0.web.acceptsDesktopMouse($0.anchor)}
+  let needed=AXIsProcessTrusted() && sessions.values.contains{!$0.paused && ($0.program.ownsInput || $0.web.acceptsDesktopMouse($0.anchor))}
   if !needed {removeMouseMonitor();return};guard mouseMonitor==nil else{return}
   mouseMonitor=NSEvent.addGlobalMonitorForEvents(matching:[.leftMouseDown,.leftMouseUp,.leftMouseDragged]){[weak self] event in Task{@MainActor in self?.desktopMouse(event)}}
  }
@@ -95,12 +101,16 @@ final class OasisDesktopWallpapers {
   let point=NSPoint(x:quartz.x,y:primary.frame.maxY-quartz.y)
   if event.type == .leftMouseDown {
    mouseSession=nil
-   guard Self.isDesktopPoint(quartz),let session=sessions.values.first(where:{!$0.paused && $0.window.frame.contains(point) && $0.web.acceptsDesktopMouse($0.anchor)}) else{return}
-   mouseSession=session.id;session.web.desktopMouse(session.anchor,event:event,screenPoint:point)
+   guard Self.isDesktopPoint(quartz),let session=sessions.values.first(where:{!$0.paused && $0.window.frame.contains(point) && ($0.program.ownsInput || $0.web.acceptsDesktopMouse($0.anchor))}) else{return}
+   mouseSession=session.id;if session.program.ownsInput{session.program.pointer("down",at:point,in:session.window.frame);return};session.web.desktopMouse(session.anchor,event:event,screenPoint:point)
   }else if let id=mouseSession,let session=sessions[id],!session.paused {
    let valid=session.window.frame.contains(point) && (event.type == .leftMouseUp ? Self.isDesktopPoint(quartz):Self.desktopGroup(quartz) != nil)
    // Release outside the Web view if another window covered the desktop while
    // dragging, so an unrelated mouse-up can never activate a wallpaper button.
+   if session.program.ownsInput {
+    if event.type == .leftMouseUp {session.program.pointer("up",at:valid ? point:NSPoint(x:session.window.frame.minX-1000,y:session.window.frame.minY-1000),in:session.window.frame);mouseSession=nil}
+    else if valid{session.program.pointer("drag",at:point,in:session.window.frame)};return
+   }
    if event.type == .leftMouseUp {session.web.desktopMouse(session.anchor,event:event,screenPoint:valid ? point:NSPoint(x:session.window.frame.minX-1000,y:session.window.frame.minY-1000));mouseSession=nil}
    else if valid {session.web.desktopMouse(session.anchor,event:event,screenPoint:point)}
   }else if event.type == .leftMouseUp {mouseSession=nil}
@@ -152,12 +162,109 @@ final class OasisDesktopWallpapers {
  private static func onBattery()->Bool {guard let source=IOPSCopyPowerSourcesInfo()?.takeRetainedValue(),let type=IOPSGetProvidingPowerSourceType(source)?.takeUnretainedValue() else{return false};return (type as String)==kIOPSBatteryPowerValue}
  private static func frontWindows(_ pid:pid_t?)->[CGRect] {guard let pid,let list=CGWindowListCopyWindowInfo([.optionOnScreenOnly,.excludeDesktopElements],kCGNullWindowID) as? [[String:Any]] else{return []};return list.compactMap{row in guard (row[kCGWindowOwnerPID as String] as? NSNumber)?.int32Value==pid,(row[kCGWindowLayer as String] as? NSNumber)?.intValue==0,((row[kCGWindowAlpha as String] as? NSNumber)?.doubleValue ?? 1)>0,let bounds=row[kCGWindowBounds as String] as? [String:Any] else{return nil};return CGRect(dictionaryRepresentation:bounds as CFDictionary)}}
  private static func coverage(_ display:CGDirectDisplayID,_ windows:[CGRect])->Int {let bounds=CGDisplayBounds(display);guard bounds.width>0,bounds.height>0 else{return 0};var result=0;for window in windows{let overlap=window.intersection(bounds);if overlap.isNull{continue};let w=overlap.width/bounds.width,h=overlap.height/bounds.height;if w>=0.985&&h>=0.985{return 2};if w>=0.9&&h>=0.86{result=1}};return result}
- private static func otherAudioPlaying()->Bool {
+ private static func otherAudioPlaying(excluding owned:Set<pid_t>)->Bool {
   guard #available(macOS 14.2,*) else{return false};var address=AudioObjectPropertyAddress(mSelector:kAudioHardwarePropertyProcessObjectList,mScope:kAudioObjectPropertyScopeGlobal,mElement:kAudioObjectPropertyElementMain),size:UInt32=0
   guard AudioObjectGetPropertyDataSize(AudioObjectID(kAudioObjectSystemObject),&address,0,nil,&size)==noErr,size>0 else{return false};var objects=[AudioObjectID](repeating:0,count:Int(size)/MemoryLayout<AudioObjectID>.size)
   guard AudioObjectGetPropertyData(AudioObjectID(kAudioObjectSystemObject),&address,0,nil,&size,&objects)==noErr else{return false}
   for object in objects {var pid:pid_t=0,running:UInt32=0,pidSize=UInt32(MemoryLayout<pid_t>.size),stateSize=UInt32(MemoryLayout<UInt32>.size),pidAddress=AudioObjectPropertyAddress(mSelector:kAudioProcessPropertyPID,mScope:kAudioObjectPropertyScopeGlobal,mElement:kAudioObjectPropertyElementMain),stateAddress=AudioObjectPropertyAddress(mSelector:kAudioProcessPropertyIsRunningOutput,mScope:kAudioObjectPropertyScopeGlobal,mElement:kAudioObjectPropertyElementMain)
-   guard AudioObjectGetPropertyData(object,&pidAddress,0,nil,&pidSize,&pid)==noErr,pid != getpid(),AudioObjectGetPropertyData(object,&stateAddress,0,nil,&stateSize,&running)==noErr,running != 0 else{continue};let bundle=NSRunningApplication(processIdentifier:pid)?.bundleIdentifier ?? "";if bundle.hasPrefix("com.apple.WebKit") || ["local.mole.dashboard","local.oasis.wallpaper"].contains(bundle) {continue};return true
+   guard AudioObjectGetPropertyData(object,&pidAddress,0,nil,&pidSize,&pid)==noErr,pid != getpid(),!owned.contains(pid),AudioObjectGetPropertyData(object,&stateAddress,0,nil,&stateSize,&running)==noErr,running != 0 else{continue};let bundle=NSRunningApplication(processIdentifier:pid)?.bundleIdentifier ?? "";if bundle.hasPrefix("com.apple.WebKit") || ["local.mole.dashboard","local.oasis.wallpaper"].contains(bundle) {continue};return true
   };return false
+ }
+}
+
+/// Runs a selected Windows wallpaper out of process. A file picked in the native
+/// panel is authorized by its content digest; a drag-in is confirmed on first use.
+@MainActor
+private final class OasisOriginalDesktopProgram {
+ private var launcher:Process?,commands:FileHandle?,output:FileHandle?,pending=Data()
+ private var key="",generation=UUID(),lastPaused=false,lastVolume:Double=0
+ private(set) var ownerPID:pid_t=0
+ private(set) var status="",ready=false
+ var ownsInput:Bool {ready && launcher?.isRunning == true}
+ static func remember(_ digest:String){
+  var hashes=UserDefaults.standard.stringArray(forKey:"oasisWindowsSelectedFiles") ?? []
+  hashes.removeAll{$0==digest};hashes.append(digest)
+  UserDefaults.standard.set(Array(hashes.suffix(200)),forKey:"oasisWindowsSelectedFiles")
+ }
+ private var prompt:NSAlert?
+ private func allowed(_ digest:String)->Bool {UserDefaults.standard.stringArray(forKey:"oasisWindowsSelectedFiles")?.contains(digest)==true}
+ func update(_ item:[String:Any]?,screen:String,display:CGDirectDisplayID,frame:NSRect,resources:URL,audible:Bool,paused:Bool) {
+  guard let item,let id=item["id"] as? String,let root=item["root"] as? String,let entry=item["entry"] as? String,
+        let digest=item["digest"] as? String,digest.range(of:"^[a-f0-9]{64}$",options:.regularExpression) != nil else {if !key.isEmpty{stop()};return}
+  let volume=audible ? min(100,max(0,(item["volume"] as? NSNumber)?.doubleValue ?? 0)) : 0
+  let newKey="\(id)|\(digest)|\(Int(frame.width))x\(Int(frame.height))"
+  if newKey==key {if volume != lastVolume{send("volume \(volume)");lastVolume=volume};if paused != lastPaused{send(paused ? "pause":"play");lastPaused=paused};return}
+  stop();key=newKey;lastPaused=paused;lastVolume=volume
+  let token=generation
+  let start={ [weak self] in
+   guard let self,self.generation==token else{return}
+   let options:[String:Any]=["id":id,"entry":entry,"root":root,"screen":screen,"display":display,"width":frame.width,"height":frame.height,"volume":self.lastVolume]
+   self.launch(options,resources:resources,token:token)
+  }
+  if allowed(digest){start();return}
+  let alert=NSAlert();alert.messageText="要在桌面執行「\(item["name"] as? String ?? "Windows 桌布")」嗎？"
+  alert.informativeText="Oasis 會啟動檔案內的 Windows 程式。首次使用會下載執行環境。"
+  alert.addButton(withTitle:"在桌面執行");alert.addButton(withTitle:"取消");prompt=alert;status="confirm"
+  // A sheet keeps the desktop polling and other screens responsive.
+  guard let window=NSApp.windows.first(where:{$0.isVisible && $0.canBecomeKey && $0.level.rawValue>=0}) else{key="";return}
+  alert.beginSheetModal(for:window){[weak self] response in
+   guard let self,self.generation==token else{return};self.prompt=nil
+   if response == .alertFirstButtonReturn{Self.remember(digest);start()}else{self.status="cancelled"}
+  }
+ }
+ private func launch(_ options:[String:Any],resources:URL,token:UUID){
+  guard let data=try? JSONSerialization.data(withJSONObject:options),let json=String(data:data,encoding:.utf8) else{return}
+  let proc=Process(),stdin=Pipe(),stdout=Pipe()
+  proc.executableURL=resources.deletingLastPathComponent().appendingPathComponent("MacOS/node")
+  proc.arguments=[resources.appendingPathComponent("OasisWindows/launch.mjs").path,"start",json]
+  proc.environment=["PATH":"/usr/bin:/bin","HOME":FileManager.default.homeDirectoryForCurrentUser.path,"LANG":"en_US.UTF-8"]
+  proc.standardInput=stdin;proc.standardOutput=stdout;proc.standardError=FileHandle.nullDevice
+  status="starting";launcher=proc;commands=stdin.fileHandleForWriting;output=stdout.fileHandleForReading
+  _=fcntl(stdin.fileHandleForWriting.fileDescriptor,F_SETNOSIGPIPE,1)
+  output?.readabilityHandler={ [weak self] handle in
+   let bytes=handle.availableData
+   if bytes.isEmpty{handle.readabilityHandler=nil;return}
+   Task{@MainActor in guard let self,self.generation==token else{return};self.receive(bytes)}
+  }
+  proc.terminationHandler={ [weak self] _ in Task{@MainActor in
+   guard let self,self.generation==token else{return};self.ready=false;self.commands=nil
+   if !self.status.hasPrefix("error "){self.status="error application-exited"}
+  }}
+  do{try proc.run();if lastPaused{send("pause")}}catch{status="error runtime-failed";self.launcher=nil}
+ }
+ private func receive(_ bytes:Data){
+  pending.append(bytes)
+  while let newline=pending.firstIndex(of:10){
+   let line=String(decoding:pending[..<newline],as:UTF8.self);pending.removeSubrange(...newline)
+   if line.hasPrefix("ready "){ready=true;status="ready";ownerPID=Int32(line.split(separator:" ").last ?? "") ?? 0}
+   else if !status.hasPrefix("error ") && (line=="preparing" || line=="starting" || line.hasPrefix("progress ") || line.hasPrefix("error ")){status=line}
+  }
+  if pending.count>4096{pending.removeAll()}
+ }
+ private func send(_ line:String){guard let commands,launcher?.isRunning==true else{return};try? commands.write(contentsOf:Data((line+"\n").utf8))}
+ func pointer(_ kind:String,at point:NSPoint,in frame:NSRect){
+  guard ownsInput else{return}
+  send("\(kind) \((point.x-frame.minX)/max(1,frame.width)) \((frame.maxY-point.y)/max(1,frame.height))")
+ }
+ func stop(){
+  generation=UUID()
+  if let alert=prompt,let parent=alert.window.sheetParent{parent.endSheet(alert.window,returnCode:.cancel)};prompt=nil
+  send("quit");try? commands?.close();commands=nil;output?.readabilityHandler=nil;output=nil
+  launcher=nil;pending.removeAll();key="";ready=false;ownerPID=0;status=""
+ }
+}
+
+enum OasisOriginalWallpaperSelection {
+ @MainActor static func open(_ urls:[URL]?,completion:@escaping([URL]?)->Void){
+  guard let urls,urls.contains(where:{["zip","exe"].contains($0.pathExtension.lowercased())}) else{completion(urls);return}
+  Task {
+   let values=await Task.detached(priority:.userInitiated){urls.filter{["zip","exe"].contains($0.pathExtension.lowercased())}.compactMap{url -> String? in
+     guard let handle=try? FileHandle(forReadingFrom:url) else{return nil};defer{try? handle.close()};var hash=SHA256()
+     do{while let bytes=try handle.read(upToCount:1024*1024),!bytes.isEmpty{hash.update(data:bytes)}}catch{return nil}
+     return hash.finalize().map{String(format:"%02x",$0)}.joined()
+    }}.value
+   for hash in values{OasisOriginalDesktopProgram.remember(hash)}
+   completion(urls)
+  }
  }
 }

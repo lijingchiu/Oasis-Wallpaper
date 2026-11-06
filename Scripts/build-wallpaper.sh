@@ -22,6 +22,7 @@ for name in OasisWeather.mjs OasisWeatherImages.mjs OasisWeatherUpload.mjs Oasis
 cp "$RESOURCES/"OasisWorkshop*.mjs "$APP/Contents/Resources/"
 cp -R "$RESOURCES/WeatherScenes" "$APP/Contents/Resources/"
 bash "$ROOT/Scripts/build-wallpaper-archive.sh" "$APP/Contents/Resources"
+bash "$ROOT/Scripts/build-windows-wallpaper.sh" "$APP/Contents/Resources"
 bash "$ROOT/Scripts/build-workshop-helper.sh"
 for arch in arm64 x64;do
  mkdir -p "$APP/Contents/Resources/WorkshopHelper/$arch"

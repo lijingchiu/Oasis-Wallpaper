@@ -4,7 +4,7 @@ Oasis Wallpaper is a macOS desktop wallpaper application with a Steam Workshop b
 
 ## Local wallpaper archives
 
-Select a display in the library, then drop a ZIP onto the library or choose it with the upload button. Keep the original folder structure, including the Unity data folder alongside the EXE. Import runs locally. The two supported Unity/Spine layouts are the single-character dress-up scene and the multi-character music player. Oasis reads their original scene, artwork, animation and controls. Other Windows programs with custom logic need a compatible player. A ZIP containing a self-contained web wallpaper or a single supported video or image can also be imported.
+Select a display in the library, then drop an EXE or its ZIP onto the library. Include the original data folders and DLLs when the program needs them. On first use Oasis downloads and verifies the pinned [Wine runtime](https://github.com/Gcenx/macOS_Wine_builds/releases/tag/11.21) and [DXVK graphics libraries](https://github.com/Gcenx/DXVK-macOS/releases/tag/v1.10.3-20230507-repack). Apple silicon uses Rosetta. The program runs behind the selected screen’s desktop icons with its own Windows profile. Enable Accessibility for desktop clicks. Windows drivers, custom launchers and graphics APIs beyond the installed runtime can require additional support. Self-contained Web, video and image ZIPs also import through the same library.
 
 ## Updates
 
