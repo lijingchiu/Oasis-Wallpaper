@@ -7,6 +7,9 @@ html[data-material=liquid] .wallpaper-header h1{font-family:"Snell Roundhand","A
 .wx-background-settings>.wx-location-bar,.wx-background-settings>.wx-search-results{display:flex!important}.wx-background-settings>.wx-search-results[hidden]{display:none!important}.wx-background-settings>.wx-location-bar{margin:0 0 18px}.wx-background-settings>.wx-background-picker{margin-top:18px}.wx-desktop-body{padding-bottom:18px}
 .wallpaper-tabs{display:flex;align-items:center;gap:9px;max-width:1040px;margin:18px auto 0;padding-bottom:16px;border-bottom:1px solid var(--line)}.wallpaper-tabs button[aria-current=page]{border-color:var(--accent);background:var(--glass-surface);color:var(--text)}
 #workshop-browser[hidden]{display:none!important}
+body:not([data-controls-ready]) :is(.wallpaper-tabs,.intro,.startup-toggle){display:none}
+#page-load-status:not([hidden]){display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 16px;color:var(--text)}
+#page-load-status .btn{text-decoration:none}
 body[data-page=library] .wx-background-settings>:is(.wx-location-bar,.wx-search-results,.wx-desktop-settings,.wx-settings){display:none!important}
 body[data-page=library] .wx-background-picker{margin-top:0;border:0;background:transparent;box-shadow:none}body[data-page=library] .wx-background-picker>summary{display:none}
 body[data-page=library] .wx-background-body{display:grid;grid-template-columns:minmax(0,1fr) 280px;grid-template-areas:'filters preview' 'upload preview' 'gallery adjust' 'gallery particles' 'gallery archived' 'status city' 'off off';gap:14px;padding:0;align-items:start}

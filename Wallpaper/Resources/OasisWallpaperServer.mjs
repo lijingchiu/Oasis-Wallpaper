@@ -26,18 +26,25 @@ function send(res,code,data,type='application/json; charset=utf-8'){
 async function readBody(req,limit=10000){let data='';for await(const part of req){data+=part;if(data.length>limit)throw Error('too-large')}return data?JSON.parse(data):{}}
 function type(name){return name.endsWith('.png')?'image/png':name.endsWith('.css')?'text/css; charset=utf-8':name.endsWith('.js')?'text/javascript; charset=utf-8':'text/html; charset=utf-8'}
 const server=http.createServer(async(req,res)=>{
+ if(!isLocalRequest(req,port))return send(res,403,{ok:false});
+ // These resources live in the signed bundle, outside the library being imported.
+ if(req.method==='GET'){
+  try {
+   if(req.url==='/weather-catalog.js')return send(res,200,'window.OasisWeatherCatalog='+JSON.stringify(sceneryCatalog)+';','text/javascript; charset=utf-8');
+   const file=assets[req.url];
+   if(typeof file==='string')return send(res,200,await readFile(new URL('./'+file,import.meta.url)),type(file));
+   const scene=/^\/weather-scenes\/([a-zA-Z]+)(-thumb)?\.jpg$/.exec(req.url);
+   if(scene&&sceneryCatalog.some(x=>x.id===scene[1]))return send(res,200,await readFile(new URL('./WeatherScenes/'+scene[1]+(scene[2]||'')+'.jpg',import.meta.url)),'image/jpeg');
+  }catch{return send(res,500,{ok:false})}
+ }
+ const nativeImport=req.method==='POST'&&req.url==='/api/native-import';
+ if(nativeImport&&(!nativeToken||req.headers['x-mole-native']!==nativeToken))return send(res,403,{ok:false});
  if(importing)return send(res,409,{ok:false,error:'import-busy'});
- if(req.method==='POST'&&req.url==='/api/native-import'){
-  if(!isLocalRequest(req,port)||!nativeToken||req.headers['x-mole-native']!==nativeToken)return send(res,403,{ok:false});
+ if(nativeImport){
   if(activeRequests)return send(res,409,{ok:false,error:'import-busy'});
   importing=true;try{const result=await importOasisLibrary({source:join(homedir(),'.config','mole'),destination:dirname(settingsPath)});if(result.ok){weather.close();weather=createWeather({path:settingsPath})}return send(res,result.ok?200:400,result)}finally{importing=false}
  }
  activeRequests++;try{
- if(!isLocalRequest(req,port))return send(res,403,{ok:false});
- if(req.method==='GET'&&assets[req.url])return send(res,200,await readFile(new URL('./'+assets[req.url],import.meta.url)),type(assets[req.url]));
- if(req.method==='GET'&&req.url==='/weather-catalog.js')return send(res,200,'window.OasisWeatherCatalog='+JSON.stringify(sceneryCatalog)+';','text/javascript; charset=utf-8');
- const scene=/^\/weather-scenes\/([a-zA-Z]+)(-thumb)?\.jpg$/.exec(req.url);
- if(req.method==='GET'&&scene&&sceneryCatalog.some(x=>x.id===scene[1]))return send(res,200,await readFile(new URL('./WeatherScenes/'+scene[1]+(scene[2]||'')+'.jpg',import.meta.url)),'image/jpeg');
  const custom=/^\/weather-custom\/(custom-[a-f0-9-]{36})(-thumb)?\.jpg$/.exec(req.url);
  if(req.method==='GET'&&custom){try{return send(res,200,await weather.readImage(custom[1],!!custom[2]),'image/jpeg')}catch{return send(res,404,{ok:false,error:'image-not-found'})}}
  if(await serveWeatherMedia(req,res,weather,send))return;

@@ -1,7 +1,7 @@
 (()=>{'use strict';
  let screens=[],selectedScreen='',ready=false;
  window.oasisWallpaperLoginState=value=>{const input=document.getElementById('login');input.checked=!!value?.enabled;input.disabled=value?.available===false};
- window.oasisWallpaperImportResult=value=>{const status=document.getElementById('import-status'),button=document.getElementById('import-oasis');button.disabled=false;status.hidden=false;status.textContent=value?.ok?'已匯入 Oasis 桌布，請選擇螢幕及桌布。':value?.error==='already-configured'?'獨立版已有桌布設定，為保留目前內容，未覆寫。':value?.error==='source-unavailable'?'找不到可匯入的 Oasis 桌布設定。':value?.error==='import-busy'?'桌布正在處理中，請稍後重試。':'無法安全複製桌布，請使用上傳或 Steam 連結新增。';if(value?.ok)window.OasisWeather.refresh()};
+ window.oasisWallpaperImportResult=value=>{const status=document.getElementById('import-status'),button=document.getElementById('import-oasis');button.disabled=false;status.hidden=false;status.textContent=value?.ok?'已匯入 Oasis 桌布，請選擇螢幕及桌布。':value?.error==='already-configured'?'獨立版已有桌布設定，為保留目前內容，未覆寫。':value?.error==='source-unavailable'?'找不到可匯入的 Oasis 桌布設定。':value?.error==='import-busy'?'桌布正在處理中，請稍後重試。':'無法安全複製桌布，請使用上傳或 Steam 連結新增。';if(value?.ok)window.OasisWeather?.refresh()};
  const originalScreens=window.oasisDesktopScreens;
  window.oasisDesktopScreens=rows=>{
   screens=Array.isArray(rows)?rows.filter(row=>row&&typeof row.id==='string'&&typeof row.name==='string'):[];
@@ -25,9 +25,8 @@
   const bounds=header.getBoundingClientRect(),control=document.querySelector('.startup-toggle').getBoundingClientRect();
   bridge.postMessage({action:'windowChrome',modal:!!document.querySelector('dialog[open]'),drag:{height:Math.max(0,Math.min(120,bounds.bottom)),exclusions:[{x:control.x,y:control.y,width:control.width,height:control.height}]}});
  }
- function start(){
+ function mountWallpaperPages(){
   window.OasisWeather.mountSettings(document.getElementById('wallpaper-settings'));
-  window.MoleTheme.mount(document.getElementById('wallpaper-appearance'));
   const desktop=document.querySelector('.wx-desktop-settings');desktop.open=true;
   const picker=document.querySelector('.wx-background-picker'),body=picker.querySelector('.wx-background-body'),gallery=body.querySelector('.wx-scenery-grid');
   const target=document.createElement('div');target.className='ow-library-target';target.innerHTML=targetMarkup()+'<button type="button" class="btn ow-clear-display">此螢幕不套用</button>';
@@ -40,29 +39,60 @@
   document.querySelectorAll('.ow-target select').forEach(select=>select.addEventListener('change',event=>{selectedScreen=event.target.value;renderTargets();refreshLibrary()}));
   target.querySelector('.ow-clear-display').addEventListener('click',()=>window.OasisWeather.clearDesktopWallpaper(selectedScreen).catch(()=>{}));
   function refreshLibrary(){
-   const selected=gallery.querySelector('[aria-pressed=true][data-custom-background]'),rows=window.OasisWeather.get().customImages||[],term=filters.querySelector('input').value.trim().toLocaleLowerCase(),kind=filters.querySelector('select').value;
+   const state=window.OasisWeather.get();
+   const selected=gallery.querySelector('[aria-pressed=true][data-custom-background]'),rows=state.customImages||[],term=filters.querySelector('input').value.trim().toLocaleLowerCase(),kind=filters.querySelector('select').value;
    gallery.querySelectorAll('[data-background]').forEach(card=>{const row=rows.find(item=>item.id===card.dataset.background),match=!!row&&(kind==='all'||kind==='local'&&!row.workshopID||kind==='workshop'&&!!row.workshopID);card.hidden=!match||!!term&&!card.textContent.toLocaleLowerCase().includes(term)});
-   const desktop=window.OasisWeather.get().settings.desktop,choice=desktop?.screens?.[selectedScreen]||'follow';
+   const desktop=state.settings.desktop,choice=desktop?.screens?.[selectedScreen]||'follow';
    preview.querySelector('strong').textContent=desktop?.enabled&&choice!=='off'?(selected?.querySelector('strong')?.textContent||'目前使用先前的桌布'):'未套用桌布';const image=selected?.querySelector('img'),targetImage=preview.querySelector('img');if(desktop?.enabled&&choice!=='off'&&image?.getAttribute('src')){targetImage.src=image.getAttribute('src');targetImage.hidden=false}else{targetImage.removeAttribute('src');targetImage.hidden=true}
   }
+  renderTargets();refreshLibrary();
   filters.addEventListener('input',refreshLibrary);filters.addEventListener('change',refreshLibrary);new MutationObserver(refreshLibrary).observe(gallery,{subtree:true,childList:true,attributes:true,attributeFilter:['aria-pressed']});
-  ready=true;renderTargets();refreshLibrary();
   let browser=null;const workshop=document.querySelector('#workshop-browser'),workshopDetail=document.createElement('div');workshopDetail.className='ow-workshop-preview';workshopDetail.hidden=true;workshopDetail.innerHTML='<img alt=""><strong></strong>';picker.querySelector('.wx-workshop-body').prepend(workshopDetail);
-  function switchPage(page){
-   document.body.dataset.page=page;document.querySelectorAll('[data-page-tab]').forEach(button=>{if(button.dataset.pageTab===page)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current')});
-   workshop.hidden=page!=='workshop';document.getElementById('wallpaper-settings').hidden=page==='appearance';document.getElementById('wallpaper-appearance').hidden=page!=='appearance';document.getElementById('page-description').textContent=page==='workshop'?'探索 Steam 工作坊中的桌布。':page==='settings'?'調整電源與播放效能。':page==='appearance'?'調整 Oasis Wallpaper 的玻璃外觀。':'選擇螢幕，點選桌布即可套用。';
+  ready=true;
+  return function openWallpaperPage(page){
    if(page==='workshop'){
     picker.open=true;picker.querySelector('.wx-workshop').open=true;
     if(!browser){
-     browser=window.OasisWorkshopBrowser.mount(workshop,{onClear:()=>{workshopDetail.hidden=true;window.OasisWeather.clearWorkshopSelection()},onSelect:item=>{workshopDetail.hidden=false;workshopDetail.querySelector('img').src=item.preview;workshopDetail.querySelector('strong').textContent=item.title;window.OasisWeather.inspectWorkshop(item.url)}});
-     const controls=document.createElement('aside');controls.className='ow-workshop-controls';const form=workshop.querySelector('.owb-search'),filters=workshop.querySelector('.owb-filters');form.before(controls);controls.append(form,filters);browser.search();
+     const mounted=window.OasisWorkshopBrowser.mount(workshop,{onClear:()=>{workshopDetail.hidden=true;window.OasisWeather.clearWorkshopSelection()},onSelect:item=>{workshopDetail.hidden=false;workshopDetail.querySelector('img').src=item.preview;workshopDetail.querySelector('strong').textContent=item.title;window.OasisWeather.inspectWorkshop(item.url)}});
+     const controls=document.createElement('aside');controls.className='ow-workshop-controls';const form=workshop.querySelector('.owb-search'),filters=workshop.querySelector('.owb-filters');form.before(controls);controls.append(form,filters);mounted.search();browser=mounted;
     }
    }else if(page==='library')picker.open=true;
+  };
+ }
+ function start(){
+  const settings=document.getElementById('wallpaper-settings');
+  const appearance=document.getElementById('wallpaper-appearance');
+  const workshop=document.getElementById('workshop-browser');
+  const status=document.getElementById('page-load-status');
+  const tabs=document.querySelectorAll('[data-page-tab]');
+  const descriptions={library:'選擇螢幕，點選桌布即可套用。',workshop:'探索 Steam 工作坊中的桌布。',settings:'調整電源與播放效能。',appearance:'調整 Oasis Wallpaper 的玻璃外觀。'};
+  let openWallpaperPage,appearanceReady=false;
+  function switchPage(tab){
+   const page=tab.dataset.pageTab;
+   document.body.dataset.page=page;
+   for(const other of tabs){
+    if(other===tab)other.setAttribute('aria-current','page');else other.removeAttribute('aria-current');
+   }
+   document.getElementById('page-description').textContent=descriptions[page];
+   let available=page==='appearance'?appearanceReady:!!openWallpaperPage;
+   if(available && page!=='appearance'){
+    try{openWallpaperPage(page)}catch(error){available=false;console.error('Oasis Wallpaper:',page,error)}
+   }
+   workshop.hidden=!available || page!=='workshop';
+   settings.hidden=!available || page==='appearance';
+   appearance.hidden=!available || page!=='appearance';
+   if(!available)status.querySelector('span').textContent=tab.textContent+'未能載入。';
+   status.hidden=available;
    window.scrollTo({top:0,behavior:'auto'});syncChrome();
   }
-  document.querySelectorAll('[data-page-tab]').forEach(button=>button.onclick=()=>switchPage(button.dataset.pageTab));
+  // Bind window controls before mounting independently loaded page modules.
+  for(const tab of tabs)tab.addEventListener('click',()=>switchPage(tab));
   document.getElementById('login').addEventListener('change',event=>window.webkit?.messageHandlers?.mole?.postMessage({action:'loginAtStartup',enabled:event.target.checked}));
   document.getElementById('import-oasis').addEventListener('click',event=>{const bridge=window.webkit?.messageHandlers?.mole;if(!bridge)return;event.currentTarget.disabled=true;const status=document.getElementById('import-status');status.hidden=false;status.textContent='正在匯入 Oasis 桌布…';bridge.postMessage({action:'importOasis'})});
+  document.body.dataset.controlsReady='true';
+  try{openWallpaperPage=mountWallpaperPages()}catch(error){console.error('Oasis Wallpaper: wallpaper settings',error)}
+  try{window.MoleTheme.mount(appearance);appearanceReady=true}catch(error){console.error('Oasis Wallpaper: appearance',error)}
+  switchPage(document.querySelector('[data-page-tab="library"]'));
   const chrome=document.querySelector('.wallpaper-chrome');new ResizeObserver(()=>document.documentElement.style.setProperty('--chrome-height',`${chrome.offsetHeight}px`)).observe(chrome);
   window.addEventListener('resize',syncChrome);window.addEventListener('scroll',syncChrome,{passive:true});new MutationObserver(syncChrome).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['open']});
   syncChrome();window.webkit?.messageHandlers?.mole?.postMessage({action:'desktopScreens'});window.webkit?.messageHandlers?.mole?.postMessage({action:'loginAtStartupState'});

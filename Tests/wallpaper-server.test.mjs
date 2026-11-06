@@ -1,9 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,mkdir,readFile,rm,writeFile} from 'node:fs/promises';
+import {mkdtemp,mkdir,open,readFile,rename,rm,writeFile} from 'node:fs/promises';
+import {constants} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
-import {spawn} from 'node:child_process';
+import {execFileSync,spawn} from 'node:child_process';
+import {setTimeout as delay} from 'node:timers/promises';
 import {once} from 'node:events';
 
 test('standalone service imports safely, isolates settings, and serves desktop controls',{skip:!process.env.OASIS_WALLPAPER_TEST_APP},async()=>{
@@ -20,7 +22,31 @@ test('standalone service imports safely, isolates settings, and serves desktop c
   assert.equal((await post('/api/native-scene',{}))[0],403);
   assert.equal((await post('/api/weather',{}, {origin:'https://outside.invalid'}))[0],403);
   assert.equal((await post('/api/weather/workshop/browse',{rating:'unsupported'}))[1].error,'workshop-browse-input');
-  const native={'x-mole-native':'fixture-native-token'};assert.equal((await post('/api/native-import',{},native))[0],200);
+  const native={'x-mole-native':'fixture-native-token'};
+  // A pipe holds the real import at its settings read until the HTTP checks finish.
+  const settingsFile=join(source,'oasis-weather.json'),original=await readFile(settingsFile);
+  const saved=join(root,'original-settings.json');
+  await rename(settingsFile,saved);
+  execFileSync('/usr/bin/mkfifo',[settingsFile]);
+  const importing=post('/api/native-import',{},native);
+  let writer;
+  for(let attempt=0;attempt<100&&!writer;attempt++){
+   try{writer=await open(settingsFile,constants.O_WRONLY|constants.O_NONBLOCK)}
+   catch(error){if(error.code!=='ENXIO')throw error;await delay(30)}
+  }
+  assert.ok(writer,'import did not reach the settings read');
+  try{
+   await rm(settingsFile);await rename(saved,settingsFile);
+   const assets=['/','/theme.js','/weather.js','/wallpaper-app.js','/wallpaper-app.css','/weather-catalog.js'];
+   const statuses=await Promise.all(assets.map(async path=>[path,(await fetch(base+path)).status]));
+   assert.deepEqual(statuses,assets.map(path=>[path,200]),'bundled UI during library import');
+   assert.equal((await fetch(base+'/theme.js',{headers:{origin:'https://outside.invalid'}})).status,403);
+   assert.equal((await post('/api/weather',{action:'settings',desktop:{enabled:true}}))[0],409);
+   assert.equal((await post('/api/native-import',{},native))[0],409);
+  }finally{
+   await writer.writeFile(original);await writer.close();
+   assert.equal((await importing)[0],200);
+  }
   let [,state]=await post('/api/weather',{action:'snapshot'});assert.equal(state.settings.background,'live');assert.equal(state.settings.desktop.enabled,false);assert.equal(state.settings.desktop.fps,144);
   assert.deepEqual(JSON.parse(await readFile(join(source,'oasis-weather.json'),'utf8')),initial);
   [,state]=await post('/api/weather',{action:'settings',desktop:{enabled:true,fps:144,screens:{displayA:'live'}}});assert.equal(state.settings.desktop.screens.displayA,'live');
