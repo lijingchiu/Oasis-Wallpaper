@@ -89,6 +89,17 @@ export async function readCanvas(env, assets, saveArt, prefabClass = null) {
       match = b.readFloatLE(56);
     }
     if (cls === 'Mask') n.showMask = !!b[32];
+    if (cls === 'GameManager' && b.length >= 40) {
+      // The edit gear follows the serialized list of panels in the original scene.
+      const gearOffset = 40 + 12 * b.readUInt32LE(36);
+      if (gearOffset + 16 <= b.length && b.readInt32LE(gearOffset) === 0) {
+        const gear = captures.get(String(b.readBigInt64LE(gearOffset + 4)));
+        const speed = b.readFloatLE(gearOffset + 12), duration = b.readFloatLE(32);
+        if (gear && Number.isFinite(speed) && Number.isFinite(duration) && duration >= 0) {
+          gear.editMotion = {speed: -speed, duration};
+        }
+      }
+    }
     if (cls === 'SkeletonGraphic') n.skeleton = assetAt(a, b, 88)?.name;
     if (cls === 'UIRotate') n.spin = b.readFloatLE(32);
     if (cls === 'UIRandomSize') n.randomSize = [b.readFloatLE(32), b.readFloatLE(36)];

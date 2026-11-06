@@ -30,6 +30,9 @@ const editorMask = within(editor, (r) => r.name === 'Mask')[0];
 if (editorMask) editorMask.style.overflow = 'visible';
 const sidePanels = [byName('LeftCharactorPanel')[0], byName('RightCharactorPanel')[0]],
   banner = byName('BannerPanel')[0];
+const editGear = ui.all((r) => r.editMotion)[0];
+const editControls = [...sidePanels, banner].flatMap((p) => within(p, (r) => r.components.includes('Button')));
+if (editGear) ui.root.style.setProperty('--edit-duration', editGear.row.editMotion.duration + 's');
 const audio = document.querySelector('audio');
 const clampInt = (n, max, fallback = 0) => (Number.isInteger(n) && n >= 0 && n <= max ? n : fallback);
 const settings = {
@@ -61,6 +64,7 @@ const save = () => {
 };
 let sideEditing = 0,
   editMode = false,
+  gearAngle = 0,
   last = null,
   levels = null;
 const effects = sceneEffects(ui),
@@ -153,6 +157,10 @@ function navigateCharacter(i, delta) {
 function draw(time) {
   const dt = last === null ? 0 : Math.min(0.1, (time - last) / 1000);
   last = time;
+  if (editMode && editGear) {
+    gearAngle = (gearAngle + editGear.row.editMotion.speed * dt) % 360;
+    editGear.style.rotate = gearAngle + 'deg';
+  }
   actors.forEach((actor, i) => {
     if (actor.rig) actor.drawing.draw(actor.rig.frame(dt * settings.sides[i].speed));
   });
@@ -168,9 +176,17 @@ function accessible(el, label, act) {
 }
 function toggleEdit(value) {
   editMode = value;
-  for (const p of sidePanels)
-    for (const el of within(p, (r) => r.components.includes('Button'))) el.hidden = !value;
-  if (!value) editor.hidden = true;
+  for (const el of editControls) {
+    el.hidden = false;
+    el.inert = !value;
+    el.dataset.editVisible = String(value);
+  }
+  if (value) listPanel.hidden = true;
+  else {
+    editor.hidden = true;
+    gearAngle = 0;
+    if (editGear) editGear.style.rotate = '';
+  }
   ui.size();
 }
 function showPoses(i) {
@@ -419,8 +435,8 @@ for (const el of ui.all((r) => r.components.includes('Button'))) {
       break;
     case 'SwitchPanel':
       accessible(el, action, () => {
+        if (editMode) toggleEdit(false);
         listPanel.hidden = !listPanel.hidden;
-        editor.hidden = true;
         ui.size();
       });
       break;
