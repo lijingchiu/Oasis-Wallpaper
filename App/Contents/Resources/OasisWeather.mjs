@@ -208,7 +208,7 @@ export function createWeather({path,fetchImpl=globalThis.fetch,now=Date.now,medi
   }
   await load();if(importing)throw Error('image-busy');importing=true;let row,previousDesktop=null,previousRows=null,previousBackground=null,assigned=false;
   try{
-   const existing=customImages.find(x=>x.workshopID===item.id);if(customImages.length>=40&&!existing)throw Error('image-limit');
+   const existing=item.id?customImages.find(x=>x.workshopID===item.id):null;if(customImages.length>=40&&!existing)throw Error('image-limit');
    row=await packages.prepare(folder,item,{replace:!!existing});
    if(row.mediaType==='web')await packages.start();
    stagingWallpaperID=row.id;customImages=[...customImages,row];

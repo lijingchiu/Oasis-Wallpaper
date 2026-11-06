@@ -3,7 +3,7 @@ function installRuntime(){
  'use strict';let properties={},last={},lastListener=null,paused=false,fps=30,audio=null,audioTimer=0;
  const raf=requestAnimationFrame.bind(window),caf=cancelAnimationFrame.bind(window),frames=new Map();let next=0,pending=0,previous=0;
  const invoke=(fn,...args)=>{try{return fn?.(...args)}catch(error){setTimeout(()=>{throw error})}};
- function tick(time){pending=0;if(!paused&&!document.hidden&&time-previous>=1000/fps-.5){previous=time;const work=[...frames.values()];frames.clear();for(const fn of work)invoke(fn,time)}if(frames.size&&!paused&&!document.hidden)pending=raf(tick)}
+ function tick(time){pending=0;if(!paused&&!document.hidden&&time-previous>=1000/fps-.5){previous=time;const work=[...frames.values()];frames.clear();for(const fn of work)invoke(fn,time)}schedule()}
  function schedule(){if(frames.size&&!pending&&!paused&&!document.hidden)pending=raf(tick)}
  window.requestAnimationFrame=fn=>{const id=++next;frames.set(id,fn);schedule();return id};window.cancelAnimationFrame=id=>{frames.delete(id);if(!frames.size&&pending){caf(pending);pending=0}};
  function audioState(){clearInterval(audioTimer);audioTimer=0;if(audio&&!paused&&!document.hidden)audioTimer=setInterval(()=>invoke(audio,Array(128).fill(0)),1000/fps)}

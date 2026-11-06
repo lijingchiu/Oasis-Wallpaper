@@ -21,6 +21,7 @@ bash "$ROOT/Scripts/build-wallpaper-icon.sh" "$APP/Contents/Resources/OasisWallp
 for name in OasisWeather.mjs OasisWeatherImages.mjs OasisWeatherUpload.mjs OasisWeatherMediaHttp.mjs OasisSteamWorkshop.mjs OasisCityScenery.mjs OasisWallpaperFiles.mjs MoleRequestPolicy.mjs OasisWeatherUI.js OasisWeatherScene.js OasisWeatherLandscapes.js OasisWallpaperProperties.js OasisWallpaperHealth.js OasisWorkshopBrowser.js OasisWorkshopBrowser.css OasisDesktopWallpaper.html OasisDesktopWallpaper.js OasisWeather.css OasisControls.css MoleGlass.css MoleTheme.css MoleTheme.js OasisWeatherAtlas.png OasisWeatherCloudsHD.png OasisWordmark.png MoleLocalization.json; do cp "$RESOURCES/$name" "$APP/Contents/Resources/";done
 cp "$RESOURCES/"OasisWorkshop*.mjs "$APP/Contents/Resources/"
 cp -R "$RESOURCES/WeatherScenes" "$APP/Contents/Resources/"
+bash "$ROOT/Scripts/build-wallpaper-archive.sh" "$APP/Contents/Resources"
 bash "$ROOT/Scripts/build-workshop-helper.sh"
 for arch in arm64 x64;do
  mkdir -p "$APP/Contents/Resources/WorkshopHelper/$arch"

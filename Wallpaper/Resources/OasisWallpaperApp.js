@@ -74,7 +74,7 @@
   const workshop=document.getElementById('workshop-browser');
   const status=document.getElementById('page-load-status');
   const tabs=document.querySelectorAll('[data-page-tab]');
-  const descriptions={library:'選擇螢幕，點選桌布即可套用。',workshop:'探索 Steam 工作坊中的桌布。',settings:'調整電源與播放效能。',appearance:'調整 Oasis Wallpaper 的玻璃外觀。'};
+  const descriptions={library:'選擇螢幕並點選桌布，或拖入桌布 ZIP。',workshop:'探索 Steam 工作坊中的桌布。',settings:'調整電源與播放效能。',appearance:'調整 Oasis Wallpaper 的玻璃外觀。'};
   let openWallpaperPage,appearanceReady=false;
   function switchPage(tab){
    const page=tab.dataset.pageTab;

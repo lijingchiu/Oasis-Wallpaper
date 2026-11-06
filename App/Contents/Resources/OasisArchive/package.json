@@ -1,0 +1,14 @@
+{
+  "name": "oasis-wallpaper-archive",
+  "private": true,
+  "dependencies": {
+    "pngjs": "7.0.0",
+    "unity-asset-reader": "1.2.0",
+    "unity-asset-reader-texture": "1.2.0",
+    "yauzl": "3.4.0",
+    "unity-asset-reader-audio": "1.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

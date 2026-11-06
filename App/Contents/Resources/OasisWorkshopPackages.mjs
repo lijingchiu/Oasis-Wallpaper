@@ -8,6 +8,7 @@ import {validCustomID,mediaRange,validateWallpaperProperties} from './OasisWeath
 import {workshopFileBridge} from './OasisWorkshopBridge.mjs';
 import {workshopCSSStream} from './OasisWorkshopCSS.mjs';
 import {workshopRuntime} from './OasisWorkshopRuntime.mjs';
+import {archivePreferences} from './OasisArchive/preferences.mjs';
 const health=await readFile(new URL('./OasisWallpaperHealth.js',import.meta.url),'utf8');
 
 export const safePackagePath=value=>typeof value==='string'&&value.length>0&&value.length<=1024&&!/[\\:\u0000-\u001f]/.test(value)&&!value.startsWith('/')&&value.split('/').every(x=>x&&x!=='.'&&x!=='..'&&x.toLowerCase()!=='.depotdownloader');
@@ -41,10 +42,13 @@ export function createWorkshopPackages({settingsPath,images,fetchImpl=globalThis
  async function start(){if(webServer)return;webServer=http.createServer(async(req,res)=>{
   const fail=()=>{if(!res.headersSent){res.writeHead(404);res.end()}else res.destroy()};let file;
   try{
-   if(!['GET','HEAD'].includes(req.method)||req.headers.host!==new URL(origin).host)return fail();
+   if(req.headers.host!==new URL(origin).host)return fail();
    const requestURL=new URL(req.url,origin),path=requestURL.pathname.split('/');if(path[1]!==token||!validCustomID(path[2]))return fail();const id=path[2],row=records().find(x=>x.id===id&&x.mediaType==='web'&&x.cached!==false);if(!row)return fail();
    const relative=path.slice(3).map(decodeURIComponent).join('/');if(!safePackagePath(relative))return fail();
-   const root=resolve(folder,id);if((await lstat(root)).isSymbolicLink())return fail();if(relative.startsWith('_oasis/directory/')){const key=relative.slice(17),property=row.properties?.[key],choice=requestURL.searchParams.get('selection');if(choice!==null&&choice!=='none'&&!/^[a-f0-9]{32}$/.test(choice))return fail();const selected=choice==='none'?null:await userFiles?.directory(row,key,choice?{token:choice}:{});const list=selected??await directoryFiles(root,property);const body=JSON.stringify(list);res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(req.method==='HEAD'?undefined:body);return}let target=root,stat;
+   const root=resolve(folder,id);if((await lstat(root)).isSymbolicLink())return fail();
+   if(relative==='_oasis/controls')return await archivePreferences(req,res,{root,kind:row.archivePlayer,origin});
+   if(!['GET','HEAD'].includes(req.method)||relative.toLowerCase().startsWith('.oasis-preferences'))return fail();
+   if(relative.startsWith('_oasis/directory/')){const key=relative.slice(17),property=row.properties?.[key],choice=requestURL.searchParams.get('selection');if(choice!==null&&choice!=='none'&&!/^[a-f0-9]{32}$/.test(choice))return fail();const selected=choice==='none'?null:await userFiles?.directory(row,key,choice?{token:choice}:{});const list=selected??await directoryFiles(root,property);const body=JSON.stringify(list);res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(req.method==='HEAD'?undefined:body);return}let target=root,stat;
    if(relative.startsWith('_oasis/user/')){if(!userFiles)return fail();const selected=await userFiles.openAsset(row,relative);file=selected.handle;target=selected.path;stat=selected.stat}
    else{for(const part of relative.split('/')){target=join(target,part);if((await lstat(target)).isSymbolicLink())return fail()}if(!target.startsWith(root+sep))return fail();file=await open(target,constants.O_RDONLY|constants.O_NOFOLLOW);stat=await file.stat();if(!stat.isFile())return fail()}
    const type=types[extname(target).toLowerCase()]||'application/octet-stream';
@@ -76,7 +80,7 @@ export function createWorkshopPackages({settingsPath,images,fetchImpl=globalThis
   // Cover artwork is optional. Never reject a working renderer because its
   // preview is absent, corrupt, unsupported, or temporarily unavailable online.
   if(!row){const placeholder=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=','base64');row=await images.importImage(placeholder,item.title,{replace,posterOnly:true})}
-  await images.evict(row.id);const target=join(folder,row.id);try{await copyTree(source,target);return{...row,mediaType:project.type,entry:project.file,workshopID:item.id,sourceBytes:item.size,cached:true,properties:properties(project)}}catch(error){await images.discard(row.id).catch(()=>{});await rm(target,{recursive:true,force:true});throw error}
+  await images.evict(row.id);const target=join(folder,row.id);try{await copyTree(source,target);return{...row,mediaType:project.type,entry:project.file,...(item.id?{workshopID:item.id}:{}),...(['actor','band'].includes(item.archivePlayer)?{archivePlayer:item.archivePlayer}:{}),sourceBytes:item.size,cached:true,properties:properties(project)}}catch(error){await images.discard(row.id).catch(()=>{});await rm(target,{recursive:true,force:true});throw error}
  }
  const properties=project=>validateWallpaperProperties(project.general?.properties);
  async function evict(id){if(validCustomID(id))await rm(join(folder,id),{recursive:true,force:true})}

@@ -1,0 +1,180 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#stage {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  font-family: system-ui, sans-serif;
+  background: #5799cf;
+}
+#stage {
+  position: absolute;
+  inset: 0;
+}
+.node,
+.surface,
+.caption,
+.actor,
+.rail,
+.songs {
+  position: absolute;
+}
+.node {
+  pointer-events: none;
+}
+.surface,
+.caption,
+.actor,
+.rail,
+.songs {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.surface {
+  display: block;
+  pointer-events: none;
+}
+.actor {
+  display: block;
+}
+.caption {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: white;
+  line-height: 1.08;
+  font-weight: 700;
+  white-space: pre-line;
+}
+.hit,
+.rail,
+.songs {
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.hit {
+  cursor: pointer;
+}
+.hit:focus-visible {
+  outline: 4px solid white;
+  outline-offset: -4px;
+}
+.rail {
+  margin: 0;
+  cursor: pointer;
+  opacity: 0.01;
+}
+.songs {
+  overflow: auto;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 12px;
+}
+.songs button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: 600 46px system-ui;
+  text-align: left;
+  cursor: pointer;
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.songs button[aria-current='true'] {
+  background: #fff6;
+}
+.songs img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+}
+.poses {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  color: #222;
+}
+.poses button {
+  justify-content: center;
+}
+.node[hidden],
+[hidden] {
+  display: none !important;
+}
+
+.hit[aria-pressed='true']:focus-visible {
+  outline: 4px solid white;
+}
+.hit img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.songs button {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1250/150;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+}
+.songs button .caption {
+  justify-items: start;
+  text-align: left;
+}
+.songs button:focus-visible,
+.poses button[aria-current='true'] {
+  outline: 5px solid white;
+  outline-offset: -5px;
+}
+.poses button {
+  aspect-ratio: 1/2;
+}
+.pose-thumb {
+  position: absolute;
+  inset: 0;
+  background-size: 100% 1200%;
+  animation: author-pose 1s steps(12) infinite;
+}
+@keyframes author-pose {
+  from {
+    background-position-y: 0;
+  }
+  to {
+    background-position-y: 109.09091%;
+  }
+}
+.frequency-bar {
+  position: absolute;
+  bottom: 50%;
+  width: 20px;
+  height: 1px;
+  background: currentColor;
+  color: white;
+  transform-origin: bottom;
+  pointer-events: none;
+}
+.pattern-scroll {
+  animation: author-pattern 18s linear infinite;
+}
+@keyframes author-pattern {
+  to {
+    background-position: 100% 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pose-thumb,
+  .pattern-scroll {
+    animation-play-state: paused;
+  }
+}

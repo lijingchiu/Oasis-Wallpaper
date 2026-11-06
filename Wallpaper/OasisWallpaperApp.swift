@@ -114,7 +114,7 @@ final class WallpaperApp:NSObject,NSApplicationDelegate,WKScriptMessageHandler,W
  }
  func webView(_ webView:WKWebView,runOpenPanelWith parameters:WKOpenPanelParameters,initiatedByFrame frame:WKFrameInfo,completionHandler:@escaping([URL]?)->Void){
   guard frame.isMainFrame,frame.securityOrigin.host=="127.0.0.1",frame.securityOrigin.port==port else{completionHandler(nil);return}
-  let panel=NSOpenPanel();panel.title="選擇背景圖片或影片";panel.canChooseFiles=true;panel.canChooseDirectories=parameters.allowsDirectories;panel.allowsMultipleSelection=parameters.allowsMultipleSelection;panel.begin{response in completionHandler(response == .OK ? panel.urls:nil)}
+  let panel=NSOpenPanel();panel.title="選擇背景圖片、影片或 ZIP";panel.canChooseFiles=true;panel.canChooseDirectories=parameters.allowsDirectories;panel.allowsMultipleSelection=parameters.allowsMultipleSelection;panel.begin{response in completionHandler(response == .OK ? panel.urls:nil)}
  }
  func userContentController(_ controller:WKUserContentController,didReceive message:WKScriptMessage){
   guard message.frameInfo.isMainFrame,message.frameInfo.securityOrigin.host=="127.0.0.1",message.frameInfo.securityOrigin.port==port,let body=message.body as? [String:Any],let action=body["action"] as? String,let source=message.webView else{return}

@@ -7,7 +7,7 @@ import {homedir} from 'node:os';
 import {setTimeout as delay} from 'node:timers/promises';
 import {createWeather} from './OasisWeather.mjs';
 import {createSteamWorkshop} from './OasisSteamWorkshop.mjs';
-import {uploadWeatherVideo} from './OasisWeatherUpload.mjs';
+import {uploadWeatherVideo,uploadWallpaperArchive} from './OasisWeatherUpload.mjs';
 import {serveWeatherMedia} from './OasisWeatherMediaHttp.mjs';
 import {sceneryCatalog,MAX_IMAGE_BYTES,MAX_MEDIA_BYTES} from './OasisWeatherImages.mjs';
 import {isLocalRequest} from './MoleRequestPolicy.mjs';
@@ -78,9 +78,13 @@ const server=http.createServer(async(req,res)=>{
  }
  if(req.method==='POST'&&req.url==='/api/weather/image'){
   const contentType=String(req.headers['content-type']||'').split(';')[0],limit=contentType.startsWith('video/')?MAX_MEDIA_BYTES:MAX_IMAGE_BYTES;
-  if(!['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/quicktime','video/x-m4v'].includes(contentType))return send(res,415,{ok:false,error:'image-type'});
+  if(!['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/quicktime','video/x-m4v','application/zip'].includes(contentType))return send(res,415,{ok:false,error:'image-type'});
   let name='';try{name=decodeURIComponent(String(req.headers['x-oasis-image-name']||'').slice(0,1200))}catch{}
   let desktopTarget=null;const screen=req.headers['x-oasis-desktop-screen'];if(screen!==undefined){const expected=req.headers['x-oasis-desktop-expected'],enabled=req.headers['x-oasis-desktop-enabled'],displays=String(req.headers['x-oasis-desktop-displays']||'').split(',').filter(Boolean);if(typeof screen!=='string'||!/^[A-Za-z0-9_-]{1,80}$/.test(screen)||typeof expected!=='string'||!/^[A-Za-z0-9_-]{1,100}$/.test(expected)||!['0','1'].includes(enabled)||displays.length>32||displays.some(id=>!/^[A-Za-z0-9_-]{1,80}$/.test(id)))return send(res,400,{ok:false,error:'workshop-target'});desktopTarget={screen,expected,enable:true,expectedEnabled:enabled==='1',displays}}
+  if(contentType==='application/zip'){
+   try{return send(res,200,await uploadWallpaperArchive(req,{settingsPath,name,length:req.headers['content-length'],weather,desktopTarget}))}
+   catch(error){return send(res,400,{ok:false,error:/^(?:archive-|image-|workshop-)/.test(error.message)?error.message:'archive-invalid'})}
+  }
   if(contentType.startsWith('video/')){try{return send(res,200,await uploadWeatherVideo(req,{settingsPath,name,length:req.headers['content-length'],importFile:(file,label)=>weather.importVideoFile(file,label,null,{desktopTarget})}))}catch(error){return send(res,400,{ok:false,error:/^(image-|workshop-selection-changed)/.test(error.message)?error.message:'image-decode'})}}
   if(Number(req.headers['content-length'])>limit)return send(res,413,{ok:false,error:'image-size'});
   try{const chunks=[];let size=0;for await(const chunk of req){size+=chunk.length;if(size>limit)return send(res,413,{ok:false,error:'image-size'});chunks.push(chunk)}return send(res,200,await weather.importImage(Buffer.concat(chunks),name,{desktopTarget}))}catch(error){return send(res,400,{ok:false,error:/^(image-|workshop-selection-changed)/.test(error.message)?error.message:'image-decode'})}

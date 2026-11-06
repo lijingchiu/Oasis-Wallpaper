@@ -1,0 +1,17 @@
+[package]
+name = "oasis-wallpaper-mesh"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+chine = { version = "=0.2.0", default-features = false, features = ["json"] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+panic = "abort"
+strip = true
