@@ -80,7 +80,20 @@ final class StartupChecks: NSObject, WKNavigationDelegate {
                 for tab in ["library", "settings", "appearance", "workshop"] {
                     try await select(tab, available: true)
                 }
+                try await select("library", available: true)
+                try await check("!document.querySelector('#import-oasis, #import-status') && !!document.querySelector('input[type=file]')", "Library actions after removing the Oasis import")
+                try await select("workshop", available: true)
                 try await check("!!document.querySelector('.owb-search input') && !!document.querySelector('[data-glass-setting]')", "Controls missing after retry")
+                try await check("""
+                    (() => {
+                        const button = document.querySelector('#check-update'), panel = document.querySelector('#update-status');
+                        const bar = panel.querySelector('progress');
+                        window.oasisWallpaperUpdate({phase:'downloading',busy:true,version:'1.0.3',message:'42%',progress:0.42});
+                        const downloading = button.disabled && !panel.hidden && !bar.hidden && bar.value === 0.42;
+                        window.oasisWallpaperUpdate({phase:'current',busy:false,version:'1.0.3',message:'目前已是最新版',progress:0});
+                        return downloading && !button.disabled && bar.hidden && panel.textContent.includes('最新版');
+                    })()
+                    """, "Update progress or retry state did not render")
             } catch {
                 controller.remove(rule)
                 try? await store.removeContentRuleList(forIdentifier: id)

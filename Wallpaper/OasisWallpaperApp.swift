@@ -13,6 +13,10 @@ final class WallpaperApp:NSObject,NSApplicationDelegate,WKScriptMessageHandler,W
  private lazy var workshop=OasisWorkshopCredentials(port:port,token:token)
  private lazy var location=OasisWeatherLocation()
  private let login=MoleLoginAtStartup()
+ private lazy var updater = OasisWallpaperUpdater(reserveRestart: { [weak self] reserve in
+  guard let self else { throw OasisUpdateError.install }
+  try await self.reserveUpdateRestart(reserve)
+ }, changed: { [weak self] state in self?.publish("window.oasisWallpaperUpdate", state) })
 
  func applicationDidFinishLaunching(_ notification:Notification){
   OasisKeychainAccess.disableInteraction()
@@ -25,9 +29,28 @@ final class WallpaperApp:NSObject,NSApplicationDelegate,WKScriptMessageHandler,W
  private func createMenu(){
   let main=NSMenu(),appItem=NSMenuItem();main.addItem(appItem);let menu=NSMenu()
   menu.addItem(withTitle:"關於 Oasis Wallpaper",action:#selector(NSApplication.orderFrontStandardAboutPanel(_:)),keyEquivalent:"")
+  menu.addItem(withTitle:"檢查更新…",action:#selector(checkForUpdates),keyEquivalent:"").target=self
   menu.addItem(.separator());menu.addItem(withTitle:"隱藏 Oasis Wallpaper",action:#selector(NSApplication.hide(_:)),keyEquivalent:"h")
   menu.addItem(.separator());menu.addItem(withTitle:"結束 Oasis Wallpaper",action:#selector(NSApplication.terminate(_:)),keyEquivalent:"q")
   appItem.submenu=menu;NSApp.mainMenu=main
+ }
+ @objc private func checkForUpdates() {
+  window?.makeKeyAndOrderFront(nil)
+  NSApp.activate(ignoringOtherApps:true)
+  Task { await updater.check() }
+ }
+ private func reserveUpdateRestart(_ reserve: Bool) async throws {
+  guard backend?.isRunning == true else { return }
+  guard port > 0, let url = URL(string:"http://127.0.0.1:\(port)/api/native-update-install") else { throw OasisUpdateError.busy }
+  var request = URLRequest(url:url)
+  request.httpMethod = "POST"
+  request.timeoutInterval = 8
+  request.setValue(token,forHTTPHeaderField:"X-Mole-Native")
+  request.httpBody = try JSONSerialization.data(withJSONObject:["reserve":reserve])
+  let (_, response) = try await URLSession.shared.data(for:request)
+  guard let http = response as? HTTPURLResponse else { throw OasisUpdateError.install }
+  if http.statusCode == 409 { throw OasisUpdateError.busy }
+  guard http.statusCode == 200 else { throw OasisUpdateError.install }
  }
  private func createWindow(){
   window=NSWindow(contentRect:NSRect(x:0,y:0,width:920,height:720),styleMask:[.titled,.closable,.miniaturizable,.resizable,.fullSizeContentView],backing:.buffered,defer:false)
@@ -55,6 +78,8 @@ final class WallpaperApp:NSObject,NSApplicationDelegate,WKScriptMessageHandler,W
  private func startBackend(){
   let process=Process(),pipe=Pipe();process.executableURL=Bundle.main.bundleURL.appendingPathComponent("Contents/MacOS/node");process.arguments=[resources.appendingPathComponent("OasisWallpaperServer.mjs").path];process.currentDirectoryURL=resources
   var env=ProcessInfo.processInfo.environment
+  env.removeValue(forKey:"OASIS_WALLPAPER_UPDATE_READY")
+  env.removeValue(forKey:"OASIS_WALLPAPER_ROLLBACK")
   for key in env.keys where key.hasPrefix("NODE_") || key.hasPrefix("DYLD_") || key=="OPENSSL_CONF" || key=="OPENSSL_MODULES" {env.removeValue(forKey:key)}
   env["MOLE_GUI_NATIVE_TOKEN"]=token;env["MOLE_GUI_APP_BUNDLE"]=Bundle.main.bundleURL.path;env["MOLE_GUI_PARENT_PID"]=String(getpid());env["PATH"]="/usr/bin:/bin:/usr/sbin:/sbin"
   process.environment=env;process.standardInput=FileHandle.nullDevice;process.standardOutput=pipe;process.standardError=FileHandle.nullDevice
@@ -86,15 +111,15 @@ final class WallpaperApp:NSObject,NSApplicationDelegate,WKScriptMessageHandler,W
  func userContentController(_ controller:WKUserContentController,didReceive message:WKScriptMessage){
   guard message.frameInfo.isMainFrame,message.frameInfo.securityOrigin.host=="127.0.0.1",message.frameInfo.securityOrigin.port==port,let body=message.body as? [String:Any],let action=body["action"] as? String,let source=message.webView else{return}
   switch action {
+  case "wallpaperCheckUpdate":if source === view {checkForUpdates()}
+  case "wallpaperUpdateState":if source === view {publish("window.oasisWallpaperUpdate",updater.state)}
+  case "wallpaperReady":if source === view {OasisWallpaperUpdateInstall.acknowledgeStartup()}
   case "appearance":if source === view {applyAppearance(body);var saved=body;saved.removeValue(forKey:"action");UserDefaults.standard.set(saved,forKey:"oasisWallpaperAppearance")}
   case "windowChrome":if source === view {dragEnabled=body["modal"] as? Bool != true;_ = dragView.update(body,in:source)}
   case "desktopScreens":desktops.publishScreens(force:true)
   case "desktopInputAccess":desktops.requestInputAccess()
   case "loginAtStartupState":login.publish()
   case "loginAtStartup":if let enabled=body["enabled"] as? Bool{login.configure(enabled)}
-  case "importOasis":
-   guard let url=URL(string:"http://127.0.0.1:\(port)/api/native-import") else{return};var request=URLRequest(url:url);request.httpMethod="POST";request.timeoutInterval=300;request.setValue(token,forHTTPHeaderField:"X-Mole-Native")
-   Task{[weak self] in let response=try? await URLSession.shared.data(for:request),result=response.flatMap{try? JSONSerialization.jsonObject(with:$0.0) as? [String:Any]} ?? ["ok":false,"error":"import-unavailable"];self?.publish("window.oasisWallpaperImportResult",result)}
   case "workshopRestore":if let requestId=body["requestId"] as? String,requestId.count<100 {Task{NSApp.activate(ignoringOtherApps:true);let ok=await workshop.authorize();publish("window.oasisWorkshopRestoreResult",["requestId":requestId,"ok":ok])}}
   case "wallpaperOrigin":if let value=body["url"] as? String,let url=URL(string:value){webWallpapers.register(url)}
   case "wallpaperReplay":if let id=body["id"] as? String{scenes.replay(source,id:id);webWallpapers.replay(source,id:id)}
@@ -125,5 +150,13 @@ final class WallpaperApp:NSObject,NSApplicationDelegate,WKScriptMessageHandler,W
 }
 
 @main struct OasisWallpaperMain {
- static func main(){if CommandLine.arguments.dropFirst().first=="--prepare-weather-media"{exit(OasisWeatherMedia.run())};if CommandLine.arguments.dropFirst().first=="--clone-wallpaper-tree"{exit(OasisWallpaperClone.run())};let app=NSApplication.shared,delegate=WallpaperApp();app.delegate=delegate;app.run();withExtendedLifetime(delegate){}}
+ static func main(){
+  let arguments=CommandLine.arguments
+  switch arguments.dropFirst().first {
+  case "--prepare-weather-media":exit(OasisWeatherMedia.run())
+  case "--clone-wallpaper-tree":exit(OasisWallpaperClone.run())
+  case "--install-wallpaper-update":exit(OasisWallpaperUpdateInstall.run(Array(arguments.dropFirst(2))))
+  default:let app=NSApplication.shared,delegate=WallpaperApp();app.delegate=delegate;app.run();withExtendedLifetime(delegate){}
+  }
+ }
 }

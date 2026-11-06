@@ -163,5 +163,5 @@ export function createSteamWorkshop({path,importImage,fetchImpl=globalThis.fetch
   if(body.action==='logout'){cancel();session=null;credentialUpdate={generation:randomUUID(),clear:true};return{ok:true,job:view(),signedIn:false}}
   throw Error('workshop-action');
  }
- return{action,inspect,view,cancel,nativeCredentials,settled:()=>current?.task};
+ return{action,inspect,view,cancel,nativeCredentials,settled:()=>current?.task,busy:()=>activeStages.has(current?.stage)};
 }

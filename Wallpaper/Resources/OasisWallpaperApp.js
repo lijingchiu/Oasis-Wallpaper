@@ -1,7 +1,6 @@
 (()=>{'use strict';
  let screens=[],selectedScreen='',ready=false;
  window.oasisWallpaperLoginState=value=>{const input=document.getElementById('login');input.checked=!!value?.enabled;input.disabled=value?.available===false};
- window.oasisWallpaperImportResult=value=>{const status=document.getElementById('import-status'),button=document.getElementById('import-oasis');button.disabled=false;status.hidden=false;status.textContent=value?.ok?'已匯入 Oasis 桌布，請選擇螢幕及桌布。':value?.error==='already-configured'?'獨立版已有桌布設定，為保留目前內容，未覆寫。':value?.error==='source-unavailable'?'找不到可匯入的 Oasis 桌布設定。':value?.error==='import-busy'?'桌布正在處理中，請稍後重試。':'無法安全複製桌布，請使用上傳或 Steam 連結新增。';if(value?.ok)window.OasisWeather?.refresh()};
  const originalScreens=window.oasisDesktopScreens;
  window.oasisDesktopScreens=rows=>{
   screens=Array.isArray(rows)?rows.filter(row=>row&&typeof row.id==='string'&&typeof row.name==='string'):[];
@@ -87,12 +86,28 @@
   }
   // Bind window controls before mounting independently loaded page modules.
   for(const tab of tabs)tab.addEventListener('click',()=>switchPage(tab));
+  const updateButton=document.getElementById('check-update'),updateStatus=document.getElementById('update-status');
+  const updateText=updateStatus.querySelector('[role=status]'),updateBar=updateStatus.querySelector('progress');
+  window.oasisWallpaperUpdate=state=>{
+   updateButton.disabled=!!state.busy;
+   updateButton.title='Oasis Wallpaper '+state.version;
+   updateStatus.hidden=!state.message;
+   updateText.textContent=state.message;
+   updateBar.hidden=state.phase!=='downloading';
+   updateBar.value=state.progress;
+  };
+  updateButton.addEventListener('click',()=>{
+   const bridge=window.webkit?.messageHandlers?.mole;
+   if(bridge){bridge.postMessage({action:'wallpaperCheckUpdate'});return}
+   updateStatus.hidden=false;updateText.textContent='請在 Oasis Wallpaper App 內檢查更新。';
+  });
+  window.webkit?.messageHandlers?.mole?.postMessage({action:'wallpaperUpdateState'});
   document.getElementById('login').addEventListener('change',event=>window.webkit?.messageHandlers?.mole?.postMessage({action:'loginAtStartup',enabled:event.target.checked}));
-  document.getElementById('import-oasis').addEventListener('click',event=>{const bridge=window.webkit?.messageHandlers?.mole;if(!bridge)return;event.currentTarget.disabled=true;const status=document.getElementById('import-status');status.hidden=false;status.textContent='正在匯入 Oasis 桌布…';bridge.postMessage({action:'importOasis'})});
   document.body.dataset.controlsReady='true';
   try{openWallpaperPage=mountWallpaperPages()}catch(error){console.error('Oasis Wallpaper: wallpaper settings',error)}
   try{window.MoleTheme.mount(appearance);appearanceReady=true}catch(error){console.error('Oasis Wallpaper: appearance',error)}
   switchPage(document.querySelector('[data-page-tab="library"]'));
+  if(openWallpaperPage&&appearanceReady)window.webkit?.messageHandlers?.mole?.postMessage({action:'wallpaperReady'});
   const chrome=document.querySelector('.wallpaper-chrome');new ResizeObserver(()=>document.documentElement.style.setProperty('--chrome-height',`${chrome.offsetHeight}px`)).observe(chrome);
   window.addEventListener('resize',syncChrome);window.addEventListener('scroll',syncChrome,{passive:true});new MutationObserver(syncChrome).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['open']});
   syncChrome();window.webkit?.messageHandlers?.mole?.postMessage({action:'desktopScreens'});window.webkit?.messageHandlers?.mole?.postMessage({action:'loginAtStartupState'});

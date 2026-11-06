@@ -23,6 +23,12 @@ test('standalone service imports safely, isolates settings, and serves desktop c
   assert.equal((await post('/api/weather',{}, {origin:'https://outside.invalid'}))[0],403);
   assert.equal((await post('/api/weather/workshop/browse',{rating:'unsupported'}))[1].error,'workshop-browse-input');
   const native={'x-mole-native':'fixture-native-token'};
+  assert.equal((await post('/api/native-update-install',{reserve:true}))[0],403);
+  assert.equal((await post('/api/native-update-install',{reserve:'true'},native))[0],400);
+  assert.equal((await post('/api/native-update-install',{reserve:true},native))[0],200);
+  assert.equal((await post('/api/weather',{action:'settings',desktop:{enabled:true}}))[0],409);
+  assert.equal((await fetch(base+'/wallpaper-app.js')).status,200);
+  assert.equal((await post('/api/native-update-install',{reserve:false},native))[0],200);
   // A pipe holds the real import at its settings read until the HTTP checks finish.
   const settingsFile=join(source,'oasis-weather.json'),original=await readFile(settingsFile);
   const saved=join(root,'original-settings.json');
@@ -43,6 +49,7 @@ test('standalone service imports safely, isolates settings, and serves desktop c
    assert.equal((await fetch(base+'/theme.js',{headers:{origin:'https://outside.invalid'}})).status,403);
    assert.equal((await post('/api/weather',{action:'settings',desktop:{enabled:true}}))[0],409);
    assert.equal((await post('/api/native-import',{},native))[0],409);
+   assert.equal((await post('/api/native-update-install',{reserve:true},native))[0],409);
   }finally{
    await writer.writeFile(original);await writer.close();
    assert.equal((await importing)[0],200);
