@@ -122,6 +122,7 @@ with tempfile.TemporaryDirectory(prefix="oasis-wallpaper-update-test-") as temp:
             threading.Thread(target=server.serve_forever, daemon=True).start()
             env = dict(os.environ, WALLPAPER_TEST_FEED=f"http://127.0.0.1:{server.server_port}",
                        WALLPAPER_TEST_LOG=str(trace), OASIS_WALLPAPER_DATA=str(data))
+            started_ns = time.time_ns()
             process = subprocess.Popen([app / "Contents/MacOS/Oasis"], env=env)
             try:
                 process.wait(timeout=100)
@@ -141,6 +142,7 @@ with tempfile.TemporaryDirectory(prefix="oasis-wallpaper-update-test-") as temp:
                 assert marker.read_bytes() == b"existing user content"
                 if case == "upgrade":
                     assert "installing " in log and re.search(r"downloading 0\.[1-9]", log), log
+                    assert app.stat().st_mtime_ns >= started_ns, "Finder still sees the archived bundle date"
                 print("PASS", case, flush=True)
             finally:
                 server.shutdown()

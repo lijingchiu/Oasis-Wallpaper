@@ -22,7 +22,12 @@ enum OasisWallpaperUpdateInstall {
               stage.deletingLastPathComponent().path == target.deletingLastPathComponent().path,
               stage.resolvingSymlinksInPath().path == stage.path else { return }
         let descriptor = open(file.path, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW, 0o600)
-        if descriptor >= 0 { close(descriptor) }
+        if descriptor >= 0 {
+            // An atomic swap can preserve the old bundle date and leave Finder using its cached icon.
+            // Refresh only this bundle, once the replacement has started successfully.
+            try? FileManager.default.setAttributes([.modificationDate: Date()], ofItemAtPath: target.path)
+            close(descriptor)
+        }
     }
 
     static func validate(stage: URL, target: URL, version: OasisVersion) throws {
