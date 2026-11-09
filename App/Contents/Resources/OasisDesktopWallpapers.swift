@@ -30,7 +30,7 @@ final class OasisDesktopWallpapers {
  }
  private struct Screen {let id:String,name:String,display:CGDirectDisplayID,frame:NSRect}
  private let resources:URL,port:Int,token:String,publish:([[String:Any]])->Void
- private var timer:Timer?,pointerTimer:Timer?,mouseMonitor:Any?,mouseSession:String?,sessions:[String:Session]=[:],observers:[(NotificationCenter,NSObjectProtocol)]=[],busy=false,screensSleeping=false,lastScreens="",config:[String:Any]=[:],lastPointer:NSPoint?,ownershipBlocked=false
+ private var timer:Timer?,pointerTimer:Timer?,mouseMonitor:Any?,mouseSession:String?,sessions:[String:Session]=[:],observers:[(NotificationCenter,NSObjectProtocol)]=[],busy=false,screensSleeping=false,lastScreens="",config:[String:Any]=[:],lastPointer:NSPoint?,ownershipBlocked=false,preferredAudioScreen:String?
  private let ownership=OasisDesktopOwnership()
  init(resources:URL,port:Int,token:String,publish:@escaping([[String:Any]])->Void){self.resources=resources;self.port=port;self.token=token;self.publish=publish}
  func start(){stop();observe();publishScreens();timer=Timer.scheduledTimer(withTimeInterval:2,repeats:true){[weak self] _ in Task{@MainActor in await self?.poll()}};Task{await poll()}}
@@ -65,7 +65,7 @@ final class OasisDesktopWallpapers {
   var desired:[(Screen,String)]=[]
   for screen in screens {guard choices[screen.id] != "off" else{continue};let coverage=Self.coverage(screen.display,windows),action=Self.action(desktop,battery:battery,asleep:screensSleeping,focused:other,maximized:coverage==1,fullscreen:coverage==2);if action != "stop"{desired.append((screen,action))}}
   let ids=Set(desired.map{$0.0.id});for (id,session) in Array(sessions) where !ids.contains(id){session.close();sessions.removeValue(forKey:id)}
-  let eligible=data["desktopAudibleScreens"] as? [String],audioID=Self.audioScreen(desired.map{($0.0.id,$0.1)},eligible:eligible)
+  let eligible=data["desktopAudibleScreens"] as? [String],audioID=Self.audioScreen(desired.map{($0.0.id,$0.1)},eligible:eligible,preferred:preferredAudioScreen)
   for (screen,action) in desired {
    if sessions[screen.id]==nil {sessions[screen.id]=makeSession(screen)}
    guard let session=sessions[screen.id] else{continue};if session.window.frame != screen.frame {session.window.setFrame(screen.frame,display:true)}
@@ -107,7 +107,7 @@ final class OasisDesktopWallpapers {
   if event.type == .leftMouseDown {
    mouseSession=nil
    guard Self.isDesktopPoint(quartz),let session=sessions.values.first(where:{!$0.paused && $0.window.frame.contains(point) && ($0.program.ownsInput || $0.web.acceptsDesktopMouse($0.anchor))}) else{return}
-   mouseSession=session.id;if session.program.ownsInput{session.program.pointer("down",at:point,in:session.window.frame);return};session.web.desktopMouse(session.anchor,event:event,screenPoint:point)
+   mouseSession=session.id;if preferredAudioScreen != session.id {preferredAudioScreen=session.id;Task{await poll()}};if session.program.ownsInput{session.program.pointer("down",at:point,in:session.window.frame);return};session.web.desktopMouse(session.anchor,event:event,screenPoint:point)
   }else if let id=mouseSession,let session=sessions[id],!session.paused {
    let valid=session.window.frame.contains(point) && (event.type == .leftMouseUp ? Self.isDesktopPoint(quartz):Self.desktopGroup(quartz) != nil)
    // Release outside the Web view if another window covered the desktop while
@@ -163,7 +163,12 @@ final class OasisDesktopWallpapers {
   func merge(_ key:String,_ active:Bool){guard active else{return};let value=config[key] as? String ?? "play";if (rank[value] ?? 0)>(rank[result] ?? 0){result=value}}
   merge("sleep",asleep);merge("focused",focused);merge("maximized",maximized);merge("fullscreen",fullscreen);return rank[result] == nil ? "play":result
  }
- static func audioScreen(_ displays:[(String,String)],eligible:[String]?)->String? {displays.first(where:{$0.1=="play" && (eligible?.contains($0.0) ?? true)})?.0}
+ static func audioScreen(_ displays:[(String,String)],eligible:[String]?,preferred:String?=nil)->String? {
+  let playing=displays.filter{$0.1=="play"}.map(\.0)
+  if let preferred,playing.contains(preferred),eligible?.contains(preferred) ?? true{return preferred}
+  guard let eligible else{return playing.first}
+  return eligible.first{playing.contains($0)}
+ }
  private static func onBattery()->Bool {guard let source=IOPSCopyPowerSourcesInfo()?.takeRetainedValue(),let type=IOPSGetProvidingPowerSourceType(source)?.takeUnretainedValue() else{return false};return (type as String)==kIOPSBatteryPowerValue}
  private static func frontWindows(_ pid:pid_t?)->[CGRect] {guard let pid,let list=CGWindowListCopyWindowInfo([.optionOnScreenOnly,.excludeDesktopElements],kCGNullWindowID) as? [[String:Any]] else{return []};return list.compactMap{row in guard (row[kCGWindowOwnerPID as String] as? NSNumber)?.int32Value==pid,(row[kCGWindowLayer as String] as? NSNumber)?.intValue==0,((row[kCGWindowAlpha as String] as? NSNumber)?.doubleValue ?? 1)>0,let bounds=row[kCGWindowBounds as String] as? [String:Any] else{return nil};return CGRect(dictionaryRepresentation:bounds as CFDictionary)}}
  private static func coverage(_ display:CGDirectDisplayID,_ windows:[CGRect])->Int {let bounds=CGDisplayBounds(display);guard bounds.width>0,bounds.height>0 else{return 0};var result=0;for window in windows{let overlap=window.intersection(bounds);if overlap.isNull{continue};let w=overlap.width/bounds.width,h=overlap.height/bounds.height;if w>=0.985&&h>=0.985{return 2};if w>=0.9&&h>=0.86{result=1}};return result}

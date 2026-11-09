@@ -15,6 +15,18 @@ const defaults={enabled:true,intensity:45,unit:'celsius',background:'live',effec
 const wallpaperDefaults={x:0,y:0,scale:100,brightness:100,saturation:100,hue:0,audio:false,volume:50};
 const wallpaperLimits={x:[-100,100],y:[-100,100],scale:[50,200],brightness:[0,200],saturation:[0,200],hue:[-180,180],volume:[0,100]};
 function wallpaperKey(id,rows){const row=rows.find(x=>x.id===id);return row?.workshopID?'workshop-'+row.workshopID:id}
+// Older imported videos may lack audio-track metadata. Give an explicitly
+// audio-capable wallpaper priority while keeping legacy videos as a fallback.
+export function prioritizeDesktopAudio(screens,selection,rows,wallpaper){
+ const known=[],unknown=[];
+ for(const screen of screens){
+  const id=selection(screen),row=rows.find(item=>item.id===id),value=wallpaper(id,'desktop',screen);
+  if(!row||!['video','web','scene','application'].includes(row.mediaType)||row.cached===false||
+     row.mediaType==='video'&&row.hasAudio===false||!value.audio||value.volume<=0)continue;
+  (row.mediaType==='video'&&row.hasAudio!==true?unknown:known).push(screen);
+ }
+ return [...known,...unknown];
+}
 export function normalizeDesktop(value,rows=[]){
  const v=value&&typeof value==='object'&&!Array.isArray(value)?value:{},out={...desktopDefaults,screens:{}};
  if(typeof v.enabled==='boolean')out.enabled=v.enabled;if(typeof v.audio==='boolean')out.audio=v.audio;
@@ -230,7 +242,7 @@ export function createWeather({path,fetchImpl=globalThis.fetch,now=Date.now,medi
   const active=customImages.find(x=>x.id===chosen&&x.cached!==false),pending=desktopHost?null:customImages.find(x=>x.id===scenePending?.id&&x.cached!==false);
   const scene=pending?.mediaType==='scene'?pending:active?.mediaType==='scene'?active:null;
   const web=pending?.mediaType==='web'?pending:active?.mediaType==='web'?active:null;
-  const desktop=settings.desktop,desktopDisplay=id=>{const value=wallpaper(id,'desktop',screen);return {...value,audio:desktop.audio&&value.audio,volume:desktop.volume*value.volume/100}},screens=new Set(detectedScreensKnown?knownScreens:[...Object.keys(desktop.screens),...knownScreens]),desktopAudibleScreens=[...screens].filter(screenID=>{const id=selection(screenID),row=customImages.find(x=>x.id===id),value=wallpaper(id,'desktop',screenID);return !!row&&['video','web','scene','application'].includes(row.mediaType)&&row.cached!==false&&(row.mediaType!=='video'||row.hasAudio!==false)&&value.audio&&value.volume>0}),desktopAudioActive=desktopHostEnabled&&desktop.enabled&&desktop.audio&&desktop.volume>0&&(!detectedScreensKnown&&!screens.size||desktopAudibleScreens.length>0),display=desktopHost?desktopDisplay(chosen):wallpaper(chosen),enabled=desktopHost?desktop.enabled&&desktopChoice!=='off':settings.enabled,intensity=desktopHost?1:settings.intensity/100,revision=desktopHost?0:wallpaperRevision,common={revision,intensity,enabled,fps:desktopHost?desktop.fps:30,display};
+  const desktop=settings.desktop,desktopDisplay=id=>{const value=wallpaper(id,'desktop',screen);return {...value,audio:desktop.audio&&value.audio,volume:desktop.volume*value.volume/100}},screens=new Set(detectedScreensKnown?knownScreens:[...Object.keys(desktop.screens),...knownScreens]),desktopAudibleScreens=prioritizeDesktopAudio(screens,selection,customImages,wallpaper),desktopAudioActive=desktopHostEnabled&&desktop.enabled&&desktop.audio&&desktop.volume>0&&(!detectedScreensKnown&&!screens.size||desktopAudibleScreens.length>0),display=desktopHost?desktopDisplay(chosen):wallpaper(chosen),enabled=desktopHost?desktop.enabled&&desktopChoice!=='off':settings.enabled,intensity=desktopHost?1:settings.intensity/100,revision=desktopHost?0:wallpaperRevision,common={revision,intensity,enabled,fps:desktopHost?desktop.fps:30,display};
   const sceneSettings=scene?(desktopHost?{...sceneDisplay(scene,'desktop',screen),...desktopDisplay(scene.id),properties:sceneDisplay(scene,'desktop',screen).properties}:sceneDisplay(scene)):null,webSettings=web?(desktopHost?desktopDisplay(web.id):wallpaper(web.id)):null;
   const applications={};
   if(body.desktopManagement===true&&desktop.enabled)for(const screenID of screens){

@@ -18,6 +18,8 @@ import CoreGraphics
   precondition(!dock(42,dockLevel+1,primary));precondition(!dock(42,-1,primary))
   let screens=[("A","play"),("B","play"),("C","pause")]
   precondition(OasisDesktopWallpapers.audioScreen(screens,eligible:["B"])=="B");precondition(OasisDesktopWallpapers.audioScreen(screens,eligible:["C"])==nil);precondition(OasisDesktopWallpapers.audioScreen(screens,eligible:nil)=="A")
-  print("Desktop wallpaper policy: 21 checks passed")
+  precondition(OasisDesktopWallpapers.audioScreen(screens,eligible:["B","A"])=="B");precondition(OasisDesktopWallpapers.audioScreen(screens,eligible:["C","A"])=="A")
+  precondition(OasisDesktopWallpapers.audioScreen(screens,eligible:["A","B"],preferred:"B")=="B");precondition(OasisDesktopWallpapers.audioScreen(screens,eligible:["A"],preferred:"B")=="A");precondition(OasisDesktopWallpapers.audioScreen(screens,eligible:["A","C"],preferred:"C")=="A")
+  print("Desktop wallpaper policy: 26 checks passed")
  }
 }
