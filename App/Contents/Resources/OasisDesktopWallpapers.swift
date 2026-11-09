@@ -94,11 +94,16 @@ final class OasisDesktopWallpapers {
  private func updateMouseMonitor(){
   let needed=AXIsProcessTrusted() && sessions.values.contains{!$0.paused && ($0.program.ownsInput || $0.web.acceptsDesktopMouse($0.anchor))}
   if !needed {removeMouseMonitor();return};guard mouseMonitor==nil else{return}
-  mouseMonitor=NSEvent.addGlobalMonitorForEvents(matching:[.leftMouseDown,.leftMouseUp,.leftMouseDragged]){[weak self] event in Task{@MainActor in self?.desktopMouse(event)}}
+  mouseMonitor=NSEvent.addGlobalMonitorForEvents(matching:[.leftMouseDown,.leftMouseUp,.leftMouseDragged,.scrollWheel]){[weak self] event in Task{@MainActor in self?.desktopMouse(event)}}
  }
  private func desktopMouse(_ event:NSEvent){
   guard let quartz=event.cgEvent?.location,let primary=NSScreen.screens.first else{mouseSession=nil;return}
   let point=NSPoint(x:quartz.x,y:primary.frame.maxY-quartz.y)
+  if event.type == .scrollWheel {
+   guard Self.isDesktopPoint(quartz),let session=sessions.values.first(where:{!$0.paused && $0.window.frame.contains(point) && $0.program.ownsInput}) else{return}
+   session.program.scroll(event,at:point,in:session.window.frame)
+   return
+  }
   if event.type == .leftMouseDown {
    mouseSession=nil
    guard Self.isDesktopPoint(quartz),let session=sessions.values.first(where:{!$0.paused && $0.window.frame.contains(point) && ($0.program.ownsInput || $0.web.acceptsDesktopMouse($0.anchor))}) else{return}
@@ -126,10 +131,10 @@ final class OasisDesktopWallpapers {
   }
   return true
  }
- // Dock can own a full-display, mostly transparent window. Its actual controls
- // are still protected by the Finder accessibility hit test below.
+ // Dock's transparent full-display backdrop uses level 18 for Show Desktop
+ // and level 20 for the normal desktop. The Finder hit test still excludes controls.
  static func isFullDisplayDockWindow(owner:pid_t?,level:Int,bounds:CGRect,dockPID:pid_t?,displays:[CGRect])->Bool {
-  guard let owner,let dockPID,owner==dockPID,level==Int(CGWindowLevelForKey(.dockWindow)) else{return false}
+  guard let owner,let dockPID,owner==dockPID,level>Int(CGWindowLevelForKey(.normalWindow)),level<=Int(CGWindowLevelForKey(.dockWindow)) else{return false}
   return displays.contains{abs($0.minX-bounds.minX)<1 && abs($0.minY-bounds.minY)<1 && abs($0.width-bounds.width)<1 && abs($0.height-bounds.height)<1}
  }
  private static func attribute(_ element:AXUIElement,_ name:CFString)->CFTypeRef? {var value:CFTypeRef?;return AXUIElementCopyAttributeValue(element,name,&value) == .success ? value:nil}
@@ -245,6 +250,14 @@ private final class OasisOriginalDesktopProgram {
  func pointer(_ kind:String,at point:NSPoint,in frame:NSRect){
   guard ownsInput else{return}
   send("\(kind) \((point.x-frame.minX)/max(1,frame.width)) \((frame.maxY-point.y)/max(1,frame.height))")
+ }
+ func scroll(_ event:NSEvent,at point:NSPoint,in frame:NSRect){
+  guard ownsInput else{return}
+  let scale:Double=event.hasPreciseScrollingDeltas ? 1:10
+  let x=(point.x-frame.minX)/max(1,frame.width),y=(frame.maxY-point.y)/max(1,frame.height)
+  let dx=max(-8192,min(8192,event.scrollingDeltaX*scale)),dy=max(-8192,min(8192,event.scrollingDeltaY*scale))
+  guard dx.isFinite,dy.isFinite else{return}
+  send(String(format:"scroll %.8f %.8f %.6f %.6f",locale:Locale(identifier:"en_US_POSIX"),x,y,dx,dy))
  }
  func stop(){
   generation=UUID()

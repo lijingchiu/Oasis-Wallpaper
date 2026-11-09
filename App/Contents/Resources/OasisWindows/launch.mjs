@@ -67,7 +67,8 @@ lines.on('line', (line) => {
     proxy.stdin.write(line + '\n');
     return;
   }
-  if (!paused && player?.stdin.writable && /^(down|up|drag|move) -?[\d.]+ -?[\d.]+$/.test(line))
+  if (!paused && player?.stdin.writable &&
+      (/^(down|up|drag|move) -?[\d.]+ -?[\d.]+$/.test(line) || /^scroll(?: -?[\d.]+){4}$/.test(line)))
     player.stdin.write(line + '\n');
 });
 function silentPipe(stream) {

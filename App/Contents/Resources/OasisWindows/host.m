@@ -20,6 +20,28 @@ __attribute__((visibility("default"), used)) const struct reserve_item *wine_mai
 static __weak NSWindow *game;
 static uint32_t targetID;
 static int eventID;
+
+// A synthesized scroll event has no AppKit window. Wine needs its original
+// window to route the wheel to the correct Windows control. Keep this adapter
+// rooted in NSObject so AppKit initialization stays inside Wine startup.
+@interface OasisWallpaperScrollEvent : NSObject
+@property(nonatomic, strong) NSEvent *sourceEvent;
+@property(nonatomic, weak) NSWindow *targetWindow;
+@end
+@implementation OasisWallpaperScrollEvent
+- (NSEventType)type { return NSEventTypeScrollWheel; }
+- (NSWindow *)window { return self.targetWindow; }
+- (NSInteger)windowNumber { return self.targetWindow.windowNumber; }
+- (CGEventRef)CGEvent { return self.sourceEvent.CGEvent; }
+- (NSTimeInterval)timestamp { return self.sourceEvent.timestamp; }
+- (CGFloat)deltaX { return self.sourceEvent.deltaX; }
+- (CGFloat)deltaY { return self.sourceEvent.deltaY; }
+@end
+
+@interface NSObject (OasisWineInput)
+- (BOOL)handleEvent:(id)event;
+@end
+
 static NSScreen *screenForGame(void) {
     for (NSScreen *screen in NSScreen.screens)
         if ([screen.deviceDescription[@"NSScreenNumber"] unsignedIntValue] == targetID)
@@ -95,6 +117,28 @@ static void pointer(NSString *line) {
     if (![scanner scanUpToString:@" " intoString:&kind] || ![scanner scanDouble:&x] ||
         ![scanner scanDouble:&y] || !isfinite(x) || !isfinite(y))
         return;
+    NSPoint local = NSMakePoint(x * NSWidth(window.frame), (1 - y) * NSHeight(window.frame)),
+            global = [window convertPointToScreen:local];
+    if ([kind isEqual:@"scroll"]) {
+        double dx, dy;
+        if (![scanner scanDouble:&dx] || ![scanner scanDouble:&dy] ||
+            !isfinite(dx) || !isfinite(dy) || fabs(dx) > 8192 || fabs(dy) > 8192 ||
+            x < 0 || x > 1 || y < 0 || y > 1)
+            return;
+        CGEventRef cg = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitPixel, 2,
+                                                     (int32_t)round(dy), (int32_t)round(dx));
+        if (!cg)
+            return;
+        CGEventSetLocation(cg, CGPointMake(global.x, NSMaxY(NSScreen.screens.firstObject.frame) - global.y));
+        OasisWallpaperScrollEvent *event = [OasisWallpaperScrollEvent new];
+        event.sourceEvent = [NSEvent eventWithCGEvent:cg];
+        event.targetWindow = window;
+        CFRelease(cg);
+        id controller = NSApp.delegate;
+        if ([controller respondsToSelector:@selector(handleEvent:)])
+            [controller handleEvent:event];
+        return;
+    }
     NSEventType type;
     if ([kind isEqual:@"down"])
         type = NSEventTypeLeftMouseDown;
@@ -106,8 +150,6 @@ static void pointer(NSString *line) {
         type = NSEventTypeMouseMoved;
     else
         return;
-    NSPoint local = NSMakePoint(x * NSWidth(window.frame), (1 - y) * NSHeight(window.frame)),
-            global = [window convertPointToScreen:local];
     NSEvent *event = [NSEvent
         mouseEventWithType:type
                   location:local
